@@ -1,0 +1,109 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>📱 IMEI Management</h1>
+
+<br>
+
+<div class="card">
+
+    <h2>Add IMEIs</h2>
+
+    <form action="/save_imeis" method="POST">
+
+        <label><strong>Select Phone Model</strong></label>
+
+        <br><br>
+
+        <select name="phone_id" required>
+
+            <option value="">
+                -- Select Phone --
+            </option>
+
+            {% for phone in phones %}
+
+            <option value="{{ phone.id }}">
+                {{ phone.brand }} {{ phone.model }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+        <br><br>
+
+        <label><strong>Paste IMEIs (One per Line)</strong></label>
+
+        <br><br>
+
+        <textarea
+            name="imeis"
+            rows="10"
+            placeholder="356789111111111
+356789111111112
+356789111111113"
+            required></textarea>
+
+        <br><br>
+
+        <button type="submit">
+
+            💾 Save IMEIs
+
+        </button>
+
+    </form>
+
+</div>
+
+<br><br>
+
+<div class="card">
+
+<h2>Registered IMEIs</h2>
+
+<table>
+
+<tr>
+
+<th>Phone</th>
+<th>IMEI</th>
+<th>Status</th>
+
+</tr>
+
+{% for item in imeis %}
+
+<tr>
+
+<td>
+
+{{ item.brand }}
+
+{{ item.model }}
+
+</td>
+
+<td>
+
+{{ item.imei }}
+
+</td>
+
+<td>
+
+{{ item.status }}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+{% endblock %}

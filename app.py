@@ -120,25 +120,10 @@ def save_phone():
     buying_price = request.form["buying_price"]
     selling_price = request.form["selling_price"]
     quantity = request.form["quantity"]
-    imei = request.form["imei"]
+    
 
     cursor.execute("""
-        INSERT INTO phones
-        (
-            brand,
-            model,
-            color,
-            phone_condition,
-            storage,
-            ram,
-            buying_price,
-            selling_price,
-            quantity,
-            imei
-        )
-        VALUES
-        (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    """,
+    INSERT INTO phones
     (
         brand,
         model,
@@ -148,9 +133,22 @@ def save_phone():
         ram,
         buying_price,
         selling_price,
-        quantity,
-        imei
-    ))
+        quantity
+    )
+    VALUES
+    (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+""",
+(
+    brand,
+    model,
+    color,
+    phone_condition,
+    storage,
+    ram,
+    buying_price,
+    selling_price,
+    quantity
+))
 
     conn.commit()
 
@@ -192,36 +190,34 @@ def update_phone(id):
     buying_price = request.form["buying_price"]
     selling_price = request.form["selling_price"]
     quantity = request.form["quantity"]
-    imei = request.form["imei"]
+    
 
     cursor.execute("""
-        UPDATE phones
-        SET
-            brand=%s,
-            model=%s,
-            color=%s,
-            phone_condition=%s,
-            storage=%s,
-            ram=%s,
-            buying_price=%s,
-            selling_price=%s,
-            quantity=%s,
-            imei=%s
-        WHERE id=%s
-    """,
-    (
-        brand,
-        model,
-        color,
-        phone_condition,
-        storage,
-        ram,
-        buying_price,
-        selling_price,
-        quantity,
-        imei,
-        id
-    ))
+    UPDATE phones
+    SET
+        brand=%s,
+        model=%s,
+        color=%s,
+        phone_condition=%s,
+        storage=%s,
+        ram=%s,
+        buying_price=%s,
+        selling_price=%s,
+        quantity=%s
+    WHERE id=%s
+""",
+(
+    brand,
+    model,
+    color,
+    phone_condition,
+    storage,
+    ram,
+    buying_price,
+    selling_price,
+    quantity,
+    id
+))
 
     conn.commit()
 
@@ -247,6 +243,42 @@ def delete_phone(id):
 # ==========================================
 # Run Flask
 # ==========================================
+
+# ==========================================
+# IMEI Management
+# ==========================================
+@app.route("/imei_management")
+def imei_management():
+
+    cursor.execute("""
+        SELECT id, brand, model
+        FROM phones
+        ORDER BY brand, model
+    """)
+
+    phones = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT
+            phone_imei.*,
+            phones.brand,
+            phones.model
+        FROM phone_imei
+        INNER JOIN phones
+        ON phones.id = phone_imei.phone_id
+        ORDER BY phone_imei.id DESC
+    """)
+
+    imeis = cursor.fetchall()
+
+    return render_template(
+        "imei_management.html",
+        phones=phones,
+        imeis=imeis,
+        current_date=datetime.now().strftime("%d %b %Y")
+    )
+
+
 if __name__ == "__main__":
     app.run(
         debug=True,

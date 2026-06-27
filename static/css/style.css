@@ -542,3 +542,34 @@ WELCOME BOX
     border-radius:8px;
 
 }
+
+select,
+textarea{
+
+width:100%;
+
+padding:12px;
+
+border:1px solid #ccc;
+
+border-radius:8px;
+
+font-size:15px;
+
+margin-top:5px;
+
+}
+
+textarea{
+
+resize:vertical;
+
+font-family:inherit;
+
+}
+
+.card{
+
+margin-bottom:25px;
+
+}
