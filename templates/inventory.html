@@ -45,13 +45,21 @@
 
 <td>
 
-<a href="/edit_phone/{{ phone.id }}">
-✏ Edit
+<a href="/phone/{{ phone.id }}" class="btn-view">
+    <i class="fa fa-eye"></i> View
+</a>
+
+<a href="/edit_phone/{{ phone.id }}" class="btn-edit">
+    <i class="fa fa-edit"></i> Edit
 </a>
 
 <a href="/delete_phone/{{ phone.id }}"
-onclick="return confirm('Delete this phone?')">
-🗑 Delete </a>
+onclick="return confirm('Delete this phone?')"
+class="btn-delete">
+
+    <i class="fa fa-trash"></i> Delete
+
+</a>
 
 </td>
 

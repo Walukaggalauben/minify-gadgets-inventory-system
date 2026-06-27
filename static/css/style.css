@@ -368,3 +368,177 @@ QUICK ACTIONS
     font-size:18px;
 
 }
+
+/*==============================
+WELCOME BOX
+==============================*/
+
+.welcome-box{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    background:linear-gradient(135deg,#00695C,#009688);
+
+    color:white;
+
+    padding:30px;
+
+    border-radius:18px;
+
+    margin-bottom:30px;
+
+    box-shadow:0 6px 18px rgba(0,0,0,.15);
+
+}
+
+.welcome-box h1{
+
+    margin-bottom:12px;
+
+}
+
+.welcome-box p{
+
+    max-width:600px;
+
+    line-height:1.7;
+
+}
+
+.today-box{
+
+    background:white;
+
+    color:#00695C;
+
+    padding:20px;
+
+    border-radius:15px;
+
+    text-align:center;
+
+    min-width:180px;
+
+}
+
+.today-box h3{
+
+    margin-bottom:10px;
+
+}
+
+.today-box h2{
+
+    font-size:26px;
+
+}
+
+/* ===========================
+   PHONE DETAILS
+=========================== */
+
+.details-card{
+
+    background:#fff;
+
+    border-radius:15px;
+
+    padding:30px;
+
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+
+}
+
+.details-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+.status-badge{
+
+    background:#009688;
+
+    color:white;
+
+    padding:8px 16px;
+
+    border-radius:30px;
+
+    font-weight:bold;
+
+}
+
+.details-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+.details-table th{
+
+    width:220px;
+
+    background:#f7f7f7;
+
+    color:#333;
+
+    text-align:left;
+
+    padding:14px;
+
+}
+
+.details-table td{
+
+    padding:14px;
+
+    border-bottom:1px solid #eee;
+
+}
+
+.btn-back{
+
+    display:inline-block;
+
+    padding:10px 20px;
+
+    background:#607d8b;
+
+    color:white;
+
+    text-decoration:none;
+
+    border-radius:8px;
+
+    margin-right:10px;
+
+}
+
+.btn-edit{
+
+    display:inline-block;
+
+    padding:10px 20px;
+
+    background:#009688;
+
+    color:white;
+
+    text-decoration:none;
+
+    border-radius:8px;
+
+}

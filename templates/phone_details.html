@@ -1,0 +1,94 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1><i class="fa fa-mobile-screen"></i> Phone Details</h1>
+
+<br>
+
+<div class="details-card">
+
+    <div class="details-header">
+
+        <h2>{{ phone.brand }} {{ phone.model }}</h2>
+
+        <span class="status-badge">
+            {{ phone.phone_condition }}
+        </span>
+
+    </div>
+
+    <table class="details-table">
+
+        <tr>
+            <th>ID</th>
+            <td>{{ phone.id }}</td>
+        </tr>
+
+        <tr>
+            <th>Brand</th>
+            <td>{{ phone.brand }}</td>
+        </tr>
+
+        <tr>
+            <th>Model</th>
+            <td>{{ phone.model }}</td>
+        </tr>
+
+        <tr>
+            <th>Color</th>
+            <td>{{ phone.color }}</td>
+        </tr>
+
+        <tr>
+            <th>Phone Condition</th>
+            <td>{{ phone.phone_condition }}</td>
+        </tr>
+
+        <tr>
+            <th>Storage</th>
+            <td>{{ phone.storage }}</td>
+        </tr>
+
+        <tr>
+            <th>RAM</th>
+            <td>{{ phone.ram }}</td>
+        </tr>
+
+        <tr>
+            <th>Buying Price</th>
+            <td>UGX {{ "{:,.0f}".format(phone.buying_price) }}</td>
+        </tr>
+
+        <tr>
+            <th>Selling Price</th>
+            <td>UGX {{ "{:,.0f}".format(phone.selling_price) }}</td>
+        </tr>
+
+        <tr>
+            <th>Quantity</th>
+            <td>{{ phone.quantity }}</td>
+        </tr>
+
+        <tr>
+            <th>IMEI</th>
+            <td>{{ phone.imei }}</td>
+        </tr>
+
+    </table>
+
+    <br>
+
+    <a href="/inventory" class="btn-back">
+        <i class="fa fa-arrow-left"></i>
+        Back to Inventory
+    </a>
+
+    <a href="/edit_phone/{{ phone.id }}" class="btn-edit">
+        <i class="fa fa-edit"></i>
+        Edit Phone
+    </a>
+
+</div>
+
+{% endblock %}

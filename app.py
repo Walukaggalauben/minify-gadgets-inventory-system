@@ -71,6 +71,26 @@ def inventory():
         phones=phones,
         current_date=datetime.now().strftime("%d %b %Y")
     )
+    
+    
+# ==========================
+# Phone Details
+# ==========================
+@app.route('/phone/<int:id>')
+def phone_details(id):
+
+    cursor.execute(
+        "SELECT * FROM phones WHERE id=%s",
+        (id,)
+    )
+
+    phone = cursor.fetchone()
+
+    return render_template(
+        "phone_details.html",
+        phone=phone,
+        current_date=datetime.now().strftime("%d %b %Y")
+    )    
 
 
 # ==========================================
