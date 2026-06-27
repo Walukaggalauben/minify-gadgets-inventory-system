@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>📦 Inventory</h1>
+
+<br>
+
+<a href="/add_phone">
+➕ Add Phone
+</a>
+
+<br><br>
+
+<table>
+
+<tr>
+
+<th>ID</th>
+<th>Brand</th>
+<th>Model</th>
+<th>Condition</th>
+<th>Storage</th>
+<th>RAM</th>
+<th>Buying</th>
+<th>Selling</th>
+<th>Qty</th>
+<th>Actions</th>
+
+</tr>
+
+{% for phone in phones %}
+
+<tr>
+
+<td>{{ phone.id }}</td>
+<td>{{ phone.brand }}</td>
+<td>{{ phone.model }}</td>
+<td>{{ phone.phone_condition }}</td>
+<td>{{ phone.storage }}</td>
+<td>{{ phone.ram }}</td>
+<td>{{ phone.buying_price }}</td>
+<td>{{ phone.selling_price }}</td>
+<td>{{ phone.quantity }}</td>
+
+<td>
+
+<a href="/edit_phone/{{ phone.id }}">
+✏ Edit
+</a>
+
+<a href="/delete_phone/{{ phone.id }}"
+onclick="return confirm('Delete this phone?')">
+🗑 Delete </a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endblock %}

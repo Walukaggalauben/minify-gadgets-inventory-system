@@ -1,0 +1,129 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MINIFY GADGETS Inventory System</title>
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}">
+
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <div class="logo">
+        <img src="{{ url_for('static', filename='images/logo.png') }}">
+    </div>
+
+    <a href="/dashboard">
+        <i class="fas fa-home"></i>
+        Dashboard
+    </a>
+
+    <div class="menu-title">
+        INVENTORY
+    </div>
+
+    <a href="/inventory">
+        <i class="fas fa-boxes"></i>
+        Inventory
+    </a>
+
+    <a href="/add_phone">
+        <i class="fas fa-plus-circle"></i>
+        Add Phone
+    </a>
+
+    <a href="#">
+        <i class="fas fa-mobile-alt"></i>
+        IMEI Management
+    </a>
+
+    <div class="menu-title">
+        SALES
+    </div>
+
+    <a href="#">
+        <i class="fas fa-shopping-cart"></i>
+        Sales
+    </a>
+
+    <a href="#">
+        <i class="fas fa-receipt"></i>
+        Sales History
+    </a>
+
+    <div class="menu-title">
+        CUSTOMERS
+    </div>
+
+    <a href="#">
+        <i class="fas fa-users"></i>
+        Customers
+    </a>
+
+    <div class="menu-title">
+        FINANCE
+    </div>
+
+    <a href="#">
+        <i class="fas fa-money-bill-wave"></i>
+        Expenses
+    </a>
+
+    <a href="#">
+        <i class="fas fa-chart-line"></i>
+        Reports
+    </a>
+
+    <div class="menu-title">
+        SYSTEM
+    </div>
+
+    <a href="#">
+        <i class="fas fa-cog"></i>
+        Settings
+    </a>
+
+    <a href="#">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+    </a>
+
+</div>
+<div class="main">
+
+    <div class="header">
+
+        <h2>MINIFY GADGETS Inventory System</h2>
+
+        <div class="date-box">
+            {{ current_date }}
+        </div>
+
+    </div>
+
+    <div class="content">
+
+        {% block content %}
+        {% endblock %}
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
+

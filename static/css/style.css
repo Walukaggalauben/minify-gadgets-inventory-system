@@ -1,0 +1,370 @@
+/* ============================
+   MINIFY GADGETS THEME
+============================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:#f4f7fa;
+    color:#333;
+}
+
+/* ============================
+   SIDEBAR
+============================= */
+
+.sidebar{
+    width:240px;
+    height:100vh;
+    position:fixed;
+    left:0;
+    top:0;
+    overflow-y:auto;
+    background:linear-gradient(180deg,#004d40,#00695C);
+    box-shadow:3px 0 15px rgba(0,0,0,.15);
+}
+
+.logo{
+    background:white;
+    text-align:center;
+    padding:20px;
+}
+
+.logo img{
+    width:180px;
+}
+
+/* ============================
+   MENU
+============================= */
+
+.sidebar a{
+    display:block;
+    padding:15px 20px;
+    color:white;
+    text-decoration:none;
+    font-weight:600;
+    transition:.3s;
+}
+
+.sidebar a:hover{
+    background:#00897B;
+    padding-left:28px;
+}
+
+/* ============================
+   MAIN
+============================= */
+
+.main{
+    margin-left:240px;
+    min-height:100vh;
+}
+
+/* ============================
+   HEADER
+============================= */
+
+.header{
+    background:white;
+    padding:20px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.header h2{
+    color:#00695C;
+}
+
+/* ============================
+   DATE
+============================= */
+
+.date-box{
+    background:#00695C;
+    color:white;
+    padding:10px 18px;
+    border-radius:10px;
+    font-weight:bold;
+}
+
+/* ============================
+   CONTENT
+============================= */
+
+.content{
+    padding:30px;
+}
+
+/* ============================
+   DASHBOARD CARDS
+============================= */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:white;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.card h2{
+    color:#00695C;
+    margin-bottom:10px;
+}
+
+/* ============================
+   FORMS
+============================= */
+
+form p{
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+input,
+select{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:15px;
+    transition:.3s;
+}
+
+input:focus,
+select:focus{
+    outline:none;
+    border-color:#00695C;
+    box-shadow:0 0 5px rgba(0,105,92,.25);
+}
+
+/* ============================
+   BUTTONS
+============================= */
+
+button{
+    background:#00695C;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.3s;
+}
+
+button:hover{
+    background:#00897B;
+}
+
+/* ============================
+   TABLES
+============================= */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    border-radius:15px;
+    overflow:hidden;
+}
+
+th{
+    background:#00695C;
+    color:white;
+    padding:14px;
+}
+
+td{
+    padding:14px;
+    border-bottom:1px solid #eee;
+}
+
+tr:hover{
+    background:#f8f9fa;
+}
+
+/* ============================
+   RESPONSIVE
+============================= */
+
+@media(max-width:768px){
+
+.sidebar{
+    width:100%;
+    height:auto;
+    position:relative;
+}
+
+.main{
+    margin-left:0;
+}
+
+.cards{
+    grid-template-columns:1fr;
+}
+
+}
+
+/* ============================
+   MENU TITLES
+============================= */
+
+.menu-title{
+    color:#9fd9cf;
+    font-size:12px;
+    font-weight:bold;
+    padding:20px 20px 8px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+}
+
+/* ============================
+   SIDEBAR ICONS
+============================= */
+
+.sidebar a i{
+    width:25px;
+}
+
+/* ============================
+   ACTIVE & HOVER EFFECT
+============================= */
+
+.sidebar a{
+    border-left:4px solid transparent;
+}
+
+.sidebar a:hover{
+    border-left:4px solid #ffffff;
+}
+
+/*==================================
+DASHBOARD CARDS
+===================================*/
+
+.dashboard-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+}
+
+.card-icon{
+
+    width:70px;
+
+    height:70px;
+
+    border-radius:50%;
+
+    background:linear-gradient(135deg,#00695C,#009688);
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:34px;
+
+    flex-shrink:0;
+
+}
+
+.card-info h3{
+
+    color:#777;
+
+    font-size:15px;
+
+    margin-bottom:8px;
+
+}
+
+.card-info h2{
+
+    color:#00695C;
+
+    font-size:28px;
+
+    margin-bottom:6px;
+
+}
+
+.card-info p{
+
+    color:#999;
+
+    font-size:13px;
+
+}
+
+/*==================================
+QUICK ACTIONS
+===================================*/
+
+.quick-card{
+
+    background:white;
+
+    text-decoration:none;
+
+    color:#333;
+
+    border-radius:15px;
+
+    padding:30px;
+
+    text-align:center;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+    transition:.3s;
+
+}
+
+.quick-card:hover{
+
+    transform:translateY(-8px);
+
+}
+
+.quick-card i{
+
+    font-size:40px;
+
+    color:#00695C;
+
+    margin-bottom:15px;
+
+}
+
+.quick-card h3{
+
+    font-size:18px;
+
+}

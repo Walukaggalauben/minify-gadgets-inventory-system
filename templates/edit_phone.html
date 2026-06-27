@@ -1,0 +1,97 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>✏ Edit Phone</h1>
+
+<div class="card">
+
+<form action="/update_phone/{{ phone.id }}" method="POST">
+
+    <p>Brand</p>
+    <input type="text" name="brand" value="{{ phone.brand }}" required>
+
+    <br><br>
+
+    <p>Model</p>
+    <input type="text" name="model" value="{{ phone.model }}" required>
+
+    <br><br>
+
+    <p>Color</p>
+    <input type="text" name="color" value="{{ phone.color }}" required>
+
+    <br><br>
+
+    <p>Phone Condition</p>
+
+    <input
+        type="text"
+        name="condition"
+        value="{{ phone.phone_condition }}"
+        placeholder="NEW, USED, DM, REF, Open Box..."
+        required
+    >
+
+    <br><br>
+
+    <p>Storage</p>
+    <input type="text" name="storage" value="{{ phone.storage }}" required>
+
+    <br><br>
+
+    <p>RAM</p>
+    <input type="text" name="ram" value="{{ phone.ram }}" required>
+
+    <br><br>
+
+    <p>Buying Price</p>
+    <input
+        type="number"
+        name="buying_price"
+        step="0.01"
+        value="{{ phone.buying_price }}"
+        required
+    >
+
+    <br><br>
+
+    <p>Selling Price</p>
+    <input
+        type="number"
+        name="selling_price"
+        step="0.01"
+        value="{{ phone.selling_price }}"
+        required
+    >
+
+    <br><br>
+
+    <p>Quantity</p>
+    <input
+        type="number"
+        name="quantity"
+        value="{{ phone.quantity }}"
+        required
+    >
+
+    <br><br>
+
+    <p>IMEI</p>
+    <input
+        type="text"
+        name="imei"
+        value="{{ phone.imei }}"
+    >
+
+    <br><br>
+
+    <button type="submit">
+        💾 Update Phone
+    </button>
+
+</form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>📊 Dashboard</h1>
+
+<br>
+
+<div class="cards">
+
+    <div class="card dashboard-card">
+
+        <div class="card-icon">
+            📱
+        </div>
+
+        <div class="card-info">
+
+            <h3>Total Phone Models</h3>
+
+            <h2>{{ totalPhones.total }}</h2>
+
+            <p>Available in Inventory</p>
+
+        </div>
+
+    </div>
+
+    <div class="card dashboard-card">
+
+        <div class="card-icon">
+            📦
+        </div>
+
+        <div class="card-info">
+
+            <h3>Total Stock</h3>
+
+            <h2>{{ totalStock.stock }}</h2>
+
+            <p>Units Available</p>
+
+        </div>
+
+    </div>
+
+    <div class="card dashboard-card">
+
+        <div class="card-icon">
+            💰
+        </div>
+
+        <div class="card-info">
+
+            <h3>Total Sales</h3>
+
+            <h2>
+                UGX {{ "{:,.0f}".format(totalSales.sales) }}
+            </h2>
+
+            <p>Business Revenue</p>
+
+        </div>
+
+    </div>
+
+    <div class="card dashboard-card">
+
+        <div class="card-icon">
+            📈
+        </div>
+
+        <div class="card-info">
+
+            <h3>Total Profit</h3>
+
+            <h2>
+                UGX {{ "{:,.0f}".format(totalProfit.profit) }}
+            </h2>
+
+            <p>Overall Profit</p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<br><br>
+
+<h2>⚡ Quick Actions</h2>
+
+<br>
+
+<div class="cards">
+
+    <a href="/add_phone" class="quick-card">
+
+        <i class="fas fa-plus-circle"></i>
+
+        <h3>Add Phone</h3>
+
+    </a>
+
+    <a href="/inventory" class="quick-card">
+
+        <i class="fas fa-box"></i>
+
+        <h3>Inventory</h3>
+
+    </a>
+
+    <a href="#" class="quick-card">
+
+        <i class="fas fa-shopping-cart"></i>
+
+        <h3>Sales</h3>
+
+    </a>
+
+    <a href="#" class="quick-card">
+
+        <i class="fas fa-chart-line"></i>
+
+        <h3>Reports</h3>
+
+    </a>
+
+</div>
+
+{% endblock %}

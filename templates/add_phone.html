@@ -1,0 +1,129 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>📱 Add Phone</h1>
+
+<div class="card">
+
+<form action="/save_phone" method="POST">
+
+    <p><strong>Brand</strong></p>
+    <input
+        type="text"
+        name="brand"
+        placeholder="Samsung, Apple, Huawei..."
+        required
+    >
+
+    <br><br>
+
+    <p><strong>Model</strong></p>
+    <input
+        type="text"
+        name="model"
+        placeholder="S25 Ultra, iPhone 16 Pro..."
+        required
+    >
+
+    <br><br>
+
+    <p><strong>Color</strong></p>
+    <input
+        type="text"
+        name="color"
+        placeholder="Black, Blue, White, Silver..."
+        required
+    >
+
+    <br><br>
+
+    <p><strong>Phone Condition / Remarks</strong></p>
+    <input
+        type="text"
+        name="condition"
+        placeholder="NEW, USED, DM, REF, Open Box, LCD Changed..."
+        required
+    >
+
+    <br><br>
+
+    <p><strong>Storage</strong></p>
+    <input
+        type="text"
+        name="storage"
+        placeholder="128GB"
+        required
+    >
+
+    <br><br>
+
+    <p><strong>RAM</strong></p>
+    <input
+        type="text"
+        name="ram"
+        placeholder="8GB"
+        required
+    >
+
+    <br><br>
+
+    <p><strong>Buying Price (UGX)</strong></p>
+    <input
+        type="number"
+        name="buying_price"
+        step="0.01"
+        min="0"
+        placeholder="700000"
+        required
+    >
+
+    <br><br>
+
+    <p><strong>Selling Price (UGX)</strong></p>
+    <input
+        type="number"
+        name="selling_price"
+        step="0.01"
+        min="0"
+        placeholder="850000"
+        required
+    >
+
+    <br><br>
+
+    <p><strong>Quantity</strong></p>
+    <input
+        type="number"
+        name="quantity"
+        min="0"
+        value="1"
+        required
+    >
+
+    <br><br>
+
+    <p><strong>IMEI Number</strong></p>
+    <input
+        type="text"
+        name="imei"
+        placeholder="Enter IMEI (leave blank if multiple devices)"
+    >
+
+    <br><br>
+
+    <button type="submit">
+        💾 Save Phone
+    </button>
+
+    &nbsp;&nbsp;
+
+    <a href="/inventory">
+        Cancel
+    </a>
+
+</form>
+
+</div>
+
+{% endblock %}
