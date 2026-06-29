@@ -1,0 +1,195 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>
+    <i class="fas fa-receipt"></i>
+    Sale Receipt
+</h1>
+
+<br>
+
+<div class="card receipt-card">
+
+    <div class="receipt-header">
+
+    <img
+        src="{{ url_for('static', filename='images/logo.png') }}"
+        width="120">
+
+    <h2>MINIFY GADGETS</h2>
+
+    <p>
+
+        Phones • Accessories • Repairs
+
+    </p>
+
+    <p>
+
+        Kampala, Uganda
+
+    </p>
+
+    <p>
+
+        Tel: +256 XXX XXX XXX
+
+    </p>
+
+</div>z
+
+    <hr>
+
+    <table class="details-table">
+
+        <tr>
+            <th>Receipt No</th>
+            <td>#{{ sale.id }}</td>
+        </tr>
+
+        <tr>
+            <th>Date</th>
+            <td>{{ sale.sale_date.strftime("%d %B %Y %I:%M %p") }}</td>
+        </tr>
+
+        <tr>
+            <th>Customer</th>
+            <td>{{ sale.customer_name }}</td>
+        </tr>
+
+        <tr>
+            <th>Customer Phone</th>
+            <td>{{ sale.phone }}</td>
+        </tr>
+
+        <tr>
+            <th>Phone Purchased</th>
+            <td>{{ sale.brand }} {{ sale.model }}</td>
+        </tr>
+
+        <tr>
+            <th>Condition</th>
+            <td>{{ sale.phone_condition }}</td>
+        </tr>
+
+        <tr>
+            <th>Color</th>
+            <td>{{ sale.color }}</td>
+        </tr>
+
+        <tr>
+            <th>Storage</th>
+            <td>{{ sale.storage }}</td>
+        </tr>
+
+        <tr>
+            <th>RAM</th>
+            <td>{{ sale.ram }}</td>
+        </tr>
+
+        <tr>
+            <th>IMEI</th>
+            <td>{{ sale.imei }}</td>
+        </tr>
+
+        <tr>
+            <th>Quantity</th>
+            <td>1</td>
+        </tr>
+
+        <tr>
+            <th>Payment Method</th>
+            <td>{{ sale.payment_method }}</td>
+        </tr>
+
+        <tr>
+            <th>Total Paid</th>
+            <td>
+                <strong>
+                    UGX {{ "{:,.0f}".format(sale.total) }}
+                </strong>
+            </td>
+        </tr>
+
+    </table>
+
+    <hr>
+
+    <h3>Warranty Information</h3>
+
+    <p>
+        • Please keep this receipt as proof of purchase.
+    </p>
+
+    <p>
+        • Warranty is valid only when the IMEI on the device matches the IMEI on this receipt.
+    </p>
+
+    <p>
+        • Physical damage, liquid damage and unauthorized repairs are not covered under warranty.
+    </p>
+
+    <hr>
+
+    <hr>
+
+<div class="receipt-footer">
+
+<h3>
+
+THANK YOU!
+
+</h3>
+
+<p>
+
+Thank you for choosing MINIFY GADGETS.
+
+</p>
+
+<p>
+
+Keep this receipt for warranty and support.
+
+</p>
+
+<p>
+
+<strong>
+
+www.minifygadgets.com
+
+</strong>
+
+</p>
+
+</div>
+
+    <br>
+
+    <button
+        onclick="window.print()"
+        class="btn-save">
+
+        <i class="fas fa-print"></i>
+
+        Print Receipt
+
+    </button>
+
+    &nbsp;
+
+    <a
+        href="/sales_history"
+        class="btn-view">
+
+        <i class="fas fa-arrow-left"></i>
+
+        Back
+
+    </a>
+
+</div>
+
+{% endblock %}

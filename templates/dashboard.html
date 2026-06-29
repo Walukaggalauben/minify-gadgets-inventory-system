@@ -6,7 +6,7 @@
 
     <div>
 
-        <h1>👋 Welcome Back!</h1>
+        <h1>👋 Welcome CEO MINIFY GADGETS!</h1>
 
         <p>
 
@@ -33,79 +33,79 @@
 <div class="cards">
 
     <div class="card dashboard-card">
-
-        <div class="card-icon">
-            📱
-        </div>
-
+        <div class="card-icon">📱</div>
         <div class="card-info">
-
-            <h3>Total Phone Models</h3>
-
+            <h3>Total Phones</h3>
             <h2>{{ totalPhones.total }}</h2>
-
-            <p>Available in Inventory</p>
-
         </div>
-
     </div>
 
     <div class="card dashboard-card">
-
-        <div class="card-icon">
-            📦
-        </div>
-
+        <div class="card-icon">📦</div>
         <div class="card-info">
-
             <h3>Total Stock</h3>
-
             <h2>{{ totalStock.stock }}</h2>
-
-            <p>Units Available</p>
-
         </div>
-
     </div>
 
     <div class="card dashboard-card">
-
-        <div class="card-icon">
-            💰
-        </div>
-
+        <div class="card-icon">💰</div>
         <div class="card-info">
-
             <h3>Total Sales</h3>
-
-            <h2>
-                UGX {{ "{:,.0f}".format(totalSales.sales) }}
-            </h2>
-
-            <p>Business Revenue</p>
-
+            <h2>UGX {{ "{:,.0f}".format(totalSales.sales) }}</h2>
         </div>
-
     </div>
 
     <div class="card dashboard-card">
-
-        <div class="card-icon">
-            📈
+        <div class="card-icon">📈</div>
+        <div class="card-info">
+            <h3>Gross Profit</h3>
+            <h2>UGX {{ "{:,.0f}".format(totalProfit.profit) }}</h2>
         </div>
+    </div>
 
+    <div class="card dashboard-card">
+        <div class="card-icon">💸</div>
+        <div class="card-info">
+            <h3>Expenses</h3>
+            <h2>UGX {{ "{:,.0f}".format(totalExpenses.expenses) }}</h2>
+        </div>
+    </div>
+
+    <div class="card dashboard-card">
+        <div class="card-icon">💵</div>
+        <div class="card-info">
+            <h3>Net Profit</h3>
+            <h2>UGX {{ "{:,.0f}".format(netProfit.net) }}</h2>
+        </div>
+    </div>
+
+    <div class="card dashboard-card">
+        <div class="card-icon">👥</div>
+        <div class="card-info">
+            <h3>Customers</h3>
+            <h2>{{ totalCustomers.customers }}</h2>
+        </div>
+    </div>
+
+    <div class="card dashboard-card">
+        <div class="card-icon">🔥</div>
         <div class="card-info">
 
-            <h3>Total Profit</h3>
+            <h3>Best Seller</h3>
 
-            <h2>
-                UGX {{ "{:,.0f}".format(totalProfit.profit) }}
-            </h2>
+            {% if bestSelling %}
 
-            <p>Overall Profit</p>
+                <h4>{{ bestSelling.brand }}</h4>
+                <p>{{ bestSelling.model }}</p>
+
+            {% else %}
+
+                <p>No sales yet</p>
+
+            {% endif %}
 
         </div>
-
     </div>
 
 </div>
@@ -149,6 +149,125 @@
         <h3>Reports</h3>
 
     </a>
+
+</div>
+
+<br><br>
+
+<div class="card">
+
+    <h2>
+        ⚠️ Low Stock Alerts
+    </h2>
+
+    <table>
+
+        <tr>
+            <th>Phone</th>
+            <th>Remaining Stock</th>
+        </tr>
+
+        {% if lowStock %}
+
+            {% for phone in lowStock %}
+
+            <tr>
+
+                <td>
+
+                    {{ phone.brand }}
+                    {{ phone.model }}
+
+                </td>
+
+                <td>
+
+                    {% if phone.quantity == 0 %}
+
+                        <span style="color:red;font-weight:bold;">
+                            Out of Stock
+                        </span>
+
+                    {% else %}
+
+                        <span style="color:orange;font-weight:bold;">
+                            {{ phone.quantity }}
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <tr>
+
+                <td colspan="2" style="text-align:center;">
+
+                    ✅ No low stock phones
+
+                </td>
+
+            </tr>
+
+        {% endif %}
+
+    </table>
+
+</div>
+
+<br>
+
+<div class="card">
+
+    <h2>
+        📊 Business Summary
+    </h2>
+
+    <br>
+
+    <p>
+
+        <strong>Total Customers:</strong>
+
+        {{ totalCustomers.customers }}
+
+    </p>
+
+    <br>
+
+    <p>
+
+        <strong>Best Selling Phone:</strong>
+
+        {% if bestSelling %}
+
+            {{ bestSelling.brand }}
+            {{ bestSelling.model }}
+
+            ({{ bestSelling.sold }} Sold)
+
+        {% else %}
+
+            No Sales Yet
+
+        {% endif %}
+
+    </p>
+
+    <br>
+
+    <p>
+
+        <strong>Net Profit:</strong>
+
+        UGX {{ "{:,.0f}".format(netProfit.net) }}
+
+    </p>
 
 </div>
 

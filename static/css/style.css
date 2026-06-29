@@ -543,33 +543,102 @@ WELCOME BOX
 
 }
 
-select,
-textarea{
-
-width:100%;
-
-padding:12px;
-
-border:1px solid #ccc;
-
-border-radius:8px;
-
-font-size:15px;
-
-margin-top:5px;
-
+.details-table{
+    width:100%;
+    border-collapse:collapse;
 }
 
-textarea{
-
-resize:vertical;
-
-font-family:inherit;
-
+.details-table th{
+    width:220px;
+    background:#00695C;
+    color:white;
+    text-align:left;
+    padding:12px;
 }
 
-.card{
-
-margin-bottom:25px;
-
+.details-table td{
+    padding:12px;
+    border-bottom:1px solid #ddd;
 }
+
+/* ==========================================
+   RECEIPT
+========================================== */
+
+.receipt-card{
+    max-width:800px;
+    margin:auto;
+    padding:30px;
+}
+
+.receipt-header{
+    text-align:center;
+}
+
+.receipt-header h2{
+    color:#0b7a3b;
+    margin-bottom:5px;
+}
+
+.receipt-header p{
+    margin:3px;
+    color:#666;
+}
+
+.receipt-footer{
+    text-align:center;
+}
+
+.details-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.details-table th{
+    width:35%;
+    text-align:left;
+    padding:10px;
+    background:#f4f4f4;
+}
+
+.details-table td{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+}
+
+/* ==========================================
+   PRINT RECEIPT
+========================================== */
+
+@media print{
+
+    .sidebar,
+    .header,
+    .btn-save,
+    .btn-view,
+    h1{
+        display:none !important;
+    }
+
+    .main{
+        margin:0;
+        width:100%;
+    }
+
+    .content{
+        padding:0;
+    }
+
+    .receipt-card{
+
+        width:100%;
+
+        max-width:100%;
+
+        border:none;
+
+        box-shadow:none;
+
+    }
+
+} 

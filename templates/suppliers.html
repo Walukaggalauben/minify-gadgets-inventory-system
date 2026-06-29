@@ -1,0 +1,128 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>
+    <i class="fas fa-truck"></i>
+    Suppliers
+</h1>
+
+<br>
+
+<div class="card">
+
+    <form method="GET" action="/suppliers">
+
+        <input
+            type="text"
+            name="search"
+            placeholder="🔍 Search supplier..."
+            value="{{ search }}"
+        >
+
+        <button type="submit" class="btn-save">
+
+            <i class="fas fa-search"></i>
+
+            Search
+
+        </button>
+
+        <a href="/suppliers" class="btn-view">
+
+            Clear
+
+        </a>
+
+        <a href="/add_supplier" class="btn-save" style="float:right;">
+
+            <i class="fas fa-plus"></i>
+
+            Add Supplier
+
+        </a>
+
+    </form>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<h2>Supplier List</h2>
+
+<table>
+
+<tr>
+
+<th>ID</th>
+<th>Supplier</th>
+<th>Contact Person</th>
+<th>Phone</th>
+<th>Actions</th>
+
+</tr>
+
+{% if suppliers %}
+
+{% for supplier in suppliers %}
+
+<tr>
+
+<td>{{ supplier.id }}</td>
+
+<td>{{ supplier.supplier_name }}</td>
+
+<td>{{ supplier.contact_person }}</td>
+
+<td>{{ supplier.phone }}</td>
+
+<td>
+
+<a href="/supplier/{{ supplier.id }}" class="btn-view">
+
+👁 View
+
+</a>
+
+<a href="/edit_supplier/{{ supplier.id }}" class="btn-edit">
+
+✏ Edit
+
+</a>
+
+<a
+href="/delete_supplier/{{ supplier.id }}"
+class="btn-delete"
+onclick="return confirm('Delete this supplier?')">
+
+🗑 Delete
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+{% else %}
+
+<tr>
+
+<td colspan="5" style="text-align:center;">
+
+No suppliers found.
+
+</td>
+
+</tr>
+
+{% endif %}
+
+</table>
+
+</div>
+
+{% endblock %}

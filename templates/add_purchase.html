@@ -1,0 +1,127 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>
+    <i class="fas fa-cart-plus"></i>
+    New Stock Purchase
+</h1>
+
+<br>
+
+<div class="card">
+
+<form action="/save_purchase" method="POST">
+
+<label><strong>Supplier</strong></label>
+
+<br><br>
+
+<select name="supplier_id" required>
+
+<option value="">Select Supplier</option>
+
+{% for supplier in suppliers %}
+
+<option value="{{ supplier.id }}">
+
+{{ supplier.supplier_name }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+<br><br>
+
+<label><strong>Phone</strong></label>
+
+<br><br>
+
+<select name="phone_id" required>
+
+<option value="">Select Phone</option>
+
+{% for phone in phones %}
+
+<option value="{{ phone.id }}">
+
+{{ phone.brand }} {{ phone.model }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+<br><br>
+
+<label><strong>Quantity Purchased</strong></label>
+
+<br><br>
+
+<input
+type="number"
+name="quantity"
+min="1"
+required>
+
+<br><br>
+
+<label><strong>Buying Price (UGX)</strong></label>
+
+<br><br>
+
+<input
+type="number"
+name="buying_price"
+step="0.01"
+required>
+
+<br><br>
+
+<label><strong>Invoice Number (Optional)</strong></label>
+
+<br><br>
+
+<input
+type="text"
+name="invoice_no">
+
+<br><br>
+
+<label><strong>Notes (Optional)</strong></label>
+
+<br><br>
+
+<textarea
+name="notes"
+rows="4"
+placeholder="Example: Bought from Ibrahim after customer order."></textarea>
+
+<br><br>
+
+<button
+type="submit"
+class="btn-save">
+
+<i class="fas fa-save"></i>
+
+Save Purchase
+
+</button>
+
+<a
+href="/purchases"
+class="btn-view">
+
+Cancel
+
+</a>
+
+</form>
+
+</div>
+
+{% endblock %}

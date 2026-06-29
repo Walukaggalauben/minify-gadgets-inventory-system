@@ -1,0 +1,121 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>
+
+<i class="fas fa-cart-plus"></i>
+
+Stock Purchases
+
+</h1>
+
+<br>
+
+<div class="card">
+
+<a href="/add_purchase" class="btn-save">
+
+<i class="fas fa-plus"></i>
+
+New Purchase
+
+</a>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<table>
+
+<tr>
+
+<th>ID</th>
+<th>Date</th>
+<th>Supplier</th>
+<th>Phone</th>
+<th>Qty</th>
+<th>Buying Price</th>
+<th>Invoice</th>
+<th>Actions</th>
+
+</tr>
+
+{% if purchases %}
+
+{% for purchase in purchases %}
+
+<tr>
+
+<td>{{ purchase.id }}</td>
+
+<td>{{ purchase.purchase_date.strftime("%d %b %Y") }}</td>
+
+<td>{{ purchase.supplier_name }}</td>
+
+<td>{{ purchase.brand }} {{ purchase.model }}</td>
+
+<td>{{ purchase.quantity }}</td>
+
+<td>
+
+UGX {{ "{:,.0f}".format(purchase.buying_price) }}
+
+</td>
+
+<td>
+
+{{ purchase.invoice_no or "-" }}
+
+</td>
+
+<td>
+
+<a href="/view_purchase/{{ purchase.id }}" class="btn-view">
+
+👁 View
+
+</a>
+
+<a href="/edit_purchase/{{ purchase.id }}" class="btn-edit">
+
+✏ Edit
+
+</a>
+
+<a
+href="/delete_purchase/{{ purchase.id }}"
+class="btn-delete"
+onclick="return confirm('Delete this purchase?')">
+
+🗑 Delete
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+{% else %}
+
+<tr>
+
+<td colspan="8" style="text-align:center;">
+
+No purchase records found.
+
+</td>
+
+</tr>
+
+{% endif %}
+
+</table>
+
+</div>
+
+{% endblock %}

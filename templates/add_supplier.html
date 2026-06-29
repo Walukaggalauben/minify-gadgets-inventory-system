@@ -1,0 +1,90 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>
+
+<i class="fas fa-plus-circle"></i>
+
+Add Supplier
+
+</h1>
+
+<br>
+
+<div class="card">
+
+<form action="/save_supplier" method="POST">
+
+<label><strong>Supplier Name</strong></label>
+
+<br><br>
+
+<input
+type="text"
+name="supplier_name"
+required>
+
+<br><br>
+
+<label><strong>Contact Person</strong></label>
+
+<br><br>
+
+<input
+type="text"
+name="contact_person">
+
+<br><br>
+
+<label><strong>Phone Number</strong></label>
+
+<br><br>
+
+<input
+type="text"
+name="phone">
+
+<br><br>
+
+<label><strong>Email</strong></label>
+
+<br><br>
+
+<input
+type="email"
+name="email">
+
+<br><br>
+
+<label><strong>Address</strong></label>
+
+<br><br>
+
+<textarea
+name="address"
+rows="4"></textarea>
+
+<br><br>
+
+<button
+type="submit"
+class="btn-save">
+
+💾 Save Supplier
+
+</button>
+
+<a
+href="/suppliers"
+class="btn-view">
+
+Cancel
+
+</a>
+
+</form>
+
+</div>
+
+{% endblock %}

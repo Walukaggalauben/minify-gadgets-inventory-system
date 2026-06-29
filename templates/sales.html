@@ -1,0 +1,313 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>
+    <i class="fas fa-shopping-cart"></i>
+    New Sale
+</h1>
+
+<br>
+
+<!-- SEARCH IMEI -->
+
+<div class="card">
+
+    <h2>
+        <i class="fas fa-barcode"></i>
+        Search Phone
+    </h2>
+
+    <form method="GET" action="/sales">
+
+        <input
+            type="text"
+            id="imei"
+            name="imei"
+            placeholder="Scan or Enter IMEI Number..."
+            value="{{ request.args.get('imei','') }}"
+            autofocus
+            required>
+
+        <br><br>
+
+        <button type="submit" class="btn-save">
+
+            <i class="fas fa-search"></i>
+
+            Search Phone
+
+        </button>
+
+    </form>
+
+</div>
+
+<br>
+
+<form method="POST" action="/complete_sale">
+
+{% if phone %}
+
+<!-- Hidden Values -->
+
+<input
+type="hidden"
+name="phone_id"
+value="{{ phone.phone_id }}">
+
+<input
+type="hidden"
+name="imei_id"
+value="{{ phone.imei_id }}">
+
+<input
+type="hidden"
+name="sale_price"
+value="{{ phone.selling_price }}">
+
+<!-- PHONE DETAILS -->
+
+<div class="card">
+
+<h2>
+
+<i class="fas fa-mobile-alt"></i>
+
+Phone Details
+
+</h2>
+
+<table class="details-table">
+
+<tr>
+<th>Brand</th>
+<td>{{ phone.brand }}</td>
+</tr>
+
+<tr>
+<th>Model</th>
+<td>{{ phone.model }}</td>
+</tr>
+
+<tr>
+<th>Color</th>
+<td>{{ phone.color }}</td>
+</tr>
+
+<tr>
+<th>Condition</th>
+<td>{{ phone.phone_condition }}</td>
+</tr>
+
+<tr>
+<th>Storage</th>
+<td>{{ phone.storage }}</td>
+</tr>
+
+<tr>
+<th>RAM</th>
+<td>{{ phone.ram }}</td>
+</tr>
+
+<tr>
+<th>IMEI</th>
+<td>{{ phone.imei }}</td>
+</tr>
+
+<tr>
+<th>Status</th>
+
+<td>
+
+{% if phone.status=="In Stock" %}
+
+<span class="status-available">
+
+🟢 In Stock
+
+</span>
+
+{% elif phone.status=="Sold" %}
+
+<span class="status-sold">
+
+🔴 Sold
+
+</span>
+
+{% else %}
+
+<span class="status-reserved">
+
+🟡 Reserved
+
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>Selling Price</th>
+
+<td>
+
+<b>
+
+UGX {{ "{:,.0f}".format(phone.selling_price) }}
+
+</b>
+
+</td>
+
+</tr>
+
+</table>
+
+</div>
+
+<br>
+
+<!-- CUSTOMER -->
+
+<div class="card">
+
+<h2>
+
+<i class="fas fa-user"></i>
+
+Customer
+
+</h2>
+
+<select
+name="customer_id"
+required>
+
+<option value="">
+
+Select Customer
+
+</option>
+
+{% for customer in customers %}
+
+<option value="{{ customer.id }}">
+
+{{ customer.customer_name }}
+
+({{ customer.phone }})
+
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+<br>
+
+<!-- PAYMENT -->
+
+<div class="card">
+
+<h2>
+
+<i class="fas fa-credit-card"></i>
+
+Payment
+
+</h2>
+
+<label>
+
+Payment Method
+
+</label>
+
+<select
+name="payment_method">
+
+<option value="Cash">
+
+Cash
+
+</option>
+
+<option value="Mobile Money">
+
+Mobile Money
+
+</option>
+
+<option value="Bank">
+
+Bank
+
+</option>
+
+<option value="Installment">
+
+Installment
+
+</option>
+
+</select>
+
+<br><br>
+
+<label>
+
+Amount Paid
+
+</label>
+
+<input
+type="number"
+name="amount_paid"
+min="0"
+step="0.01"
+required>
+
+<br><br>
+
+<button
+type="submit"
+class="btn-save">
+
+<i class="fas fa-check-circle"></i>
+
+Complete Sale
+
+</button>
+
+</div>
+
+{% else %}
+
+<div class="card">
+
+<h3>
+
+Scan or search an IMEI to begin a sale.
+
+</h3>
+
+</div>
+
+{% endif %}
+
+</form>
+
+<script>
+
+document.getElementById("imei").focus();
+
+</script>
+
+{% endblock %}

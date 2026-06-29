@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>✏ Edit IMEI</h1>
+
+<div class="card">
+
+    <h2>{{ imei.brand }} {{ imei.model }}</h2>
+
+    <form method="POST" action="/update_imei/{{ imei.id }}">
+
+        <label><strong>IMEI Number</strong></label>
+
+        <br><br>
+
+        <input
+            type="text"
+            name="imei"
+            value="{{ imei.imei }}"
+            maxlength="15"
+            required
+        >
+
+        <br><br>
+
+        <label><strong>Status</strong></label>
+
+        <br><br>
+
+        <select name="status">
+
+            <option value="Available"
+                {% if imei.status == "Available" %}selected{% endif %}>
+                Available
+            </option>
+
+            <option value="Reserved"
+                {% if imei.status == "Reserved" %}selected{% endif %}>
+                Reserved
+            </option>
+
+            <option value="Sold"
+                {% if imei.status == "Sold" %}selected{% endif %}>
+                Sold
+            </option>
+
+        </select>
+
+        <br><br>
+
+        <button type="submit">
+            💾 Update IMEI
+        </button>
+
+        <a href="/imei_management" class="btn-cancel">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

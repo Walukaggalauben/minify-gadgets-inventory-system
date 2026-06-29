@@ -1,0 +1,80 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>📱 IMEI Details</h1>
+
+<div class="card">
+
+<h2>{{ imei.brand }} {{ imei.model }}</h2>
+
+<hr><br>
+
+<table class="details-table">
+
+<tr>
+    <th>IMEI</th>
+    <td>{{ imei.imei }}</td>
+</tr>
+
+<tr>
+    <th>Status</th>
+    <td>{{ imei.status }}</td>
+</tr>
+
+<tr>
+    <th>Brand</th>
+    <td>{{ imei.brand }}</td>
+</tr>
+
+<tr>
+    <th>Model</th>
+    <td>{{ imei.model }}</td>
+</tr>
+
+<tr>
+    <th>Color</th>
+    <td>{{ imei.color }}</td>
+</tr>
+
+<tr>
+    <th>Condition</th>
+    <td>{{ imei.phone_condition }}</td>
+</tr>
+
+<tr>
+    <th>Storage</th>
+    <td>{{ imei.storage }}</td>
+</tr>
+
+<tr>
+    <th>RAM</th>
+    <td>{{ imei.ram }}</td>
+</tr>
+
+<tr>
+    <th>Buying Price</th>
+    <td>UGX {{ "{:,.0f}".format(imei.buying_price) }}</td>
+</tr>
+
+<tr>
+    <th>Selling Price</th>
+    <td>UGX {{ "{:,.0f}".format(imei.selling_price) }}</td>
+</tr>
+
+<tr>
+    <th>Date Added</th>
+    <td>{{ imei.date_added }}</td>
+</tr>
+
+</table>
+
+<br>
+
+<a href="/imei_management" class="btn-edit">
+    ⬅ Back
+</a>
+
+</div>
+
+{% endblock %}

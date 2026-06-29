@@ -6,9 +6,38 @@
 
 <br>
 
+<!-- Search Card -->
 <div class="card">
 
-    <h2>Add IMEIs</h2>
+    <form method="GET" action="/imei_management">
+
+        <input
+            type="text"
+            name="search"
+            placeholder="🔍 Search by IMEI..."
+            value="{{ search }}"
+        >
+
+        <br><br>
+
+        <button type="submit">
+            🔍 Search
+        </button>
+
+        <a href="/imei_management" class="btn-cancel">
+            Clear
+        </a>
+
+    </form>
+
+</div>
+
+<br>
+
+<!-- Add IMEIs -->
+<div class="card">
+
+    <h2>➕ Add IMEIs</h2>
 
     <form action="/save_imeis" method="POST">
 
@@ -25,7 +54,11 @@
             {% for phone in phones %}
 
             <option value="{{ phone.id }}">
-                {{ phone.brand }} {{ phone.model }}
+                {{ phone.brand }}
+                {{ phone.model }}
+                | {{ phone.color }}
+                | {{ phone.storage }}
+                | {{ phone.ram }}
             </option>
 
             {% endfor %}
@@ -34,13 +67,13 @@
 
         <br><br>
 
-        <label><strong>Paste IMEIs (One per Line)</strong></label>
+        <label><strong>Paste IMEIs (One Per Line)</strong></label>
 
         <br><br>
 
         <textarea
             name="imeis"
-            rows="10"
+            rows="8"
             placeholder="356789111111111
 356789111111112
 356789111111113"
@@ -49,60 +82,122 @@
         <br><br>
 
         <button type="submit">
-
             💾 Save IMEIs
-
         </button>
 
     </form>
 
 </div>
 
-<br><br>
+<br>
 
+<!-- Registered IMEIs -->
 <div class="card">
 
-<h2>Registered IMEIs</h2>
+    <h2>📋 Registered IMEIs</h2>
 
-<table>
+    <table>
 
-<tr>
+        <tr>
 
-<th>Phone</th>
-<th>IMEI</th>
-<th>Status</th>
+            <th>Phone</th>
+            <th>Color</th>
+            <th>Storage</th>
+            <th>RAM</th>
+            <th>IMEI</th>
+            <th>Status</th>
+            <th>Actions</th>
 
-</tr>
+        </tr>
 
-{% for item in imeis %}
+        {% for item in imeis %}
 
-<tr>
+        <tr>
 
-<td>
+            <td>
+                {{ item.brand }} {{ item.model }}
+            </td>
 
-{{ item.brand }}
+            <td>
+                {{ item.color }}
+            </td>
 
-{{ item.model }}
+            <td>
+                {{ item.storage }}
+            </td>
 
-</td>
+            <td>
+                {{ item.ram }}
+            </td>
 
-<td>
+            <td>
+                <strong>{{ item.imei }}</strong>
+            </td>
 
-{{ item.imei }}
+            <td>
 
-</td>
+                {% if item.status == "Available" %}
 
-<td>
+                    <span class="status-available">
+                        🟢 Available
+                    </span>
 
-{{ item.status }}
+                {% elif item.status == "Sold" %}
 
-</td>
+                    <span class="status-sold">
+                        🔴 Sold
+                    </span>
 
-</tr>
+                {% elif item.status == "Reserved" %}
 
-{% endfor %}
+                    <span class="status-reserved">
+                        🟡 Reserved
+                    </span>
 
-</table>
+                {% else %}
+
+                    {{ item.status }}
+
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                <a href="/view_imei/{{ item.id }}" class="btn-view">
+                    👁️ View
+                </a>
+
+                <a href="/edit_imei/{{ item.id }}" class="btn-edit">
+                    ✏ Edit
+                </a>
+
+                <a
+                    href="/delete_imei/{{ item.id }}"
+                    class="btn-delete"
+                    onclick="return confirm('Delete this IMEI?')">
+
+                    🗑 Delete
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% else %}
+
+        <tr>
+
+            <td colspan="7" style="text-align:center;">
+                No IMEIs Found.
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
 
 </div>
 

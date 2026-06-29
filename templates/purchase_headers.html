@@ -1,0 +1,131 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>
+    <i class="fas fa-file-invoice"></i>
+    Purchases
+</h1>
+
+<br>
+
+<div class="card">
+
+<form method="GET" action="/purchase_headers">
+
+<input
+type="text"
+name="search"
+placeholder="Search Purchase..."
+value="{{ search }}">
+
+<button type="submit">
+Search
+</button>
+
+<a href="/purchase_headers">
+Clear
+</a>
+
+<a href="/new_purchase" class="btn-save" style="float:right;">
+<i class="fas fa-plus"></i>
+New Purchase
+</a>
+
+</form>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<table>
+
+<tr>
+
+<th>Purchase No</th>
+<th>Supplier</th>
+<th>Type</th>
+<th>Purchase Date</th>
+<th>Payment</th>
+<th>Shipment</th>
+<th>Actions</th>
+
+</tr>
+
+{% if purchases %}
+
+{% for purchase in purchases %}
+
+<tr>
+
+<td>{{ purchase.purchase_no }}</td>
+
+<td>{{ purchase.supplier_name }}</td>
+
+<td>{{ purchase.purchase_type }}</td>
+
+<td>{{ purchase.purchase_date.strftime("%d %b %Y") }}</td>
+
+<td>
+
+{% if purchase.payment_status=="Paid" %}
+
+<span style="color:green;font-weight:bold;">
+
+Paid
+
+</span>
+
+{% else %}
+
+<span style="color:red;font-weight:bold;">
+
+Pending
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{{ purchase.shipment_status }}
+
+</td>
+
+<td>
+
+<a href="/purchase/{{ purchase.id }}" class="btn-view">
+
+👁 View
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+{% else %}
+
+<tr>
+
+<td colspan="7" style="text-align:center;">
+
+No Purchases Found
+
+</td>
+
+</tr>
+
+{% endif %}
+
+</table>
+
+</div>
+
+{% endblock %}

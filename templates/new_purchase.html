@@ -1,0 +1,152 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>
+
+<i class="fas fa-file-invoice"></i>
+
+New Purchase
+
+</h1>
+
+<br>
+
+<div class="card">
+
+<form action="/save_purchase_header" method="POST">
+
+<label>
+
+Supplier
+
+</label>
+
+<br><br>
+
+<select name="supplier_id" required>
+
+<option value="">Select Supplier</option>
+
+{% for supplier in suppliers %}
+
+<option value="{{ supplier.id }}">
+
+{{ supplier.supplier_name }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+<br><br>
+
+<label>
+
+Purchase Type
+
+</label>
+
+<br><br>
+
+<select
+name="purchase_type"
+id="purchase_type"
+required>
+
+<option value="Local">
+
+Local Purchase
+
+</option>
+
+<option value="Import">
+
+Import Purchase
+
+</option>
+
+</select>
+
+<br><br>
+
+<label>
+
+Payment Status
+
+</label>
+
+<br><br>
+
+<select
+name="payment_status"
+required>
+
+<option value="Paid">
+
+Paid
+
+</option>
+
+<option value="Pending">
+
+Pending
+
+</option>
+
+</select>
+
+<br><br>
+
+<label>
+
+Invoice Number (Optional)
+
+</label>
+
+<br><br>
+
+<input
+type="text"
+name="invoice_no">
+
+<br><br>
+
+<label>
+
+Notes
+
+</label>
+
+<br><br>
+
+<textarea
+name="notes"
+rows="4"></textarea>
+
+<br><br>
+
+<button
+type="submit"
+class="btn-save">
+
+<i class="fas fa-save"></i>
+
+Create Purchase
+
+</button>
+
+<a
+href="/purchase_headers"
+class="btn-view">
+
+Cancel
+
+</a>
+
+</form>
+
+</div>
+
+{% endblock %}

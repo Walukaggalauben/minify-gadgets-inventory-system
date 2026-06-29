@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>
+    <i class="fas fa-user-edit"></i>
+    Edit Customer
+</h1>
+
+<br>
+
+<div class="card">
+
+<form
+action="/update_customer/{{ customer.id }}"
+method="POST">
+
+<label><strong>Customer Name</strong></label>
+
+<br><br>
+
+<input
+type="text"
+name="customer_name"
+value="{{ customer.customer_name }}"
+required>
+
+<br><br>
+
+<label><strong>Phone Number</strong></label>
+
+<br><br>
+
+<input
+type="text"
+name="phone"
+value="{{ customer.phone }}"
+required>
+
+<br><br>
+
+<button
+type="submit"
+class="btn-save">
+
+💾 Update Customer
+
+</button>
+
+<a
+href="/customers"
+class="btn-view">
+
+Cancel
+
+</a>
+
+</form>
+
+</div>
+
+{% endblock %}

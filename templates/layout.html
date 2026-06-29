@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,27 +8,36 @@
 
     <title>MINIFY GADGETS Inventory System</title>
 
+    <!-- Font Awesome -->
     <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- Custom CSS -->
     <link rel="stylesheet"
-    href="{{ url_for('static', filename='css/style.css') }}">
-
+          href="{{ url_for('static', filename='css/style.css') }}">
 
 </head>
 
 <body>
 
+<!-- ===========================
+     SIDEBAR
+=========================== -->
+
 <div class="sidebar">
 
     <div class="logo">
-        <img src="{{ url_for('static', filename='images/logo.png') }}">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="MINIFY GADGETS Logo">
     </div>
+
+    <!-- Dashboard -->
 
     <a href="/dashboard">
         <i class="fas fa-home"></i>
         Dashboard
     </a>
+
+    <!-- Inventory -->
 
     <div class="menu-title">
         INVENTORY
@@ -45,38 +53,55 @@
         Add Phone
     </a>
 
-    <a href="/imei_management">
-    📱 IMEI Management
+    <a href="/suppliers">
+        <i class="fas fa-truck"></i>
+        Suppliers
     </a>
+
+    <a href="/purchase_headers">
+        <i class="fas fa-file-invoice"></i>
+        Purchases
+    </a>
+
+    <a href="/imei_management">
+        <i class="fas fa-barcode"></i>
+        IMEI Management
+    </a>
+
+    <!-- Sales -->
 
     <div class="menu-title">
         SALES
     </div>
 
-    <a href="#">
+    <a href="/sales">
         <i class="fas fa-shopping-cart"></i>
-        Sales
+        New Sale
     </a>
 
-    <a href="#">
-        <i class="fas fa-receipt"></i>
+    <a href="/sales_history">
+        <i class="fas fa-history"></i>
         Sales History
     </a>
+
+    <!-- Customers -->
 
     <div class="menu-title">
         CUSTOMERS
     </div>
 
-    <a href="#">
+    <a href="/customers">
         <i class="fas fa-users"></i>
         Customers
     </a>
+
+    <!-- Finance -->
 
     <div class="menu-title">
         FINANCE
     </div>
 
-    <a href="#">
+    <a href="/expenses">
         <i class="fas fa-money-bill-wave"></i>
         Expenses
     </a>
@@ -85,6 +110,19 @@
         <i class="fas fa-chart-line"></i>
         Reports
     </a>
+
+    <!-- Intelligence -->
+
+    <div class="menu-title">
+        INTELLIGENCE
+    </div>
+
+    <a href="#">
+        <i class="fas fa-brain"></i>
+        AI Analytics
+    </a>
+
+    <!-- System -->
 
     <div class="menu-title">
         SYSTEM
@@ -95,20 +133,31 @@
         Settings
     </a>
 
-    <a href="#">
+    <a href="/">
         <i class="fas fa-sign-out-alt"></i>
         Logout
     </a>
 
 </div>
+
+<!-- ===========================
+     MAIN CONTENT
+=========================== -->
+
 <div class="main">
 
     <div class="header">
 
-        <h2>MINIFY GADGETS Inventory System</h2>
+        <h2>
+            MINIFY GADGETS Inventory System
+        </h2>
 
         <div class="date-box">
+
+            <i class="fas fa-calendar-alt"></i>
+
             {{ current_date }}
+
         </div>
 
     </div>
@@ -125,4 +174,3 @@
 </body>
 
 </html>
-
