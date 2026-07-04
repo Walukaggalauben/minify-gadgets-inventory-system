@@ -10,21 +10,178 @@
 
     <title>MINIFY GADGETS ERP V2</title>
 
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Segoe UI,Arial,sans-serif;
+        }
+
+        body{
+
+            background:#f4f6f9;
+
+            display:flex;
+
+            justify-content:center;
+
+            align-items:center;
+
+            height:100vh;
+
+        }
+
+        .login-card{
+
+            width:420px;
+
+            background:white;
+
+            border-radius:15px;
+
+            padding:40px;
+
+            box-shadow:0 10px 30px rgba(0,0,0,.15);
+
+        }
+
+        h1{
+
+            color:#00695C;
+
+            text-align:center;
+
+            margin-bottom:10px;
+
+        }
+
+        p{
+
+            text-align:center;
+
+            color:gray;
+
+            margin-bottom:30px;
+
+        }
+
+        label{
+
+            font-weight:600;
+
+        }
+
+        input{
+
+            width:100%;
+
+            padding:12px;
+
+            margin-top:8px;
+
+            margin-bottom:20px;
+
+            border:1px solid #ccc;
+
+            border-radius:8px;
+
+            font-size:15px;
+
+        }
+
+        button{
+
+            width:100%;
+
+            padding:14px;
+
+            background:#00695C;
+
+            color:white;
+
+            border:none;
+
+            border-radius:8px;
+
+            cursor:pointer;
+
+            font-size:16px;
+
+        }
+
+        button:hover{
+
+            background:#00897B;
+
+        }
+
+        .error{
+
+            background:#ffebee;
+
+            color:#c62828;
+
+            padding:12px;
+
+            border-radius:8px;
+
+            margin-bottom:20px;
+
+        }
+
+    </style>
+
 </head>
 
 <body>
 
-    <h1>
+<div class="login-card">
 
-        MINIFY GADGETS ERP V2
+    <h1>MINIFY GADGETS</h1>
 
-    </h1>
+    <p>Enterprise Resource Planning System</p>
 
-    <p>
+    {% with messages = get_flashed_messages() %}
 
-        Version 2 is running successfully.
+        {% if messages %}
 
-    </p>
+            <div class="error">
+
+                {{ messages[0] }}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+    <form method="POST">
+
+        <label>Username</label>
+
+        <input
+            type="text"
+            name="username"
+            required>
+
+        <label>Password</label>
+
+        <input
+            type="password"
+            name="password"
+            required>
+
+        <button type="submit">
+
+            Login
+
+        </button>
+
+    </form>
+
+</div>
 
 </body>
 
