@@ -12,4 +12,6 @@ def dashboard():
     if "user_id" not in session:
         return redirect("/")
 
-    return render_template("dashboard/index.html")
+    return render_template(
+        "dashboard/index.html"
+    )
