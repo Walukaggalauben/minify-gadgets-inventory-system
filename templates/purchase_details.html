@@ -2,34 +2,227 @@
 
 {% block content %}
 
-<h1>
-    Purchase {{ purchase.purchase_no }}
-</h1>
+<div class="page-header">
 
-<br>
+    <div>
+
+        <h1>
+            <i class="fas fa-file-invoice"></i>
+            Purchase {{ purchase.purchase_no }}
+        </h1>
+
+        <p style="color:#777;margin-top:5px;">
+            Manage purchase items, IMEI registration and shipment progress.
+        </p>
+
+    </div>
+
+</div>
+
+<!-- ==========================================
+PURCHASE INFORMATION
+=========================================== -->
 
 <div class="card">
 
-<h3>Supplier</h3>
+    <h2 style="margin-bottom:20px;">
 
-<p>{{ purchase.supplier_name }}</p>
+        <i class="fas fa-info-circle"></i>
 
-<h3>Purchase Type</h3>
+        Purchase Information
 
-<p>{{ purchase.purchase_type }}</p>
+    </h2>
 
-<h3>Shipment Status</h3>
+    <div class="info-grid">
 
-<p>{{ purchase.shipment_status }}</p>
+        <div class="info-box">
+
+            <label>Purchase Number</label>
+
+            <h3>{{ purchase.purchase_no }}</h3>
+
+        </div>
+
+        <div class="info-box">
+
+            <label>Supplier</label>
+
+            <h3>{{ purchase.supplier_name }}</h3>
+
+        </div>
+
+        <div class="info-box">
+
+            <label>Purchase Type</label>
+
+            <h3>{{ purchase.purchase_type }}</h3>
+
+        </div>
+
+        <div class="info-box">
+
+            <label>Purchase Date</label>
+
+            <h3>{{ purchase.purchase_date.strftime("%d %b %Y") }}</h3>
+
+        </div>
+
+        <div class="info-box">
+
+            <label>Payment Status</label>
+
+            {% if purchase.payment_status=="Paid" %}
+
+                <span class="badge badge-success">
+
+                    Paid
+
+                </span>
+
+            {% else %}
+
+                <span class="badge badge-warning">
+
+                    Pending
+
+                </span>
+
+            {% endif %}
+
+        </div>
+
+        <div class="info-box">
+
+            <label>Shipment Status</label>
+
+            <h3>{{ purchase.shipment_status }}</h3>
+
+        </div>
+
+        <div class="info-box">
+
+            <label>Invoice Number</label>
+
+            <h3>
+
+                {% if purchase.invoice_no %}
+
+                    {{ purchase.invoice_no }}
+
+                {% else %}
+
+                    -
+
+                {% endif %}
+
+            </h3>
+
+        </div>
+
+        <div class="info-box">
+
+            <label>Notes</label>
+
+            <h3>
+
+                {% if purchase.notes %}
+
+                    {{ purchase.notes }}
+
+                {% else %}
+
+                    -
+
+                {% endif %}
+
+            </h3>
+
+        </div>
+
+    </div>
 
 </div>
 
 <br>
 
+<!-- ==========================================
+PURCHASE SUMMARY
+=========================================== -->
+
+{% set total_units = namespace(value=0) %}
+{% set total_value = namespace(value=0) %}
+
+{% for item in items %}
+    {% set total_units.value = total_units.value + item.quantity %}
+    {% set total_value.value = total_value.value + (item.quantity * item.buying_price) %}
+{% endfor %}
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <i class="fas fa-mobile-alt"></i>
+
+        <h2>{{ items|length }}</h2>
+
+        <p>Products</p>
+
+    </div>
+
+    <div class="stat-card">
+
+        <i class="fas fa-boxes"></i>
+
+        <h2>{{ total_units.value }}</h2>
+
+        <p>Total Units</p>
+
+    </div>
+
+    <div class="stat-card">
+
+        <i class="fas fa-money-bill-wave"></i>
+
+        <h2>
+
+            UGX {{ "{:,.0f}".format(total_value.value) }}
+
+        </h2>
+
+        <p>Purchase Value</p>
+
+    </div>
+
+    <div class="stat-card">
+
+        <i class="fas fa-barcode"></i>
+
+        <h2>
+
+            0 / {{ total_units.value }}
+
+        </h2>
+
+        <p>IMEIs Registered</p>
+
+    </div>
+
+</div>
+
+<br>
+
+<!-- ==========================================
+ADD PRODUCT
+=========================================== -->
+
 <div class="card">
 
 <h2>
-    Add Phone Item
+
+<i class="fas fa-plus-circle"></i>
+
+Add Product
+
 </h2>
 
 <form action="/add_purchase_item" method="POST">
@@ -39,120 +232,142 @@ type="hidden"
 name="purchase_header_id"
 value="{{ purchase.id }}">
 
-<label>
-
-Phone
-
-</label>
+    
+        <label>Phone</label>
+        <label>Condition</label>
 
 <br><br>
 
 <select
-name="phone_id"
-id="phone_id"
-required
-onchange="loadPhone()">
+    name="phone_condition"
+    required>
 
-<option value="">
+    <option value="Brand New">
+        Brand New
+    </option>
 
-Select Phone
+    <option value="Used">
+        Used
+    </option>
 
-</option>
+    <option value="Refurbished">
+        Refurbished
+    </option>
 
-{% for phone in phones %}
-
-<option value="{{ phone.id }}">
-
-{{ phone.brand }}
-{{ phone.model }}
-{{ phone.storage }}
-{{ phone.color }}
-
-</option>
-
-{% endfor %}
+    <option value="Open Box">
+        Open Box
+    </option>
 
 </select>
 
 <br><br>
 
-<label>
+        <br><br>
 
-Quantity
+        <select
+            name="phone_id"
+            id="phone_id"
+            required
+            onchange="loadPhone()">
 
-</label>
+            <option value="">
+                Select Phone
+            </option>
 
-<br><br>
+            {% for phone in phones %}
 
-<input
-type="number"
-name="quantity"
-min="1"
-required>
+            <option value="{{ phone.id }}">
 
-<br><br>
+                {{ phone.brand }}
+                {{ phone.model }}
+                {{ phone.storage }}
+                {{ phone.color }}
 
-<label>
+            </option>
 
-Buying Price
+            {% endfor %}
 
-</label>
+        </select>
 
-<br><br>
+        <br><br>
 
-<input
-type="number"
-step="0.01"
-name="buying_price"
-id="buying_price"
-required>
+        <label>
+            Buying Price (Agreed with Supplier)
+        </label>
 
-<br><br>
+        <br><br>
 
-<label>
+        <input
+            type="number"
+            step="0.01"
+            name="buying_price"
+            id="buying_price"
+            required>
 
-Target Selling Price
+        <br><br>
 
-</label>
+        <label>
+            Planned Selling Price
+        </label>
 
-<br><br>
+        <br><br>
 
-<input
-type="number"
-step="0.01"
-name="target_price"
-id="target_price"
-required>
+        <input
+            type="number"
+            step="0.01"
+            name="target_price"
+            id="target_price"
+            required>
 
-<br><br>
+        <br><br>
 
-<label>
+        <label>
+            Lowest Acceptable Selling Price
+        </label>
 
-Minimum Selling Price
+        <br><br>
 
-</label>
+        <input
+            type="number"
+            step="0.01"
+            name="minimum_price"
+            id="minimum_price"
+            required>
 
-<br><br>
+        <br><br>
 
-<input
-type="number"
-step="0.01"
-name="minimum_price"
-id="minimum_price"
-required>
+        <label>
+            Quantity
+        </label>
 
-<br><br>
+        <br><br>
 
-<button
-class="btn-save">
+        <input
+            type="number"
+            name="quantity"
+            min="1"
+            required>
 
-<i class="fas fa-plus-circle"></i>
+        <br><br>
 
-Add Item
+        <small style="color:gray;">
 
-</button>
+            Prices entered here apply only to this purchase.
+            The same phone can be bought at a different price in another purchase.
 
-</form>
+        </small>
+
+        <br><br>
+
+        <button class="btn-save">
+
+            <i class="fas fa-plus-circle"></i>
+
+            Add Item
+
+        </button>
+
+    </form>
 
 </div>
 
@@ -160,85 +375,123 @@ Add Item
 
 <div class="card">
 
-<h2>Purchase Items</h2>
+    <h2>
 
-<table>
+        <i class="fas fa-mobile-alt"></i>
 
-<tr>
+        Purchase Items
 
-<th>Phone</th>
+    </h2>
 
-<th>Qty</th>
+    <table>
 
-<th>Buying</th>
+        <tr>
 
-<th>Target</th>
+            <th>Phone</th>
 
-<th>Minimum</th>
+            <th>Qty</th>
 
-</tr>
+            <th>Buying</th>
 
-{% if items %}
+            <th>Planned</th>
 
-{% for item in items %}
+            <th>Minimum</th>
 
-<tr>
+            <th>IMEIs</th>
 
-<td>
+            <th>Status</th>
 
-{{ item.brand }}
+            <th>Actions</th>
 
-{{ item.model }}
+        </tr>
 
-{{ item.storage }}
+        {% if items %}
 
-{{ item.color }}
+        {% for item in items %}
 
-</td>
+        <tr>
 
-<td>
+            <td>
 
-{{ item.quantity }}
+                {{ item.brand }}
 
-</td>
+                {{ item.model }}
 
-<td>
+                {{ item.storage }}
 
-UGX {{ "{:,.0f}".format(item.buying_price) }}
+                {{ item.color }}
 
-</td>
+            </td>
 
-<td>
+            <td>
 
-UGX {{ "{:,.0f}".format(item.target_selling_price) }}
+                {{ item.quantity }}
 
-</td>
+            </td>
 
-<td>
+            <td>
 
-UGX {{ "{:,.0f}".format(item.minimum_selling_price) }}
+                UGX {{ "{:,.0f}".format(item.buying_price) }}
 
-</td>
+            </td>
 
-</tr>
+            <td>
 
-{% endfor %}
+                UGX {{ "{:,.0f}".format(item.target_selling_price) }}
 
-{% else %}
+            </td>
 
-<tr>
+            <td>
 
-<td colspan="5" style="text-align:center;">
+                UGX {{ "{:,.0f}".format(item.minimum_selling_price) }}
 
-No phones added yet.
+            </td>
 
-</td>
+            <td>
 
-</tr>
+                0 / {{ item.quantity }}
 
-{% endif %}
+            </td>
 
-</table>
+            <td>
+
+                {{ item.status }}
+
+            </td>
+
+            <td>
+
+                <a href="#"
+                   class="btn-view">
+
+                    <i class="fas fa-barcode"></i>
+
+                    Register IMEIs
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        {% else %}
+
+        <tr>
+
+            <td colspan="8"
+                style="text-align:center;">
+
+                No phones added yet.
+
+            </td>
+
+        </tr>
+
+        {% endif %}
+
+    </table>
 
 </div>
 
@@ -246,27 +499,22 @@ No phones added yet.
 
 function loadPhone(){
 
-    let phone = document.getElementById("phone_id").value;
+    /*
+    Version 2.0
 
-    if(phone=="")
-        return;
+    Prices are NO LONGER loaded from
+    the phones table.
 
-    fetch("/get_phone/"+phone)
+    Every purchase has its own buying
+    and selling prices.
 
-    .then(response=>response.json())
+    */
 
-    .then(data=>{
+    document.getElementById("buying_price").value = "";
 
-        document.getElementById("buying_price").value =
-        data.buying_price;
+    document.getElementById("target_price").value = "";
 
-        document.getElementById("target_price").value =
-        data.selling_price;
-
-        document.getElementById("minimum_price").value =
-        data.selling_price;
-
-    });
+    document.getElementById("minimum_price").value = "";
 
 }
 

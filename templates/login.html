@@ -2,12 +2,14 @@
 <html>
 <head>
 
-<title>MINIFY GADGETS Login</title>
+<meta charset="UTF-8">
+
+<title>MINIFY GADGETS Inventory System</title>
 
 <style>
 
 body{
-    font-family:Arial,sans-serif;
+    font-family:Arial;
     background:#f4f7fa;
     display:flex;
     justify-content:center;
@@ -29,15 +31,19 @@ h1{
 }
 
 input{
+
     width:100%;
     padding:12px;
     margin-top:10px;
     margin-bottom:15px;
     border:1px solid #ccc;
     border-radius:8px;
+    box-sizing:border-box;
+
 }
 
 button{
+
     width:100%;
     padding:12px;
     background:#00695C;
@@ -45,10 +51,21 @@ button{
     border:none;
     border-radius:8px;
     cursor:pointer;
+
 }
 
 button:hover{
+
     background:#00897B;
+
+}
+
+.error{
+
+    color:red;
+    text-align:center;
+    margin-bottom:15px;
+
 }
 
 </style>
@@ -61,11 +78,33 @@ button:hover{
 
 <h1>MINIFY GADGETS</h1>
 
-<form>
+{% with messages = get_flashed_messages() %}
 
-<input type="text" placeholder="Username">
+{% if messages %}
 
-<input type="password" placeholder="Password">
+<div class="error">
+
+{{ messages[0] }}
+
+</div>
+
+{% endif %}
+
+{% endwith %}
+
+<form method="POST">
+
+<input
+type="text"
+name="username"
+placeholder="Username"
+required>
+
+<input
+type="password"
+name="password"
+placeholder="Password"
+required>
 
 <button type="submit">
 
