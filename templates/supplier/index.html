@@ -1,0 +1,131 @@
+{% extends "layout.html" %}
+
+{% block title %}Suppliers{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h3>
+            <i class="fas fa-truck"></i>
+            Suppliers
+        </h3>
+
+        <a href="{{ url_for('supplier.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Add Supplier
+        </a>
+
+    </div>
+
+    <form method="GET" class="mb-3">
+
+        <div class="input-group">
+
+            <input
+                type="text"
+                class="form-control"
+                name="search"
+                placeholder="Search supplier..."
+                value="{{ search }}">
+
+            <button class="btn btn-outline-primary">
+
+                <i class="fas fa-search"></i>
+
+            </button>
+
+        </div>
+
+    </form>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-dark">
+
+                <tr>
+
+                    <th>Name</th>
+                    <th>Contact Person</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th width="170">Actions</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for supplier in suppliers %}
+
+                <tr>
+
+                    <td>{{ supplier.name }}</td>
+
+                    <td>{{ supplier.contact_person or "-" }}</td>
+
+                    <td>{{ supplier.phone or "-" }}</td>
+
+                    <td>{{ supplier.email or "-" }}</td>
+
+                    <td>
+
+                        <a
+                            href="{{ url_for('supplier.edit', supplier_id=supplier.id) }}"
+                            class="btn btn-warning btn-sm">
+
+                            <i class="fas fa-edit"></i>
+
+                        </a>
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('supplier.delete', supplier_id=supplier.id) }}"
+                            style="display:inline;">
+
+                            <button
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Delete this supplier?')">
+
+                                <i class="fas fa-trash"></i>
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td colspan="5" class="text-center">
+
+                        No suppliers found.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

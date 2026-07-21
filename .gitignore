@@ -1,15 +1,28 @@
 # Python
 __pycache__/
+<<<<<<< HEAD
 *.pyc
 *.pyo
 *.pyd
 
 # Virtual Environment
 venv/
+=======
+*.py[cod]
+*.pyo
+
+# Virtual Environment
+venv/
+env/
+
+# Environment variables
+.env
+>>>>>>> main
 
 # VS Code
 .vscode/
 
+<<<<<<< HEAD
 # Logs
 *.log
 
@@ -18,3 +31,20 @@ Thumbs.db
 
 # macOS
 .DS_Store
+=======
+# Flask
+instance/
+
+# Uploads
+uploads/
+
+# SQLAlchemy
+*.db
+*.sqlite3
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+>>>>>>> main

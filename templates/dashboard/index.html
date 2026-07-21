@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block page_title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Statistics Cards -->
+    <div class="row g-4">
+
+        <div class="col-lg-3 col-md-6">
+            <div class="dashboard-card">
+                <h2>UGX 0</h2>
+                <p>Today's Sales</p>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="dashboard-card">
+                <h2>UGX 0</h2>
+                <p>Today's Profit</p>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="dashboard-card">
+                <h2>UGX 0</h2>
+                <p>Inventory Value</p>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="dashboard-card">
+                <h2>0</h2>
+                <p>Low Stock Items</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row mt-5">
+
+        <div class="col-lg-6">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-white">
+                    <strong>Recent Sales</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table table-bordered">
+
+                        <thead>
+
+                            <tr>
+                                <th>Invoice</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td colspan="3" class="text-center">
+                                    No sales available.
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-6">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-white">
+                    <strong>Recent Purchases</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table table-bordered">
+
+                        <thead>
+
+                            <tr>
+                                <th>Invoice</th>
+                                <th>Supplier</th>
+                                <th>Total</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td colspan="3" class="text-center">
+                                    No purchases available.
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

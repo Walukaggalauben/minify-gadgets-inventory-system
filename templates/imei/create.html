@@ -1,0 +1,128 @@
+{% extends "layout.html" %}
+
+{% block title %}Add IMEI{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<div class="card shadow">
+
+<div class="card-header">
+
+<h4>Add IMEI</h4>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="mb-3">
+
+    <label class="form-label">Product Variant</label>
+
+    <select
+        name="product_variant_id"
+        class="form-select"
+        required>
+
+        <option value="">Select Variant</option>
+
+        {% for variant in variants %}
+
+        <option value="{{ variant.id }}">
+
+            {{ variant.product.name }}
+            |
+            {{ variant.storage or "-" }}
+            |
+            {{ variant.ram or "-" }}
+            |
+            {{ variant.colour or "-" }}
+            |
+            SKU: {{ variant.sku }}
+
+        </option>
+
+        {% endfor %}
+
+    </select>
+
+</div>
+
+<div class="mb-3">
+
+<label>IMEI</label>
+
+<input
+type="text"
+name="imei"
+class="form-control"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label>Serial Number</label>
+
+<input
+type="text"
+name="serial_number"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Status</label>
+
+<select
+name="status"
+class="form-select">
+
+<option>In Stock</option>
+<option>Reserved</option>
+<option>Sold</option>
+<option>Returned</option>
+<option>Damaged</option>
+
+</select>
+
+</div>
+
+<div class="mb-3">
+
+<label>Notes</label>
+
+<textarea
+name="notes"
+class="form-control"
+rows="4"></textarea>
+
+</div>
+
+<button class="btn btn-primary">
+
+Save IMEI
+
+</button>
+
+<a
+href="{{ url_for('imei.index') }}"
+class="btn btn-secondary">
+
+Cancel
+
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block title %}Product Variants{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Product Variants</h3>
+
+        <a href="{{ url_for('variant.create') }}" class="btn btn-primary">
+            Add Variant
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Barcode</th>
+                <th>Storage</th>
+                <th>RAM</th>
+                <th>Colour</th>
+                <th>Quantity</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for variant in variants %}
+            <tr>
+                <td>{{ variant.product.name }}</td>
+                <td>{{ variant.sku }}</td>
+                <td>{{ variant.barcode or "-" }}</td>
+                <td>{{ variant.storage }}</td>
+                <td>{{ variant.ram }}</td>
+                <td>{{ variant.colour }}</td>
+                <td>{{ variant.quantity }}</td>
+                <td>
+                    {% if variant.is_active %}
+                        Active
+                    {% else %}
+                        Inactive
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8" class="text-center">
+                    No product variants found.
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+
+{% block title %}IMEI Management{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h3>
+            <i class="fas fa-mobile-alt"></i>
+            IMEI Management
+        </h3>
+
+        <a href="{{ url_for('imei.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Add IMEI
+        </a>
+
+    </div>
+
+    <form method="GET" class="mb-3">
+
+        <div class="input-group">
+
+            <input
+                type="text"
+                name="search"
+                class="form-control"
+                placeholder="Search IMEI or Serial Number..."
+                value="{{ search }}">
+
+            <button class="btn btn-outline-primary">
+                <i class="fas fa-search"></i>
+            </button>
+
+        </div>
+
+    </form>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Variant</th>
+                        <th>IMEI</th>
+                        <th>Serial</th>
+                        <th>Status</th>
+                        <th width="180">Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for item in imeis %}
+
+                    <tr>
+
+                        <td>{{ item.product_variant.sku }}</td>
+
+                        <td>{{ item.imei }}</td>
+
+                        <td>{{ item.serial_number or "-" }}</td>
+
+                        <td>
+
+                            {% if item.status=="In Stock" %}
+                                <span class="badge bg-success">{{ item.status }}</span>
+
+                            {% elif item.status=="Reserved" %}
+                                <span class="badge bg-warning text-dark">{{ item.status }}</span>
+
+                            {% elif item.status=="Sold" %}
+                                <span class="badge bg-danger">{{ item.status }}</span>
+
+                            {% else %}
+                                <span class="badge bg-secondary">{{ item.status }}</span>
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <a
+                                href="{{ url_for('imei.edit', imei_id=item.id) }}"
+                                class="btn btn-sm btn-warning">
+
+                                <i class="fas fa-edit"></i>
+
+                            </a>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('imei.delete', imei_id=item.id) }}"
+                                style="display:inline;">
+
+                                <button
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Delete this IMEI?')">
+
+                                    <i class="fas fa-trash"></i>
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="5" class="text-center py-4">
+
+                            No IMEIs found.
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

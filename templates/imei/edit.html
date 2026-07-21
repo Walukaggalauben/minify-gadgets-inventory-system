@@ -1,0 +1,145 @@
+{% extends "layout.html" %}
+
+{% block title %}Edit IMEI{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card shadow">
+
+        <div class="card-header">
+            <h4>Edit IMEI</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <div class="mb-3">
+
+                    <label class="form-label">Product Variant</label>
+
+                    <select
+                        name="product_variant_id"
+                        class="form-select"
+                        required>
+
+                        <option value="">Select Variant</option>
+
+                        {% for variant in variants %}
+
+                        <option
+                            value="{{ variant.id }}"
+                            {% if variant.id == imei.product_variant_id %}selected{% endif %}>
+
+                            {{ variant.product.name }} - {{ variant.sku }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">IMEI</label>
+
+                    <input
+                        type="text"
+                        name="imei"
+                        class="form-control"
+                        value="{{ imei.imei }}"
+                        required>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">Serial Number</label>
+
+                    <input
+                        type="text"
+                        name="serial_number"
+                        class="form-control"
+                        value="{{ imei.serial_number or '' }}">
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">Status</label>
+
+                    <select
+                        name="status"
+                        class="form-select">
+
+                        <option value="In Stock"
+                            {% if imei.status == "In Stock" %}selected{% endif %}>
+                            In Stock
+                        </option>
+
+                        <option value="Reserved"
+                            {% if imei.status == "Reserved" %}selected{% endif %}>
+                            Reserved
+                        </option>
+
+                        <option value="Sold"
+                            {% if imei.status == "Sold" %}selected{% endif %}>
+                            Sold
+                        </option>
+
+                        <option value="Returned"
+                            {% if imei.status == "Returned" %}selected{% endif %}>
+                            Returned
+                        </option>
+
+                        <option value="Damaged"
+                            {% if imei.status == "Damaged" %}selected{% endif %}>
+                            Damaged
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">Notes</label>
+
+                    <textarea
+                        name="notes"
+                        class="form-control"
+                        rows="4">{{ imei.notes or '' }}</textarea>
+
+                </div>
+
+                <div class="d-flex gap-2">
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Update IMEI
+                    </button>
+
+                    <a
+                        href="{{ url_for('imei.index') }}"
+                        class="btn btn-secondary">
+
+                        <i class="fas fa-times"></i>
+                        Cancel
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

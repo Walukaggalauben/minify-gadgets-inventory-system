@@ -1,0 +1,154 @@
+{% extends "layout.html" %}
+
+{% block title %}Edit Product{% endblock %}
+
+{% block page_title %}Edit Product{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm">
+
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+            <i class="fas fa-edit"></i>
+            Edit Product
+        </h5>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Category
+                    </label>
+
+                    <select
+                        name="category_id"
+                        class="form-select"
+                        required>
+
+                        {% for category in categories %}
+
+                        <option
+                            value="{{ category.id }}"
+                            {% if category.id == product.category_id %}selected{% endif %}>
+
+                            {{ category.name }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Brand
+                    </label>
+
+                    <select
+                        name="brand_id"
+                        class="form-select"
+                        required>
+
+                        {% for brand in brands %}
+
+                        <option
+                            value="{{ brand.id }}"
+                            {% if brand.id == product.brand_id %}selected{% endif %}>
+
+                            {{ brand.name }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Product Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        value="{{ product.name }}"
+                        required>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Image URL
+                    </label>
+
+                    <input
+                        type="text"
+                        name="image"
+                        class="form-control"
+                        value="{{ product.image }}">
+
+                </div>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Description
+                </label>
+
+                <textarea
+                    name="description"
+                    class="form-control"
+                    rows="5">{{ product.description }}</textarea>
+
+            </div>
+
+            <hr>
+
+            <button
+                type="submit"
+                class="btn btn-primary">
+
+                <i class="fas fa-save"></i>
+
+                Update Product
+
+            </button>
+
+            <a
+                href="{{ url_for('product.index') }}"
+                class="btn btn-outline-secondary">
+
+                <i class="fas fa-times"></i>
+
+                Cancel
+
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
