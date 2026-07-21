@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block title %}Create Brand{% endblock %}
+
+{% block page_title %}Create Brand{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm">
+
+    <div class="card-body">
+
+        <form method="POST">
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Brand Name
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    name="name"
+                    required
+                >
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Logo URL
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    name="logo"
+                >
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Description
+                </label>
+
+                <textarea
+                    class="form-control"
+                    name="description"
+                    rows="4"
+                ></textarea>
+
+            </div>
+
+            <button class="btn btn-success">
+
+                <i class="fas fa-save"></i>
+
+                Save Brand
+
+            </button>
+
+            <a href="{{ url_for('brand.index') }}"
+               class="btn btn-secondary">
+
+                Cancel
+
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

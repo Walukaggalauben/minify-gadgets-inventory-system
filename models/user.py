@@ -48,6 +48,12 @@ class User(db.Model):
         "Role",
         backref="users"
     )
+    
+    purchases = db.relationship(
+    "Purchase",
+    back_populates="user",
+    lazy=True
+    )
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -57,6 +63,8 @@ class User(db.Model):
             self.password,
             password
         )
+        
+        
 
     def __repr__(self):
         return f"<User {self.username}>"

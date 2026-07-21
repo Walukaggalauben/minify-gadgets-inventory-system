@@ -1,0 +1,199 @@
+{% extends "layout.html" %}
+
+{% block title %}New Purchase{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header">
+
+            <h4>Create Purchase</h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <label>Supplier</label>
+
+                        <select
+                            name="supplier_id"
+                            class="form-control"
+                            required>
+
+                            <option value="">
+                                Select Supplier
+                            </option>
+
+                            {% for supplier in suppliers %}
+
+                            <option value="{{ supplier.id }}">
+
+                                {{ supplier.name }}
+
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label>Purchase Date</label>
+
+                        <input
+                            type="date"
+                            name="purchase_date"
+                            class="form-control"
+                            required>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label>Invoice Number</label>
+
+                        <input
+                            type="text"
+                            name="invoice_number"
+                            class="form-control">
+
+                    </div>
+
+                </div>
+
+                <br>
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <label>Payment Method</label>
+
+                        <input
+                            type="text"
+                            name="payment_method"
+                            class="form-control">
+
+                    </div>
+
+                    <div class="col-md-8">
+
+                        <label>Notes</label>
+
+                        <textarea
+                            name="notes"
+                            class="form-control"></textarea>
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <h5>Purchase Items</h5>
+
+                <table class="table table-bordered">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Product Variant</th>
+                            <th width="120">Quantity</th>
+                            <th width="180">Unit Cost</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for i in range(5) %}
+
+                        <tr>
+
+                            <td>
+
+                                <select
+                                    name="variant_id"
+                                    class="form-control">
+
+                                    <option value="">
+                                        Select Variant
+                                    </option>
+
+                                    {% for variant in variants %}
+
+                                    <option value="{{ variant.id }}">
+
+                                        {{ variant.product.name }}
+                                        -
+                                        {{ variant.storage }}
+                                        /
+                                        {{ variant.ram }}
+                                        -
+                                        {{ variant.colour }}
+
+                                    </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </td>
+
+                            <td>
+
+                                <input
+                                    type="number"
+                                    name="quantity"
+                                    class="form-control">
+
+                            </td>
+
+                            <td>
+
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="unit_cost"
+                                    class="form-control">
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+                <button
+                    type="submit"
+                    class="btn btn-success">
+
+                    Save Purchase
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
