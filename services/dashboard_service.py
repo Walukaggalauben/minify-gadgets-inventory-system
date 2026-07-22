@@ -1,4 +1,5 @@
 from sqlalchemy import func
+from datetime import date
 
 from db import db
 
@@ -6,12 +7,16 @@ from models.product import Product
 from models.product_variant import ProductVariant
 from models.category import Category
 from models.brand import Brand
+from models.sale import Sale
+from models.purchase import Purchase
 
 
 class DashboardService:
 
     @staticmethod
     def get_statistics():
+
+        today = date.today()
 
         total_products = Product.query.count()
 
@@ -21,41 +26,57 @@ class DashboardService:
 
         total_brands = Brand.query.count()
 
-        stock_value = db.session.query(
-
+        inventory_value = db.session.query(
             func.sum(
                 ProductVariant.buying_price *
                 ProductVariant.quantity
             )
+        ).scalar() or 0
 
+        today_sales = db.session.query(
+            func.sum(Sale.total_amount)
+        ).filter(
+            func.date(Sale.sale_date) == today
+        ).scalar() or 0
+
+        today_profit = db.session.query(
+            func.sum(Sale.profit)
+        ).filter(
+            func.date(Sale.sale_date) == today
         ).scalar() or 0
 
         low_stock = ProductVariant.query.filter(
-
             ProductVariant.quantity <= ProductVariant.minimum_stock
+        ).all()
 
-        ).count()
+        recent_sales = Sale.query.order_by(
+            Sale.sale_date.desc()
+        ).limit(5).all()
 
-        out_of_stock = ProductVariant.query.filter(
-
-            ProductVariant.quantity == 0
-
-        ).count()
+        recent_purchases = Purchase.query.order_by(
+            Purchase.purchase_date.desc()
+        ).limit(5).all()
 
         return {
 
-            "products": total_products,
+            "total_products": total_products,
 
-            "variants": total_variants,
+            "total_variants": total_variants,
 
-            "categories": total_categories,
+            "total_categories": total_categories,
 
-            "brands": total_brands,
+            "total_brands": total_brands,
 
-            "stock_value": stock_value,
+            "inventory_value": inventory_value,
 
-            "low_stock": low_stock,
+            "today_sales": today_sales,
 
-            "out_of_stock": out_of_stock
+            "today_profit": today_profit,
+
+            "recent_sales": recent_sales,
+
+            "recent_purchases": recent_purchases,
+
+            "low_stock": low_stock
 
         }

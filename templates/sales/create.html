@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+
+{% block title %}New Sale{% endblock %}
+{% block page_title %}New Sale{% endblock %}
+
+{% block content %}
+
+<div class="table-card">
+
+    <h3 class="mb-4">Create New Sale</h3>
+
+    <form method="POST">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <label>Customer Name</label>
+
+                <input
+                    type="text"
+                    name="customer_name"
+                    class="form-control"
+                    required>
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label>Customer Phone</label>
+
+                <input
+                    type="text"
+                    name="customer_phone"
+                    class="form-control">
+
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-4 mb-3">
+
+                <label>Product Variant</label>
+
+                <select name="variant_id" class="form-select" required>
+
+                    <option value="">Select Variant</option>
+
+                    {% for variant in variants %}
+                        <option value="{{ variant.id }}">
+                            {{ variant.sku }}
+                        </option>
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <div class="col-md-4 mb-3">
+
+                <label>IMEI</label>
+
+                <select name="imei_id" class="form-select">
+
+                    <option value="">Select IMEI</option>
+
+                    {% for imei in imeis %}
+                        <option value="{{ imei.id }}">
+                            {{ imei.imei }}
+                        </option>
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <div class="col-md-4 mb-3">
+
+                <label>Quantity</label>
+
+                <input
+                    type="number"
+                    name="quantity"
+                    value="1"
+                    min="1"
+                    class="form-control"
+                    required>
+
+            </div>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label>Payment Method</label>
+
+            <select
+                name="payment_method"
+                class="form-select">
+
+                <option>Cash</option>
+                <option>Mobile Money</option>
+                <option>Bank</option>
+                <option>Card</option>
+
+            </select>
+
+        </div>
+
+        <button class="btn btn-success">
+            <i class="fas fa-save"></i>
+            Complete Sale
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

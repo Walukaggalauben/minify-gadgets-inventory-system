@@ -1,12 +1,31 @@
-<<<<<<< HEAD
-/* ============================
-   MINIFY GADGETS THEME
-============================= */
-=======
-/* ==========================
+/* =========================================================
    MINIFY GADGETS ERP V2
-========================== */
->>>>>>> main
+   Professional Theme
+========================================================= */
+
+:root{
+
+    --primary:#0B7A3B;
+    --primary-dark:#075B2B;
+    --primary-light:#11A750;
+
+    --sidebar:#103B2E;
+
+    --background:#F5F7FA;
+
+    --card:#FFFFFF;
+
+    --text:#222;
+
+    --muted:#777;
+
+    --border:#E4E7EC;
+
+    --shadow:0 8px 25px rgba(0,0,0,.08);
+
+    --radius:14px;
+
+}
 
 *{
     margin:0;
@@ -14,396 +33,83 @@
     box-sizing:border-box;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
-<<<<<<< HEAD
-    font-family:'Segoe UI',sans-serif;
-    background:#f4f7fa;
-    color:#333;
-}
 
-/* ============================
-   SIDEBAR
-============================= */
+    font-family:"Segoe UI",Tahoma,sans-serif;
 
-.sidebar{
-    width:240px;
-    height:100vh;
-    position:fixed;
-    left:0;
-    top:0;
-    overflow-y:auto;
-    background:linear-gradient(180deg,#004d40,#00695C);
-    box-shadow:3px 0 15px rgba(0,0,0,.15);
-}
+    background:var(--background);
 
-.logo{
-    background:white;
-    text-align:center;
-    padding:20px;
-}
-
-.logo img{
-    width:180px;
-}
-
-/* ============================
-   MENU
-============================= */
-
-.sidebar a{
-    display:block;
-    padding:15px 20px;
-    color:white;
-    text-decoration:none;
-    font-weight:600;
-    transition:.3s;
-}
-
-.sidebar a:hover{
-    background:#00897B;
-    padding-left:28px;
-}
-
-/* ============================
-   MAIN
-============================= */
-
-.main{
-    margin-left:240px;
-    min-height:100vh;
-}
-
-/* ============================
-   HEADER
-============================= */
-
-.header{
-    background:white;
-    padding:20px 30px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
-}
-
-.header h2{
-    color:#00695C;
-}
-
-/* ============================
-   DATE
-============================= */
-
-.date-box{
-    background:#00695C;
-    color:white;
-    padding:10px 18px;
-    border-radius:10px;
-    font-weight:bold;
-}
-
-/* ============================
-   CONTENT
-============================= */
-
-.content{
-    padding:30px;
-}
-
-/* ============================
-   DASHBOARD CARDS
-============================= */
-
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:20px;
-}
-
-.card{
-    background:white;
-    border-radius:18px;
-    padding:25px;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-    transition:.3s;
-}
-
-.card:hover{
-    transform:translateY(-5px);
-}
-
-.card h2{
-    color:#00695C;
-    margin-bottom:10px;
-}
-
-/* ============================
-   FORMS
-============================= */
-
-form p{
-    font-weight:bold;
-    margin-bottom:8px;
-}
-
-input,
-select{
-    width:100%;
-    padding:12px;
-    border:1px solid #ccc;
-    border-radius:8px;
-    font-size:15px;
-    transition:.3s;
-}
-
-input:focus,
-select:focus{
-    outline:none;
-    border-color:#00695C;
-    box-shadow:0 0 5px rgba(0,105,92,.25);
-}
-
-/* ============================
-   BUTTONS
-============================= */
-
-button{
-    background:#00695C;
-    color:white;
-    border:none;
-    padding:12px 25px;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
-    transition:.3s;
-}
-
-button:hover{
-    background:#00897B;
-}
-
-/* ============================
-   TABLES
-============================= */
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    background:white;
-    border-radius:15px;
-    overflow:hidden;
-}
-
-th{
-    background:#00695C;
-    color:white;
-    padding:14px;
-}
-
-td{
-    padding:14px;
-    border-bottom:1px solid #eee;
-}
-
-tr:hover{
-    background:#f8f9fa;
-}
-
-/* ============================
-   RESPONSIVE
-============================= */
-
-@media(max-width:768px){
-
-.sidebar{
-    width:100%;
-    height:auto;
-    position:relative;
-}
-
-.main{
-    margin-left:0;
-}
-
-.cards{
-    grid-template-columns:1fr;
-}
+    color:var(--text);
 
 }
 
-/* ============================
-   MENU TITLES
-============================= */
-
-.menu-title{
-    color:#9fd9cf;
-    font-size:12px;
-    font-weight:bold;
-    padding:20px 20px 8px;
-    letter-spacing:1px;
-    text-transform:uppercase;
-}
-
-/* ============================
-   SIDEBAR ICONS
-============================= */
-
-.sidebar a i{
-    width:25px;
-}
-
-/* ============================
-   ACTIVE & HOVER EFFECT
-============================= */
-
-.sidebar a{
-    border-left:4px solid transparent;
-}
-
-.sidebar a:hover{
-    border-left:4px solid #ffffff;
-}
-
-/*==================================
-DASHBOARD CARDS
-===================================*/
-
-.dashboard-card{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:20px;
-
-}
-
-.card-icon{
-
-    width:70px;
-
-    height:70px;
-
-    border-radius:50%;
-
-    background:linear-gradient(135deg,#00695C,#009688);
-
-    color:white;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-size:34px;
-
-    flex-shrink:0;
-
-}
-
-.card-info h3{
-
-    color:#777;
-
-    font-size:15px;
-
-    margin-bottom:8px;
-
-}
-
-.card-info h2{
-
-    color:#00695C;
-
-    font-size:28px;
-
-    margin-bottom:6px;
-
-}
-
-.card-info p{
-
-    color:#999;
-
-    font-size:13px;
-
-}
-
-/*==================================
-QUICK ACTIONS
-===================================*/
-
-.quick-card{
-
-    background:white;
-
-    text-decoration:none;
-
-    color:#333;
-
-    border-radius:15px;
-
-    padding:30px;
-
-    text-align:center;
-
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
-=======
-    background:#f4f6f9;
-    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-}
-
-/* Wrapper */
+/* =========================================================
+   WRAPPER
+========================================================= */
 
 .wrapper{
+
     display:flex;
+
     min-height:100vh;
+
 }
 
-/* Sidebar */
+/* =========================================================
+   SIDEBAR
+========================================================= */
 
 .sidebar{
+
+    position:fixed;
+
+    left:0;
+
+    top:0;
 
     width:260px;
 
-    background:#00695C;
+    height:100vh;
 
-    color:#fff;
+    background:var(--sidebar);
 
-    position:fixed;
-
-    height:100%;
+    color:white;
 
     overflow-y:auto;
+
+    box-shadow:var(--shadow);
 
 }
 
 .logo{
 
-    padding:25px;
+    padding:30px 20px;
 
     text-align:center;
 
-    border-bottom:1px solid rgba(255,255,255,.15);
+    border-bottom:1px solid rgba(255,255,255,.08);
 
 }
 
 .logo h4{
 
-    margin-bottom:5px;
+    margin-top:15px;
 
-    font-weight:bold;
+    font-weight:700;
+
+    letter-spacing:.5px;
 
 }
 
 .logo small{
 
-    color:#d9f5ef;
+    color:#b6d8ca;
 
 }
-
-/* Menu */
 
 .sidebar ul{
 
@@ -413,149 +119,59 @@ QUICK ACTIONS
 
 }
 
-.sidebar ul li{
+.sidebar li{
 
     margin:3px 0;
 
 }
 
-.sidebar ul li a{
-
-    display:block;
-
-    color:#fff;
-
-    text-decoration:none;
-
-    padding:14px 25px;
->>>>>>> main
-
-    transition:.3s;
-
-}
-
-<<<<<<< HEAD
-.quick-card:hover{
-
-    transform:translateY(-8px);
-
-}
-
-.quick-card i{
-
-    font-size:40px;
-
-    color:#00695C;
-
-    margin-bottom:15px;
-
-}
-
-.quick-card h3{
-
-    font-size:18px;
-
-}
-
-/*==============================
-WELCOME BOX
-==============================*/
-
-.welcome-box{
+.sidebar a{
 
     display:flex;
 
-    justify-content:space-between;
-
     align-items:center;
 
-    background:linear-gradient(135deg,#00695C,#009688);
+    gap:15px;
 
     color:white;
 
-    padding:30px;
+    text-decoration:none;
 
-    border-radius:18px;
+    padding:14px 22px;
 
-    margin-bottom:30px;
+    transition:.25s;
 
-    box-shadow:0 6px 18px rgba(0,0,0,.15);
-
-}
-
-.welcome-box h1{
-
-    margin-bottom:12px;
+    border-left:4px solid transparent;
 
 }
 
-.welcome-box p{
+.sidebar a i{
 
-    max-width:600px;
-
-    line-height:1.7;
-
-}
-
-.today-box{
-
-    background:white;
-
-    color:#00695C;
-
-    padding:20px;
-
-    border-radius:15px;
+    width:22px;
 
     text-align:center;
 
-    min-width:180px;
+}
+
+.sidebar a:hover{
+
+    background:#14533f;
+
+    border-left:4px solid var(--primary-light);
 
 }
 
-.today-box h3{
+.sidebar a.active{
 
-    margin-bottom:10px;
+    background:var(--primary);
 
-}
-
-.today-box h2{
-
-    font-size:26px;
+    border-left:4px solid white;
 
 }
 
-/* ===========================
-   PHONE DETAILS
-=========================== */
-
-.details-card{
-
-    background:#fff;
-
-    border-radius:15px;
-
-    padding:30px;
-
-    box-shadow:0 5px 20px rgba(0,0,0,.08);
-
-}
-
-.details-header{
-=======
-.sidebar ul li a i{
-
-    width:25px;
-
-}
-
-.sidebar ul li a:hover{
-
-    background:#00897B;
-
-}
-
-/* Main */
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
 
 .main-content{
 
@@ -563,16 +179,21 @@ WELCOME BOX
 
     width:calc(100% - 260px);
 
+    min-height:100vh;
+
 }
 
-/* Topbar */
+/* =========================================================
+   TOPBAR
+========================================================= */
 
 .topbar{
 
-    background:#fff;
+    background:white;
 
-    padding:18px 30px;
->>>>>>> main
+    height:72px;
+
+    padding:0 30px;
 
     display:flex;
 
@@ -580,194 +201,21 @@ WELCOME BOX
 
     align-items:center;
 
-<<<<<<< HEAD
-    margin-bottom:25px;
+    border-bottom:1px solid var(--border);
+
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
+
+    position:sticky;
+
+    top:0;
+
+    z-index:999;
 
 }
 
-.status-badge{
-
-    background:#009688;
-
-    color:white;
-
-    padding:8px 16px;
-
-    border-radius:30px;
-
-    font-weight:bold;
-
-}
-
-.details-table{
-
-    width:100%;
-
-    border-collapse:collapse;
-
-}
-
-.details-table th{
-
-    width:220px;
-
-    background:#f7f7f7;
-
-    color:#333;
-
-    text-align:left;
-
-    padding:14px;
-
-}
-
-.details-table td{
-
-    padding:14px;
-
-    border-bottom:1px solid #eee;
-
-}
-
-.btn-back{
-
-    display:inline-block;
-
-    padding:10px 20px;
-
-    background:#607d8b;
-
-    color:white;
-
-    text-decoration:none;
-
-    border-radius:8px;
-
-    margin-right:10px;
-
-}
-
-.btn-edit{
-
-    display:inline-block;
-
-    padding:10px 20px;
-
-    background:#009688;
-
-    color:white;
-
-    text-decoration:none;
-
-    border-radius:8px;
-
-}
-
-.details-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-.details-table th{
-    width:220px;
-    background:#00695C;
-    color:white;
-    text-align:left;
-    padding:12px;
-}
-
-.details-table td{
-    padding:12px;
-    border-bottom:1px solid #ddd;
-}
-
-/* ==========================================
-   RECEIPT
-========================================== */
-
-.receipt-card{
-    max-width:800px;
-    margin:auto;
-    padding:30px;
-}
-
-.receipt-header{
-    text-align:center;
-}
-
-.receipt-header h2{
-    color:#0b7a3b;
-    margin-bottom:5px;
-}
-
-.receipt-header p{
-    margin:3px;
-    color:#666;
-}
-
-.receipt-footer{
-    text-align:center;
-}
-
-.details-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-.details-table th{
-    width:35%;
-    text-align:left;
-    padding:10px;
-    background:#f4f4f4;
-}
-
-.details-table td{
-    padding:10px;
-    border-bottom:1px solid #ddd;
-}
-
-/* ==========================================
-   PRINT RECEIPT
-========================================== */
-
-@media print{
-
-    .sidebar,
-    .header,
-    .btn-save,
-    .btn-view,
-    h1{
-        display:none !important;
-    }
-
-    .main{
-        margin:0;
-        width:100%;
-    }
-
-    .content{
-        padding:0;
-    }
-
-    .receipt-card{
-
-        width:100%;
-
-        max-width:100%;
-
-        border:none;
-
-        box-shadow:none;
-
-    }
-
-} 
-=======
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
-
-}
-
-/* Content */
+/* =========================================================
+   PAGE CONTENT
+========================================================= */
 
 .content-area{
 
@@ -775,55 +223,317 @@ WELCOME BOX
 
 }
 
-/* Cards */
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer{
+
+    background:white;
+
+    border-top:1px solid var(--border);
+
+    padding:18px 30px;
+
+    margin-top:40px;
+
+}
+
+/* =========================================================
+   DASHBOARD CARDS
+========================================================= */
+
+.cards{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+
+    gap:25px;
+
+    margin-bottom:35px;
+
+}
 
 .dashboard-card{
 
-    background:#fff;
+    background:var(--card);
 
-    border-radius:12px;
+    border-radius:var(--radius);
 
     padding:25px;
 
-    box-shadow:0 3px 10px rgba(0,0,0,.08);
+    box-shadow:var(--shadow);
 
-    transition:.3s;
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+    transition:.25s;
+
+    border:1px solid var(--border);
 
 }
 
 .dashboard-card:hover{
 
-    transform:translateY(-3px);
+    transform:translateY(-6px);
 
 }
 
-.dashboard-card h2{
+.card-icon{
 
-    color:#00695C;
+    width:70px;
+
+    height:70px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:white;
+
+    font-size:28px;
+
+    flex-shrink:0;
+
+}
+
+.bg-green{
+    background:#16a34a;
+}
+
+.bg-blue{
+    background:#2563eb;
+}
+
+.bg-orange{
+    background:#ea580c;
+}
+
+.bg-red{
+    background:#dc2626;
+}
+
+.bg-purple{
+    background:#7c3aed;
+}
+
+.bg-teal{
+    background:#0891b2;
+}
+
+.bg-dark{
+    background:#374151;
+}
+
+.bg-gold{
+    background:#ca8a04;
+}
+
+.card-info{
+
+    flex:1;
+
+}
+
+.card-info h3{
+
+    font-size:15px;
+
+    color:var(--muted);
+
+    margin-bottom:8px;
+
+    font-weight:600;
+
+}
+
+.card-info h2{
 
     font-size:30px;
 
-    margin-bottom:10px;
+    color:var(--primary);
+
+    margin-bottom:6px;
+
+    font-weight:700;
 
 }
 
-.dashboard-card p{
+.card-info p{
 
-    color:#777;
+    color:#888;
 
-    margin:0;
+    font-size:13px;
 
 }
 
-/* Tables */
+/* =========================================================
+   TABLES
+========================================================= */
+
+.table-card{
+
+    background:white;
+
+    border-radius:var(--radius);
+
+    padding:25px;
+
+    box-shadow:var(--shadow);
+
+    margin-bottom:30px;
+
+}
+
+.table-card h4{
+
+    margin-bottom:20px;
+
+    color:var(--primary);
+
+}
 
 .table{
 
-    background:#fff;
+    margin-bottom:0;
 
 }
 
-/* Responsive */
+.table thead{
+
+    background:var(--primary);
+
+    color:white;
+
+}
+
+.table th{
+
+    border:none;
+
+    padding:15px;
+
+    font-weight:600;
+
+}
+
+.table td{
+
+    vertical-align:middle;
+
+    padding:15px;
+
+}
+
+.table tbody tr:hover{
+
+    background:#F9FAFB;
+
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn{
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    padding:10px 18px;
+
+}
+
+.btn-success{
+
+    background:var(--primary);
+
+    border:none;
+
+}
+
+.btn-success:hover{
+
+    background:var(--primary-dark);
+
+}
+
+.btn-primary{
+
+    border:none;
+
+}
+
+.btn-warning{
+
+    color:white;
+
+}
+
+.btn-danger{
+
+    border:none;
+
+}
+
+/* =========================================================
+   FORMS
+========================================================= */
+
+.form-control,
+.form-select{
+
+    border-radius:10px;
+
+    border:1px solid var(--border);
+
+    padding:12px 15px;
+
+}
+
+.form-control:focus,
+.form-select:focus{
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 .2rem rgba(11,122,59,.15);
+
+}
+
+label{
+
+    font-weight:600;
+
+    margin-bottom:8px;
+
+}
+
+/* =========================================================
+   ALERTS
+========================================================= */
+
+.alert{
+
+    border:none;
+
+    border-radius:12px;
+
+    box-shadow:var(--shadow);
+
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
 @media(max-width:992px){
 
@@ -833,19 +543,20 @@ WELCOME BOX
 
 }
 
-.sidebar .logo small{
+.logo h4,
+.logo small{
 
     display:none;
 
 }
 
-.sidebar ul li a{
+.sidebar a{
 
-    text-align:center;
+    justify-content:center;
 
 }
 
-.sidebar ul li a span{
+.sidebar a span{
 
     display:none;
 
@@ -860,4 +571,37 @@ WELCOME BOX
 }
 
 }
->>>>>>> main
+
+@media(max-width:768px){
+
+.sidebar{
+
+    position:relative;
+
+    width:100%;
+
+    height:auto;
+
+}
+
+.main-content{
+
+    margin-left:0;
+
+    width:100%;
+
+}
+
+.topbar{
+
+    padding:15px;
+
+}
+
+.cards{
+
+    grid-template-columns:1fr;
+
+}
+
+}

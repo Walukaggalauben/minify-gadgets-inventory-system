@@ -54,6 +54,12 @@ class User(db.Model):
     back_populates="user",
     lazy=True
     )
+    
+    sales = db.relationship(
+    "Sale",
+    back_populates="user",
+    lazy=True
+    )
 
     def set_password(self, password):
         self.password = generate_password_hash(password)

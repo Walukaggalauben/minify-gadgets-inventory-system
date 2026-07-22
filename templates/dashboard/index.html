@@ -1,130 +1,213 @@
 {% extends "layout.html" %}
 
-{% block title %}
-Dashboard
-{% endblock %}
-
-{% block page_title %}
-Dashboard
-{% endblock %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
 
-<div class="container-fluid">
+<div class="row mb-4">
 
-    <!-- Statistics Cards -->
-    <div class="row g-4">
+    <div class="col-12">
 
-        <div class="col-lg-3 col-md-6">
-            <div class="dashboard-card">
-                <h2>UGX 0</h2>
-                <p>Today's Sales</p>
+        <div class="dashboard-card">
+
+            <div class="card-info">
+
+                <h2>Welcome back, {{ session.username }}</h2>
+
+                <p>
+                    Monitor inventory, purchases, sales and business performance
+                    from one place.
+                </p>
+
             </div>
-        </div>
 
-        <div class="col-lg-3 col-md-6">
-            <div class="dashboard-card">
-                <h2>UGX 0</h2>
-                <p>Today's Profit</p>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="dashboard-card">
-                <h2>UGX 0</h2>
-                <p>Inventory Value</p>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="dashboard-card">
-                <h2>0</h2>
-                <p>Low Stock Items</p>
-            </div>
         </div>
 
     </div>
 
-    <!-- Recent Activity -->
-    <div class="row mt-5">
+</div>
 
-        <div class="col-lg-6">
 
-            <div class="card shadow-sm">
+<div class="cards">
 
-                <div class="card-header bg-white">
-                    <strong>Recent Sales</strong>
-                </div>
+    <div class="dashboard-card">
 
-                <div class="card-body">
+        <div class="card-icon bg-green">
+            <i class="fas fa-box"></i>
+        </div>
 
-                    <table class="table table-bordered">
+        <div class="card-info">
 
-                        <thead>
+            <h3>Total Products</h3>
 
-                            <tr>
-                                <th>Invoice</th>
-                                <th>Customer</th>
-                                <th>Amount</th>
-                            </tr>
+            <h2>{{ stats.total_products }}</h2>
 
-                        </thead>
-
-                        <tbody>
-
-                            <tr>
-                                <td colspan="3" class="text-center">
-                                    No sales available.
-                                </td>
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
+            <p>Products in inventory</p>
 
         </div>
 
-        <div class="col-lg-6">
+    </div>
 
-            <div class="card shadow-sm">
+    <div class="dashboard-card">
 
-                <div class="card-header bg-white">
-                    <strong>Recent Purchases</strong>
-                </div>
+        <div class="card-icon bg-blue">
+            <i class="fas fa-warehouse"></i>
+        </div>
 
-                <div class="card-body">
+        <div class="card-info">
 
-                    <table class="table table-bordered">
+            <h3>Inventory Value</h3>
 
-                        <thead>
+            <h2>UGX {{ "{:,.0f}".format(stats.inventory_value) }}</h2>
 
-                            <tr>
-                                <th>Invoice</th>
-                                <th>Supplier</th>
-                                <th>Total</th>
-                            </tr>
+            <p>Total stock value</p>
 
-                        </thead>
+        </div>
 
-                        <tbody>
+    </div>
 
-                            <tr>
-                                <td colspan="3" class="text-center">
-                                    No purchases available.
-                                </td>
-                            </tr>
+    <div class="dashboard-card">
 
-                        </tbody>
+        <div class="card-icon bg-orange">
+            <i class="fas fa-shopping-cart"></i>
+        </div>
 
-                    </table>
+        <div class="card-info">
 
-                </div>
+            <h3>Today's Sales</h3>
 
-            </div>
+            <h2>UGX {{ "{:,.0f}".format(stats.today_sales) }}</h2>
+
+            <p>Sales today</p>
+
+        </div>
+
+    </div>
+
+    <div class="dashboard-card">
+
+        <div class="card-icon bg-purple">
+            <i class="fas fa-chart-line"></i>
+        </div>
+
+        <div class="card-info">
+
+            <h3>Today's Profit</h3>
+
+            <h2>UGX {{ "{:,.0f}".format(stats.today_profit) }}</h2>
+
+            <p>Profit today</p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="row">
+
+    <div class="col-lg-7">
+
+        <div class="table-card">
+
+            <h4>
+                <i class="fas fa-clock"></i>
+                Recent Sales
+            </h4>
+
+            <table class="table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for sale in stats.recent_sales %}
+
+                    <tr>
+
+                        <td>{{ sale.date }}</td>
+
+                        <td>{{ sale.customer }}</td>
+
+                        <td>
+                            UGX {{ "{:,.0f}".format(sale.total) }}
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-5">
+
+        <div class="table-card">
+
+            <h4>
+
+                <i class="fas fa-triangle-exclamation"></i>
+
+                Low Stock
+
+            </h4>
+
+            <table class="table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Product</th>
+
+                        <th>Qty</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for item in stats.low_stock %}
+
+                    <tr>
+
+                        <td>{{ item.name }}</td>
+
+                        <td>
+
+                            <span class="badge bg-danger">
+
+                                {{ item.quantity }}
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
 
         </div>
 

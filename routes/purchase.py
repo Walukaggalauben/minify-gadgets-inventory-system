@@ -24,7 +24,6 @@ purchase_bp = Blueprint(
     url_prefix="/purchases"
 )
 
-
 @purchase_bp.route("/")
 def index():
 
@@ -33,7 +32,7 @@ def index():
 
     purchases = (
         Purchase.query
-        .order_by(Purchase.id.desc())
+        .order_by(Purchase.purchase_date.desc())
         .all()
     )
 
@@ -41,8 +40,8 @@ def index():
         "purchases/index.html",
         purchases=purchases
     )
-
-
+    
+    
 @purchase_bp.route("/create", methods=["GET", "POST"])
 def create():
 
@@ -62,30 +61,64 @@ def create():
     if request.method == "POST":
 
         supplier_id = request.form.get("supplier_id")
+
         purchase_date = datetime.strptime(
             request.form.get("purchase_date"),
             "%Y-%m-%d"
         ).date()
+
         invoice_number = request.form.get("invoice_number")
         payment_method = request.form.get("payment_method")
         notes = request.form.get("notes")
 
-        variant_ids = request.form.getlist("variant_id")
-        quantities = request.form.getlist("quantity")
-        unit_costs = request.form.getlist("unit_cost")
+        # Dynamic purchase items
+        variant_ids = request.form.getlist("variant_id[]")
+        quantities = request.form.getlist("quantity[]")
+        unit_costs = request.form.getlist("unit_cost[]")
 
         items = []
 
-        for i in range(len(variant_ids)):
+        for variant_id, quantity, unit_cost in zip(
+            variant_ids,
+            quantities,
+            unit_costs
+        ):
 
-            if not variant_ids[i]:
+            if (
+                not variant_id or
+                not quantity or
+                not unit_cost
+            ):
+                continue
+
+            quantity = int(quantity)
+            unit_cost = float(unit_cost)
+
+            if quantity <= 0:
+                continue
+
+            if unit_cost < 0:
                 continue
 
             items.append({
-                "product_variant_id": int(variant_ids[i]),
-                "quantity": int(quantities[i]),
-                "unit_cost": unit_costs[i]
+                "product_variant_id": int(variant_id),
+                "quantity": quantity,
+                "unit_cost": unit_cost
             })
+
+        if not items:
+
+            flash(
+                "Please add at least one purchase item.",
+                "warning"
+            )
+
+            return render_template(
+                "purchases/create.html",
+                suppliers=suppliers,
+                variants=variants,
+                today=datetime.today().strftime("%Y-%m-%d")
+            )
 
         try:
 
@@ -118,5 +151,6 @@ def create():
     return render_template(
         "purchases/create.html",
         suppliers=suppliers,
-        variants=variants
+        variants=variants,
+        today=datetime.today().strftime("%Y-%m-%d")
     )

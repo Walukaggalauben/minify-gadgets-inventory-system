@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}Sales{% endblock %}
+{% block page_title %}Sales{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h3>Sales</h3>
+
+    <a href="{{ url_for('sale.create') }}" class="btn btn-success">
+        <i class="fas fa-plus"></i>
+        New Sale
+    </a>
+
+</div>
+
+<div class="table-card">
+
+    <h4>Sales History</h4>
+
+    <p class="text-muted">
+        Sales history will appear here after you start recording sales.
+    </p>
+
+</div>
+
+{% endblock %}

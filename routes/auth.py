@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-from flask import render_template, request, redirect, session, flash
-from app import app
-from db import cursor
-
-
-# ==========================================
-# Login
-# ==========================================
-@app.route("/", methods=["GET", "POST"])
-=======
 from flask import (
     Blueprint,
     render_template,
@@ -28,34 +17,11 @@ auth_bp = Blueprint(
 
 
 @auth_bp.route("/", methods=["GET", "POST"])
->>>>>>> main
 def login():
 
     if request.method == "POST":
 
         username = request.form["username"]
-<<<<<<< HEAD
-        password = request.form["password"]
-
-        cursor.execute("""
-            SELECT *
-            FROM users
-            WHERE username=%s
-            AND password=%s
-            LIMIT 1
-        """, (username, password))
-
-        user = cursor.fetchone()
-
-        if user:
-
-            session["user_id"] = user["id"]
-            session["username"] = user["username"]
-            session["role"] = user["role"]
-
-            return redirect("/dashboard")
-=======
-
         password = request.form["password"]
 
         user = AuthService.authenticate(
@@ -66,29 +32,26 @@ def login():
         if user:
 
             session["user_id"] = user.id
-
             session["username"] = user.username
-
             session["role"] = user.role.name
 
-            return redirect(url_for("dashboard.dashboard"))
->>>>>>> main
+            return redirect(
+                url_for("dashboard.dashboard")
+            )
 
-        flash("Invalid username or password.")
+        flash(
+            "Invalid username or password.",
+            "danger"
+        )
 
     return render_template("login.html")
 
 
-<<<<<<< HEAD
-# ==========================================
-# Logout
-# ==========================================
-@app.route("/logout")
-=======
 @auth_bp.route("/logout")
->>>>>>> main
 def logout():
 
     session.clear()
 
-    return redirect("/")
+    return redirect(
+        url_for("auth.login")
+    )

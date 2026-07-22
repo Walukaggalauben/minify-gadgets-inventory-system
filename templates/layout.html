@@ -1,25 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-<<<<<<< HEAD
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>MINIFY GADGETS Inventory System</title>
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
-=======
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
 
     <title>
         {% block title %}
@@ -27,175 +10,22 @@
         {% endblock %}
     </title>
 
-    <!-- Bootstrap -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome -->
-    <link
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 
-    <!-- Custom CSS -->
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}">
->>>>>>> main
-
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-<<<<<<< HEAD
-<!-- ===========================
-     SIDEBAR
-=========================== -->
-
-<div class="sidebar">
-
-    <div class="logo">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="MINIFY GADGETS Logo">
-    </div>
-
-    <!-- Dashboard -->
-
-    <a href="/dashboard">
-        <i class="fas fa-home"></i>
-        Dashboard
-    </a>
-
-    <!-- Inventory -->
-
-    <div class="menu-title">
-        INVENTORY
-    </div>
-
-    <a href="/inventory">
-        <i class="fas fa-boxes"></i>
-        Inventory
-    </a>
-
-    <a href="/add_phone">
-        <i class="fas fa-plus-circle"></i>
-        Add Phone
-    </a>
-
-    <a href="/suppliers">
-        <i class="fas fa-truck"></i>
-        Suppliers
-    </a>
-
-    <a href="/purchase_headers">
-        <i class="fas fa-file-invoice"></i>
-        Purchases
-    </a>
-
-    <a href="/imei_management">
-        <i class="fas fa-barcode"></i>
-        IMEI Management
-    </a>
-
-    <!-- Sales -->
-
-    <div class="menu-title">
-        SALES
-    </div>
-
-    <a href="/sales">
-        <i class="fas fa-shopping-cart"></i>
-        New Sale
-    </a>
-
-    <a href="/sales_history">
-        <i class="fas fa-history"></i>
-        Sales History
-    </a>
-
-    <!-- Customers -->
-
-    <div class="menu-title">
-        CUSTOMERS
-    </div>
-
-    <a href="/customers">
-        <i class="fas fa-users"></i>
-        Customers
-    </a>
-
-    <!-- Finance -->
-
-    <div class="menu-title">
-        FINANCE
-    </div>
-
-    <a href="/expenses">
-        <i class="fas fa-money-bill-wave"></i>
-        Expenses
-    </a>
-
-    <a href="#">
-        <i class="fas fa-chart-line"></i>
-        Reports
-    </a>
-
-    <!-- Intelligence -->
-
-    <div class="menu-title">
-        INTELLIGENCE
-    </div>
-
-    <a href="#">
-        <i class="fas fa-brain"></i>
-        AI Analytics
-    </a>
-
-    <!-- System -->
-
-    <div class="menu-title">
-        SYSTEM
-    </div>
-
-    <a href="#">
-        <i class="fas fa-cog"></i>
-        Settings
-    </a>
-
-    <a href="/">
-        <i class="fas fa-sign-out-alt"></i>
-        Logout
-    </a>
-
-</div>
-
-<!-- ===========================
-     MAIN CONTENT
-=========================== -->
-
-<div class="main">
-
-    <div class="header">
-
-        <h2>
-            MINIFY GADGETS Inventory System
-        </h2>
-
-        <div class="date-box">
-
-            <i class="fas fa-calendar-alt"></i>
-
-            {{ current_date }}
-=======
 <div class="wrapper">
 
-<!-- ========================= -->
-<!-- SIDEBAR                   -->
-<!-- ========================= -->
-
+    <!-- Sidebar -->
     <aside class="sidebar">
 
         <div class="logo text-center py-4">
-
             <i class="fas fa-mobile-screen-button fa-3x text-success mb-2"></i>
 
             <h4 class="mb-0">
@@ -205,594 +35,178 @@
             <small class="text-light">
                 ERP Version 2
             </small>
-
         </div>
 
         <hr>
 
         <ul class="nav flex-column">
 
-            <!-- Dashboard -->
-
-            <li class="nav-item">
-
-                <a
-                    class="nav-link {% if request.endpoint == 'dashboard.dashboard' %}active{% endif %}"
-                    href="{{ url_for('dashboard.dashboard') }}">
-
-                    <i class="fas fa-chart-line"></i>
-
-                    Dashboard
-
-                </a>
-
-            </li>
-
-            <!-- Categories -->
-
-            <li class="nav-item">
-
-                <a
-                    class="nav-link {% if request.endpoint and request.endpoint.startswith('category') %}active{% endif %}"
-                    href="{{ url_for('category.index') }}">
-
-                    <i class="fas fa-layer-group"></i>
-
-                    Categories
-
-                </a>
-
-            </li>
-
-            <!-- Brands -->
-
-            <li class="nav-item">
-
-                <a
-                    class="nav-link {% if request.endpoint and request.endpoint.startswith('brand') %}active{% endif %}"
-                    href="{{ url_for('brand.index') }}">
-
-                    <i class="fas fa-tags"></i>
-
-                    Brands
-
-                </a>
-
-            </li>
-
-            <!-- Products -->
-
-            <li class="nav-item">
-
-                <a
-                    class="nav-link {% if request.endpoint and request.endpoint.startswith('product') %}active{% endif %}"
-                    href="{{ url_for('product.index') }}">
-
-                    <i class="fas fa-box"></i>
-
-                    Products
-
-                </a>
-
-            </li>
-
-            <!-- Product Variants -->
-
-            <li class="nav-item">
-
-            <a
-                class="nav-link {% if request.endpoint and request.endpoint.startswith('variant') %}active{% endif %}"
-                href="{{ url_for('variant.index') }}">
-
-                <i class="fas fa-boxes-stacked"></i>
-
-                Product Variants
-
-            </a>
-
-        </li>
-
-        <!-- IMEI Management -->
-
-        <li class="nav-item">
-
-            <a
-                class="nav-link {% if request.endpoint and request.endpoint.startswith('imei') %}active{% endif %}"
-                href="{{ url_for('imei.index') }}">
-
-                <i class="fas fa-mobile-alt"></i>
-
-                IMEI Management
-
-            </a>
-
-        </li>
-
-        <!-- Inventory -->
-
-        <li class="nav-item">
-
-            <a
-                class="nav-link"
-                href="#">
-
-                <i class="fas fa-warehouse"></i>
-
-                Inventory
-
-            </a>
-
-        </li>
-            <li class="nav-item">
-
-                <a
-                    class="nav-link"
-                    href="#">
-
-                    <i class="fas fa-warehouse"></i>
-
-                    Inventory
-
-                </a>
-
-            </li>
-
-            <!-- Suppliers -->
-
-            <li class="nav-item">
-
-              <a
-                  class="nav-link {% if request.endpoint and request.endpoint.startswith('supplier') %}active{% endif %}"
-                 href="{{ url_for('supplier.index') }}">
-
-                <i class="fas fa-truck"></i>
-
-            Suppliers
-
-            </a>
-
-         </li>
-
-            <!-- Purchases -->
-
-            <li class="nav-item">
-
-                <a
-                    class="nav-link"
-                    href="#">
-
-                    <i class="fas fa-cart-shopping"></i>
-
-                    Purchases
-
-                </a>
-
-            </li>
-
-            <!-- Customers -->
-
-            <li class="nav-item">
-
-                <a
-                    class="nav-link"
-                    href="#">
-
-                    <i class="fas fa-users"></i>
-
-                    Customers
-
-                </a>
-
-            </li>
-
-            <!-- Sales -->
-
-            <li class="nav-item">
-
-                <a
-                    class="nav-link"
-                    href="#">
-
-                    <i class="fas fa-cash-register"></i>
-
-                    Sales
-
-                </a>
-
-            </li>
-
-            <!-- Repairs -->
-
-            <li class="nav-item">
-
-                <a
-                    class="nav-link"
-                    href="#">
-
-                    <i class="fas fa-screwdriver-wrench"></i>
-
-                    Repairs
-
-                </a>
-
-            </li>
-
-            <!-- Trade In -->
-
-            <li class="nav-item">
-
-                <a
-                    class="nav-link"
-                    href="#">
-
-                    <i class="fas fa-right-left"></i>
-
-                    Trade-Ins
-
-                </a>
-
-            </li>
-
-            <!-- Expenses -->
-
-            <li class="nav-item">
-
-                <a
-                    class="nav-link"
-                    href="#">
-
-                    <i class="fas fa-money-bill-wave"></i>
-
-                    Expenses
-
-                </a>
-
-            </li>
-
-            <!-- Reports -->
-
-            <li class="nav-item">
-
-                <a
-                    class="nav-link"
-                    href="#">
-
-                    <i class="fas fa-chart-pie"></i>
-
-                    Reports
-
-                </a>
-
-            </li>
-
-            <!-- Settings -->
-
-            <li class="nav-item">
-
-                <a
-                    class="nav-link"
-                    href="#">
-
-                    <i class="fas fa-gear"></i>
-
-                    Settings
-
-                </a>
-
-            </li>
-
-            <hr>
-
-            <!-- Logout -->
-
-            <li class="nav-item">
-
-                <a
-                    class="nav-link text-danger"
-                    href="{{ url_for('auth.logout') if request.endpoint else '/logout' }}">
-
-                    <i class="fas fa-right-from-bracket"></i>
-
-                    Logout
-
-                </a>
-
-            </li>
-
-        </ul>
+    <li class="menu-title">Dashboard</li>
+
+    <li>
+        <a class="nav-link {% if request.endpoint=='dashboard.dashboard' %}active{% endif %}"
+           href="{{ url_for('dashboard.dashboard') }}">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+    <li class="menu-title">Inventory</li>
+
+    <li>
+        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('category') %}active{% endif %}"
+           href="{{ url_for('category.index') }}">
+            <i class="fas fa-layer-group"></i>
+            <span>Categories</span>
+        </a>
+    </li>
+
+    <li>
+        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('brand') %}active{% endif %}"
+           href="{{ url_for('brand.index') }}">
+            <i class="fas fa-tags"></i>
+            <span>Brands</span>
+        </a>
+    </li>
+
+    <li>
+        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('product') %}active{% endif %}"
+           href="{{ url_for('product.index') }}">
+            <i class="fas fa-box"></i>
+            <span>Products</span>
+        </a>
+    </li>
+
+    <li>
+        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('variant') %}active{% endif %}"
+           href="{{ url_for('variant.index') }}">
+            <i class="fas fa-boxes-stacked"></i>
+            <span>Variants</span>
+        </a>
+    </li>
+
+    <li>
+        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('imei') %}active{% endif %}"
+           href="{{ url_for('imei.index') }}">
+            <i class="fas fa-mobile-screen"></i>
+            <span>IMEI Management</span>
+        </a>
+    </li>
+
+    <li class="menu-title">Purchasing</li>
+
+    <li>
+        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('supplier') %}active{% endif %}"
+           href="{{ url_for('supplier.index') }}">
+            <i class="fas fa-truck"></i>
+            <span>Suppliers</span>
+        </a>
+    </li>
+
+    <li>
+        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('purchase') %}active{% endif %}"
+           href="{{ url_for('purchase.create') }}">
+            <i class="fas fa-cart-shopping"></i>
+            <span>Purchases</span>
+        </a>
+    </li>
+
+    <li class="menu-title">Sales</li>
+
+    <li>
+        <a class="nav-link {% if request.endpoint and request.endpoint.startswith('sale') %}active{% endif %}"
+       href="{{ url_for('sale.index') }}">
+           <i class="fas fa-cash-register"></i>
+        <span>Sales</span>
+        </a>
+    </li>
+
+    <li class="menu-title">System</li>
+
+    <li>
+        <a class="nav-link text-danger"
+           href="{{ url_for('auth.logout') }}">
+            <i class="fas fa-right-from-bracket"></i>
+            <span>Logout</span>
+        </a>
+    </li>
+
+</ul>
 
     </aside>
 
-<!-- ========================= -->
-<!-- MAIN CONTENT STARTS HERE -->
-<!-- ========================= -->
-
+    <!-- Main -->
     <main class="main-content">
-    
-<!-- ========================= -->
-<!-- TOP NAVBAR                -->
-<!-- ========================= -->
 
-<header class="topbar shadow-sm">
+        <header class="topbar shadow-sm">
 
-    <div class="d-flex align-items-center">
-
-        <h4 class="mb-0">
-
-            {% block page_title %}
-
-            Dashboard
-
-            {% endblock %}
-
-        </h4>
-
-    </div>
-
-    <div class="d-flex align-items-center">
-
-        <div class="me-3 text-end">
-
-            <small class="text-muted d-block">
-                Logged in as
-            </small>
-
-            <strong>
-
-                {{ session.username }}
-
-            </strong>
-
-        </div>
-
-        <div>
-
-            <span class="badge bg-success p-2">
-
-                <i class="fas fa-user"></i>
-
-                Online
-
-            </span>
->>>>>>> main
-
-        </div>
-
-    </div>
-
-<<<<<<< HEAD
-    <div class="content">
-
-        {% block content %}
-        {% endblock %}
-
-    </div>
-
-</div>
-
-</body>
-
-</html>
-=======
-</header>
-
-
-<!-- ========================= -->
-<!-- FLASH MESSAGES            -->
-<!-- ========================= -->
-
-<div class="container-fluid mt-3">
-
-{% with messages = get_flashed_messages(with_categories=True) %}
-
-    {% if messages %}
-
-        {% for category, message in messages %}
-
-            <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm">
-
-                {% if category == "success" %}
-
-                    <i class="fas fa-circle-check"></i>
-
-                {% elif category == "danger" %}
-
-                    <i class="fas fa-circle-xmark"></i>
-
-                {% elif category == "warning" %}
-
-                    <i class="fas fa-triangle-exclamation"></i>
-
-                {% else %}
-
-                    <i class="fas fa-circle-info"></i>
-
-                {% endif %}
-
-                {{ message }}
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert">
-                </button>
-
+            <div>
+                <h4 class="mb-0">
+                    {% block page_title %}
+                    Dashboard
+                    {% endblock %}
+                </h4>
             </div>
 
-        {% endfor %}
+            <div class="text-end">
 
-    {% endif %}
-
-{% endwith %}
-
-</div>
-
-
-<!-- ========================= -->
-<!-- PAGE CONTENT              -->
-<!-- ========================= -->
-
-<section class="content-area container-fluid py-3">
-
-    {% block content %}
-
-    {% endblock %}
-
-</section>
-
-
-<!-- ========================= -->
-<!-- FOOTER                    -->
-<!-- ========================= -->
-
-<footer class="footer mt-auto py-3 border-top">
-
-    <div class="container-fluid">
-
-        <div class="row">
-
-            <div class="col-md-6">
+                <small class="text-muted">
+                    Logged in as
+                </small><br>
 
                 <strong>
-
-                    MINIFY GADGETS ERP V2
-
+                    {{ session.username }}
                 </strong>
 
-                <br>
-
-                <small class="text-muted">
-
-                    Inventory & Sales Management System
-
-                </small>
-
             </div>
 
-            <div class="col-md-6 text-end">
+        </header>
 
-                <small class="text-muted">
+        <div class="container-fluid mt-3">
 
-                    Version 2.0
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
 
-                </small>
+                        <div class="alert alert-{{ category }} alert-dismissible fade show">
 
-                <br>
+                            {{ message }}
 
-                <small class="text-muted">
+                            <button class="btn-close"
+                                    data-bs-dismiss="alert"></button>
 
-                    © {{ moment().year if moment is defined else "2026" }}
+                        </div>
 
-                    MINIFY GADGETS
-
-                </small>
-
-            </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
         </div>
 
-    </div>
+        <section class="container-fluid py-3">
 
-</footer>
-<!-- ========================= -->
-<!-- Bootstrap JavaScript -->
-<!-- ========================= -->
+            {% block content %}
+            {% endblock %}
+
+        </section>
+
+        <footer class="border-top py-3 text-center">
+
+            <strong>MINIFY GADGETS ERP V2</strong><br>
+
+            <small class="text-muted">
+                Inventory & Sales Management System
+            </small>
+
+        </footer>
+
+    </main>
+
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Custom JavaScript -->
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
-<script>
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    /*
-    ==========================================
-    Auto-hide Bootstrap Alerts
-    ==========================================
-    */
-
-    const alerts = document.querySelectorAll(".alert");
-
-    alerts.forEach(function(alert){
-
-        setTimeout(function(){
-
-            const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
-
-            bsAlert.close();
-
-        },5000);
-
-    });
-
-
-    /*
-    ==========================================
-    Sidebar Active Link Highlight
-    ==========================================
-    */
-
-    const currentURL = window.location.pathname;
-
-    document.querySelectorAll(".sidebar .nav-link").forEach(function(link){
-
-        if(link.getAttribute("href") === currentURL){
-
-            link.classList.add("active");
-
-        }
-
-    });
-
-
-    /*
-    ==========================================
-    Enable Bootstrap Tooltips
-    ==========================================
-    */
-
-    const tooltipTriggerList = [].slice.call(
-
-        document.querySelectorAll('[data-bs-toggle="tooltip"]')
-
-    );
-
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-
-    });
-
-
-    /*
-    ==========================================
-    Enable Bootstrap Popovers
-    ==========================================
-    */
-
-    const popoverTriggerList = [].slice.call(
-
-        document.querySelectorAll('[data-bs-toggle="popover"]')
-
-    );
-
-    popoverTriggerList.map(function (popoverTriggerEl) {
-
-        return new bootstrap.Popover(popoverTriggerEl);
-
-    });
-
-});
-
-</script>
-
 </body>
-
 </html>
-
-</main>
-
-</div>    
->>>>>>> main
