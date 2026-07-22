@@ -137,14 +137,13 @@
 
                     <tr>
 
-                        <td>{{ sale.date }}</td>
+                        <td>{{ sale.sale_date.strftime("%d %b %Y") }}</td>
 
-                        <td>{{ sale.customer }}</td>
+                        <td>{{ sale.customer_name }}</td>
 
                         <td>
-                            UGX {{ "{:,.0f}".format(sale.total) }}
+                            UGX {{ "{:,.0f}".format(sale.total_amount or 0) }}
                         </td>
-
                     </tr>
 
                 {% endfor %}

@@ -1,118 +1,383 @@
 {% extends "layout.html" %}
 
 {% block title %}New Sale{% endblock %}
-{% block page_title %}New Sale{% endblock %}
 
 {% block content %}
 
-<div class="table-card">
+<div class="container-fluid">
 
-    <h3 class="mb-4">Create New Sale</h3>
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <form method="POST">
+        <div>
+            <h2 class="fw-bold text-success">
+                <i class="fas fa-cash-register"></i>
+                Sales POS
+            </h2>
+
+            <small class="text-muted">
+                Create a new customer sale
+            </small>
+        </div>
+
+        <a href="{{ url_for('sale.index') }}"
+           class="btn btn-outline-secondary">
+
+            <i class="fas fa-arrow-left"></i>
+
+            Back
+
+        </a>
+
+    </div>
+
+    <form method="POST" id="saleForm">
 
         <div class="row">
 
-            <div class="col-md-6 mb-3">
+            <!-- LEFT SIDE -->
+            <div class="col-lg-8">
 
-                <label>Customer Name</label>
+                <!-- Customer Card -->
+                <div class="card shadow-sm border-0 mb-4">
 
-                <input
-                    type="text"
-                    name="customer_name"
-                    class="form-control"
-                    required>
+                    <div class="card-header bg-success text-white">
+
+                        <strong>
+
+                            <i class="fas fa-user"></i>
+
+                            Customer Information
+
+                        </strong>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+
+                                    Customer Name
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="customer_name"
+                                    class="form-control"
+                                    placeholder="Walk-in Customer"
+                                    required>
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+
+                                    Phone Number
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="customer_phone"
+                                    class="form-control"
+                                    placeholder="07XXXXXXXX">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Add Product -->
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-header bg-success text-white">
+
+                        <strong>
+
+                            <i class="fas fa-cart-plus"></i>
+
+                            Add Product
+
+                        </strong>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="row">
+
+                            <!-- Brand -->
+                            <div class="col-md-3 mb-3">
+
+                                <label class="form-label">
+
+                                    Brand
+
+                                </label>
+
+                                <select
+                                    id="brand"
+                                    class="form-select">
+
+                                    <option value="">
+
+                                        Select Brand
+
+                                    </option>
+
+                                    {% for brand in brands %}
+
+                                    <option value="{{ brand.id }}">
+
+                                        {{ brand.name }}
+
+                                    </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+                            <!-- Product -->
+                            <div class="col-md-3 mb-3">
+
+                                <label class="form-label">
+
+                                    Product
+
+                                </label>
+
+                                <select
+                                    id="product"
+                                    class="form-select">
+
+                                    <option value="">
+
+                                        Select Product
+
+                                    </option>
+
+                                    {% for product in products %}
+
+                                    <option
+                                        value="{{ product.id }}">
+
+                                        {{ product.name }}
+
+                                    </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+                            <!-- Variant -->
+                            <div class="col-md-3 mb-3">
+
+                                <label class="form-label">
+
+                                    Variant
+
+                                </label>
+
+                                <select
+                                    id="variant"
+                                    name="variant_id"
+                                    class="form-select"
+                                    required>
+
+                                    <option value="">
+
+                                        Select Variant
+
+                                    </option>
+
+                                    {% for variant in variants %}
+
+                                    <option
+                                        value="{{ variant.id }}">
+
+                                        {{ variant.sku }}
+
+                                    </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+                            <!-- IMEI -->
+                            <div class="col-md-3 mb-3">
+
+                                <label class="form-label">
+
+                                    IMEI
+
+                                </label>
+
+                                <select
+                                    id="imei"
+                                    name="imei_id"
+                                    class="form-select">
+
+                                    <option value="">
+
+                                        Select IMEI
+
+                                    </option>
+
+                                    {% for imei in imeis %}
+
+                                    <option
+                                        value="{{ imei.id }}">
+
+                                        {{ imei.imei_number }}
+
+                                    </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-2">
+
+                                <label class="form-label">
+
+                                    Quantity
+
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="quantity"
+                                    class="form-control"
+                                    value="1"
+                                    min="1">
+
+                            </div>
+
+                            <div class="col-md-10 d-flex align-items-end">
+
+                                <button
+                                    type="button"
+                                    id="addItem"
+                                    class="btn btn-success">
+
+                                    <i class="fas fa-plus-circle"></i>
+
+                                    Add To Cart
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
-            <div class="col-md-6 mb-3">
+            <!-- RIGHT SIDE -->
+            <div class="col-lg-4">
 
-                <label>Customer Phone</label>
+                <div class="card shadow-sm border-0 sticky-top">
 
-                <input
-                    type="text"
-                    name="customer_phone"
-                    class="form-control">
+                    <div class="card-header bg-dark text-white">
+
+                        <strong>
+
+                            Sale Summary
+
+                        </strong>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <p>
+
+                            <strong>Items</strong>
+
+                            <span class="float-end"
+                                  id="itemCount">
+
+                                0
+
+                            </span>
+
+                        </p>
+
+                        <hr>
+
+                        <p>
+
+                            <strong>Total</strong>
+
+                            <span
+                                class="float-end text-success fw-bold"
+                                id="grandTotal">
+
+                                UGX 0
+
+                            </span>
+
+                        </p>
+
+                        <hr>
+
+                        <label class="form-label">
+
+                            Payment Method
+
+                        </label>
+
+                        <select
+                            name="payment_method"
+                            class="form-select mb-3">
+
+                            <option>Cash</option>
+                            <option>Mobile Money</option>
+                            <option>Bank Transfer</option>
+                            <option>Card</option>
+
+                        </select>
+
+                        <button
+                            class="btn btn-success w-100">
+
+                            <i class="fas fa-check-circle"></i>
+
+                            Complete Sale
+
+                        </button>
+
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
-
-        <div class="row">
-
-            <div class="col-md-4 mb-3">
-
-                <label>Product Variant</label>
-
-                <select name="variant_id" class="form-select" required>
-
-                    <option value="">Select Variant</option>
-
-                    {% for variant in variants %}
-                        <option value="{{ variant.id }}">
-                            {{ variant.sku }}
-                        </option>
-                    {% endfor %}
-
-                </select>
-
-            </div>
-
-            <div class="col-md-4 mb-3">
-
-                <label>IMEI</label>
-
-                <select name="imei_id" class="form-select">
-
-                    <option value="">Select IMEI</option>
-
-                    {% for imei in imeis %}
-                        <option value="{{ imei.id }}">
-                            {{ imei.imei }}
-                        </option>
-                    {% endfor %}
-
-                </select>
-
-            </div>
-
-            <div class="col-md-4 mb-3">
-
-                <label>Quantity</label>
-
-                <input
-                    type="number"
-                    name="quantity"
-                    value="1"
-                    min="1"
-                    class="form-control"
-                    required>
-
-            </div>
-
-        </div>
-
-        <div class="mb-3">
-
-            <label>Payment Method</label>
-
-            <select
-                name="payment_method"
-                class="form-select">
-
-                <option>Cash</option>
-                <option>Mobile Money</option>
-                <option>Bank</option>
-                <option>Card</option>
-
-            </select>
-
-        </div>
-
-        <button class="btn btn-success">
-            <i class="fas fa-save"></i>
-            Complete Sale
-        </button>
 
     </form>
 

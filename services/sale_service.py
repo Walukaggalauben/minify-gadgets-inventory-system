@@ -1,6 +1,9 @@
+from datetime import datetime
 from decimal import Decimal
 
 from db import db
+
+
 
 from models.sale import Sale
 from models.sale_item import SaleItem
@@ -11,8 +14,17 @@ from models.imei import IMEI
 class SaleService:
 
     @staticmethod
+    def generate_invoice_number():
+        """
+        Generates a unique invoice number.
+
+        Example:
+        INV-20260722-153045
+        """
+        return datetime.now().strftime("INV-%Y%m%d-%H%M%S")
+
+    @staticmethod
     def create_sale(
-        invoice_number,
         customer_name,
         customer_phone,
         payment_method,
@@ -20,96 +32,124 @@ class SaleService:
         items
     ):
 
-        sale = Sale(
-            invoice_number=invoice_number,
-            customer_name=customer_name,
-            customer_phone=customer_phone,
-            payment_method=payment_method,
-            created_by=created_by
-        )
+        try:
 
-        db.session.add(sale)
+            sale = Sale(
 
-        total_amount = Decimal("0.00")
-        total_profit = Decimal("0.00")
+                invoice_number=SaleService.generate_invoice_number(),
 
-        for item in items:
+                customer_name=customer_name,
 
-            variant = ProductVariant.query.get(
-                item["variant_id"]
+                customer_phone=customer_phone,
+
+                payment_method=payment_method,
+
+                created_by=created_by
+
             )
 
-            if not variant:
-                raise Exception("Product Variant not found.")
+            db.session.add(sale)
 
-            quantity = int(item["quantity"])
+            total_amount = Decimal("0.00")
+            total_profit = Decimal("0.00")
 
-            if quantity <= 0:
-                raise Exception("Invalid quantity.")
+            for item in items:
 
-            if variant.quantity < quantity:
-                raise Exception(
-                    f"Not enough stock for {variant.sku}"
+                variant = ProductVariant.query.get(
+                    int(item["variant_id"])
                 )
 
-            # Deduct stock
-            variant.quantity -= quantity
+                if not variant:
+                    raise Exception(
+                        "Selected product variant does not exist."
+                    )
 
-            line_total = (
-                Decimal(str(variant.selling_price))
-                * quantity
-            )
+                quantity = int(item["quantity"])
 
-            line_profit = (
-                (
+                if quantity <= 0:
+                    raise Exception(
+                        "Quantity must be greater than zero."
+                    )
+
+                if variant.quantity < quantity:
+                    raise Exception(
+                        f"Insufficient stock for {variant.sku}."
+                    )
+
+                line_total = (
                     Decimal(str(variant.selling_price))
-                    - Decimal(str(variant.buying_price))
-                )
-                * quantity
-            )
-
-            sale_item = SaleItem(
-
-                sale=sale,
-
-                product_variant_id=variant.id,
-
-                quantity=quantity,
-
-                buying_price=variant.buying_price,
-
-                selling_price=variant.selling_price,
-
-                total=line_total,
-
-                profit=line_profit
-
-            )
-
-            # IMEI (optional)
-
-            if item.get("imei_id"):
-
-                imei = IMEI.query.get(
-                    item["imei_id"]
+                    * quantity
                 )
 
-                if imei:
+                line_profit = (
+                    (
+                        Decimal(str(variant.selling_price))
+                        - Decimal(str(variant.buying_price))
+                    )
+                    * quantity
+                )
+
+                sale_item = SaleItem(
+
+                    product_variant_id=variant.id,
+
+                    quantity=quantity,
+
+                    buying_price=variant.buying_price,
+
+                    selling_price=variant.selling_price,
+
+                    total=line_total,
+
+                    profit=line_profit
+
+                )
+
+                db.session.add(sale_item)
+
+                sale_item.sale = sale
+
+                imei_id = item.get("imei_id")
+
+                if imei_id:
+
+                    imei = IMEI.query.get(int(imei_id))
+
+                    if not imei:
+                        raise Exception(
+                            "Selected IMEI was not found."
+                        )
+
+                    if imei.status == "Sold":
+                        raise Exception(
+                            "This IMEI has already been sold."
+                        )
+
+                    if imei.product_variant_id != variant.id:
+                        raise Exception(
+                            "Selected IMEI does not belong to the selected product."
+                        )
 
                     imei.status = "Sold"
 
                     sale_item.imei = imei
 
-            db.session.add(sale_item)
+                variant.quantity -= quantity
 
-            total_amount += line_total
+                
 
-            total_profit += line_profit
+                total_amount += line_total
+                total_profit += line_profit
 
-        sale.total_amount = total_amount
+            sale.total_amount = total_amount
+            sale.profit = total_profit
 
-        sale.profit = total_profit
+            db.session.commit()
 
-        db.session.commit()
+            return sale
 
-        return sale
+        except Exception:
+
+            db.session.rollback()
+
+            raise
