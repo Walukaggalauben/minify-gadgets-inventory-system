@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_migrate import Migrate
+import os
 
 from config import Config
 from db import db
@@ -10,6 +11,12 @@ def create_app():
     app = Flask(__name__)
 
     app.config.from_object(Config)
+    
+    # Upload configuration
+    app.config["UPLOAD_FOLDER"] = os.path.join(app.static_folder, "uploads")
+    app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024  # 2 MB
+
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
     db.init_app(app)
 
@@ -26,6 +33,13 @@ def create_app():
     from models.sale import Sale
     from models.sale_item import SaleItem
     from models.company import Company
+    
+     # Make company available in every template
+    @app.context_processor
+    def inject_company():
+        return {
+            "company": Company.query.first()
+        }
 
     # Register Blueprints
     from routes.auth import auth_bp

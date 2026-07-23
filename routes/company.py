@@ -1,7 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
+from werkzeug.utils import secure_filename
 
 from db import db
 from models.company import Company
+
+import os
+import uuid
 
 company_bp = Blueprint(
     "company",
@@ -9,12 +13,21 @@ company_bp = Blueprint(
     url_prefix="/company"
 )
 
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
+
+
+def allowed_file(filename):
+    return (
+        "." in filename and
+        filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+    )
+
 
 @company_bp.route("/settings", methods=["GET", "POST"])
 def settings():
+
     company = Company.query.first()
 
-    # Create default record if none exists
     if not company:
         company = Company(
             business_name="MINIFY GADGETS",
@@ -22,10 +35,12 @@ def settings():
             address="",
             phone=""
         )
+
         db.session.add(company)
         db.session.commit()
 
     if request.method == "POST":
+
         company.business_name = request.form.get("business_name")
         company.tagline = request.form.get("tagline")
         company.address = request.form.get("address")
@@ -36,9 +51,50 @@ def settings():
         company.currency = request.form.get("currency")
         company.receipt_footer = request.form.get("receipt_footer")
 
+        # -----------------------------
+        # Upload Logo
+        # -----------------------------
+        logo = request.files.get("logo")
+
+        if logo and logo.filename != "":
+
+            if not allowed_file(logo.filename):
+                flash(
+                    "Only PNG, JPG and JPEG images are allowed.",
+                    "danger"
+                )
+                return redirect(url_for("company.settings"))
+
+            # Delete old logo
+            if company.logo:
+
+                old_logo = os.path.join(
+                    current_app.config["UPLOAD_FOLDER"],
+                    company.logo
+                )
+
+                if os.path.exists(old_logo):
+                    os.remove(old_logo)
+
+            ext = logo.filename.rsplit(".", 1)[1].lower()
+
+            filename = f"{uuid.uuid4().hex}.{ext}"
+
+            logo.save(
+                os.path.join(
+                    current_app.config["UPLOAD_FOLDER"],
+                    filename
+                )
+            )
+
+            company.logo = filename
+
         db.session.commit()
 
-        flash("Company settings updated successfully.", "success")
+        flash(
+            "Company settings updated successfully.",
+            "success"
+        )
 
         return redirect(url_for("company.settings"))
 
