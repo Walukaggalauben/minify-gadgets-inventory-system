@@ -1,4 +1,4 @@
-
+import json
 
 from flask import Blueprint
 from flask import render_template
@@ -14,6 +14,7 @@ from models.imei import IMEI
 from services.sale_service import SaleService
 from models.brand import Brand
 from models.product import Product
+from models.sale import Sale
 
 
 sale_bp = Blueprint(
@@ -26,17 +27,37 @@ sale_bp = Blueprint(
 @sale_bp.route("/")
 def index():
 
+    sales = Sale.query.order_by(
+        Sale.sale_date.desc()
+    ).all()
+
+    print("=" * 50)
+    print("TOTAL SALES FOUND:", len(sales))
+
+    for sale in sales:
+        print(
+            sale.id,
+            sale.invoice_number,
+            sale.customer_name,
+            sale.total_amount
+        )
+
+    print("=" * 50)
+
     return render_template(
-        "sales/index.html"
+        "sales/index.html",
+        sales=sales
     )
-
-
+    
+    
 @sale_bp.route("/create", methods=["GET", "POST"])
 def create():
 
     if request.method == "POST":
 
         try:
+
+            items = json.loads(request.form["cart_items"])
 
             SaleService.create_sale(
 
@@ -48,11 +69,8 @@ def create():
 
                 created_by=session["user_id"],
 
-                items=[{
-                    "variant_id": request.form["variant_id"],
-                    "imei_id": request.form.get("imei_id"),
-                    "quantity": request.form["quantity"]
-                }]
+                items=items
+
             )
 
             flash(
@@ -99,8 +117,22 @@ def create():
 
         imeis=imeis
 
-)
-    
+    )
+
+# ======================================================
+# VIEW SALE
+# ======================================================
+
+@sale_bp.route("/view/<int:sale_id>")
+def view_sale(sale_id):
+
+    sale = Sale.query.get_or_404(sale_id)
+
+    return render_template(
+        "sales/view.html",
+        sale=sale
+    )
+
 # ======================================================
 # API ROUTES
 # ======================================================
@@ -115,10 +147,10 @@ def get_products(brand_id):
 
     return jsonify([
         {
-            "id": imei.id,
-            "imei": imei.imei
+            "id": product.id,
+            "name": product.name
         }
-        for imei in imeis
+        for product in products
     ])
 
 
@@ -158,4 +190,4 @@ def get_imeis(variant_id):
             "imei": imei.imei
         }
         for imei in imeis
-    ])    
+    ])

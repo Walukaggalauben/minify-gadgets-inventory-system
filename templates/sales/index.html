@@ -1,29 +1,142 @@
-{% extends "layout.html" %}
-
-{% block title %}Sales{% endblock %}
-{% block page_title %}Sales{% endblock %}
-
-{% block content %}
+{% extends "layout.html" %} {% block title %}Sales{% endblock %} {% block
+page_title %}Sales{% endblock %} {% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h3 class="mb-0">Sales History</h3>
+    <small class="text-muted"> View and manage completed sales. </small>
+  </div>
 
-    <h3>Sales</h3>
-
-    <a href="{{ url_for('sale.create') }}" class="btn btn-success">
-        <i class="fas fa-plus"></i>
-        New Sale
-    </a>
-
+  <a href="{{ url_for('sale.create') }}" class="btn btn-success">
+    <i class="fas fa-plus-circle"></i>
+    New Sale
+  </a>
 </div>
 
-<div class="table-card">
+<div class="card shadow-sm border-0">
+  <div class="card-header bg-white">
+    <div class="row">
+      <div class="col-md-4">
+        <input
+          type="text"
+          id="searchInput"
+          class="form-control"
+          placeholder="Search Invoice or Customer..."
+        />
+      </div>
+    </div>
+  </div>
 
-    <h4>Sales History</h4>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0" id="salesTable">
+        <thead class="table-light">
+          <tr>
+            <th>Invoice</th>
 
-    <p class="text-muted">
-        Sales history will appear here after you start recording sales.
-    </p>
+            <th>Customer</th>
 
+            <th>Phone</th>
+
+            <th>Date</th>
+
+            <th>Payment</th>
+
+            <th class="text-end">Total</th>
+
+            <th class="text-end">Profit</th>
+
+            <th>Status</th>
+
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% if sales %} {% for sale in sales %}
+
+          <tr>
+            <td>
+              <strong>{{ sale.invoice_number }}</strong>
+            </td>
+
+            <td>{{ sale.customer_name }}</td>
+
+            <td>{{ sale.customer_phone }}</td>
+
+            <td>{{ sale.sale_date.strftime("%d %b %Y %I:%M %p") }}</td>
+
+            <td>{{ sale.payment_method }}</td>
+
+            <td class="text-end">
+              UGX {{ "{:,.0f}".format(sale.total_amount) }}
+            </td>
+
+            <td class="text-end text-success fw-bold">
+              UGX {{ "{:,.0f}".format(sale.profit) }}
+            </td>
+
+            <td>
+              {% if sale.status == "Completed" %}
+
+              <span class="badge bg-success"> {{ sale.status }} </span>
+
+              {% else %}
+
+              <span class="badge bg-secondary"> {{ sale.status }} </span>
+
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <a
+                href="{{ url_for('sale.view_sale', sale_id=sale.id) }}"
+                class="btn btn-sm btn-primary"
+                title="View Sale"
+              >
+                <i class="fas fa-eye"></i>
+              </a>
+            </td>
+          </tr>
+
+          {% endfor %} {% else %}
+
+          <tr>
+            <td colspan="9" class="text-center py-5">
+              <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+
+              <h5>No Sales Found</h5>
+
+              <p class="text-muted">
+                Record your first sale to see it appear here.
+              </p>
+
+              <a href="{{ url_for('sale.create') }}" class="btn btn-success">
+                <i class="fas fa-plus-circle"></i>
+
+                Create First Sale
+              </a>
+            </td>
+          </tr>
+
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
+
+<script>
+  document.getElementById("searchInput").addEventListener("keyup", function () {
+    const filter = this.value.toLowerCase();
+
+    const rows = document.querySelectorAll("#salesTable tbody tr");
+
+    rows.forEach((row) => {
+      const text = row.innerText.toLowerCase();
+
+      row.style.display = text.includes(filter) ? "" : "none";
+    });
+  });
+</script>
 
 {% endblock %}

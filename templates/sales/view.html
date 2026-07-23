@@ -1,0 +1,196 @@
+{% extends "layout.html" %}
+
+{% block title %}Sale Details{% endblock %}
+{% block page_title %}Sale Details{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h3 class="fw-bold">Sales Invoice</h3>
+            <p class="text-muted mb-0">{{ sale.invoice_number }}</p>
+        </div>
+
+        <div>
+            <a href="{{ url_for('sale.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Back
+            </a>
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="row mb-4">
+
+                <div class="col-md-6">
+
+                    <h5>Customer Information</h5>
+
+                    <p class="mb-1">
+                        <strong>{{ sale.customer_name }}</strong>
+                    </p>
+
+                    <p class="mb-1">
+                        {{ sale.customer_phone }}
+                    </p>
+
+                </div>
+
+                <div class="col-md-6 text-end">
+
+                    <h5>Invoice Information</h5>
+
+                    <p class="mb-1">
+                        Invoice:
+                        <strong>{{ sale.invoice_number }}</strong>
+                    </p>
+
+                    <p class="mb-1">
+                        {{ sale.sale_date.strftime("%d %B %Y %I:%M %p") }}
+                    </p>
+
+                    <p class="mb-0">
+                        Payment:
+                        {{ sale.payment_method }}
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered align-middle">
+
+                    <thead class="table-success">
+
+                        <tr>
+
+                            <th>Product</th>
+                            <th>IMEI</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-end">Price</th>
+                            <th class="text-end">Total</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for item in sale.items %}
+
+                        <tr>
+
+                            <td>
+                                {{ item.product_variant.product.brand.name }}
+                                {{ item.product_variant.product.name }}
+
+                                <br>
+
+                                <small class="text-muted">
+
+                                    {{ item.product_variant.storage }}
+                                    /
+                                    {{ item.product_variant.ram }}
+                                    /
+                                    {{ item.product_variant.colour }}
+
+                                </small>
+
+                            </td>
+
+                            <td>
+
+                                {% if item.imei %}
+
+                                    {{ item.imei.imei }}
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </td>
+
+                            <td class="text-center">
+
+                                {{ item.quantity }}
+
+                            </td>
+
+                            <td class="text-end">
+
+                                UGX {{ "{:,.0f}".format(item.selling_price) }}
+
+                            </td>
+
+                            <td class="text-end">
+
+                                UGX {{ "{:,.0f}".format(item.total) }}
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="row mt-4">
+
+                <div class="col-md-8"></div>
+
+                <div class="col-md-4">
+
+                    <table class="table">
+
+                        <tr>
+
+                            <th>Total</th>
+
+                            <td class="text-end">
+
+                                UGX {{ "{:,.0f}".format(sale.total_amount) }}
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <th>Profit</th>
+
+                            <td class="text-end text-success">
+
+                                UGX {{ "{:,.0f}".format(sale.profit) }}
+
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
