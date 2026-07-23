@@ -15,6 +15,7 @@ from services.sale_service import SaleService
 from models.brand import Brand
 from models.product import Product
 from models.sale import Sale
+from models.company import Company
 
 
 sale_bp = Blueprint(
@@ -132,7 +133,31 @@ def view_sale(sale_id):
         "sales/view.html",
         sale=sale
     )
+    
+    
+# ======================================================
+# PRINT SALE
+# ======================================================
 
+@sale_bp.route("/print/<int:sale_id>")
+def print_sale(sale_id):
+    sale = Sale.query.get_or_404(sale_id)
+
+    company = Company.query.first()
+
+    if not company:
+        company = Company(
+            business_name="MINIFY GADGETS",
+            tagline="Phones & Accessories",
+            address="",
+            phone=""
+        )
+
+    return render_template(
+        "sales/print.html",
+        sale=sale,
+        company=company
+    )
 # ======================================================
 # API ROUTES
 # ======================================================

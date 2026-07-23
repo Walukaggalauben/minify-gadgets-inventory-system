@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+
+{% block title %}Company Settings{% endblock %}
+
+{% block page_title %}Company Settings{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">
+                <i class="fas fa-building"></i>
+                Company Settings
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Business Name</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="business_name"
+                            value="{{ company.business_name }}"
+                            required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Tagline</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="tagline"
+                            value="{{ company.tagline }}">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Phone</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="phone"
+                            value="{{ company.phone }}">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Alternative Phone</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="alternate_phone"
+                            value="{{ company.alternate_phone }}">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email</label>
+                        <input
+                            type="email"
+                            class="form-control"
+                            name="email"
+                            value="{{ company.email }}">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Website</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="website"
+                            value="{{ company.website }}">
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label class="form-label">Business Address</label>
+                        <textarea
+                            class="form-control"
+                            rows="3"
+                            name="address">{{ company.address }}</textarea>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Currency</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="currency"
+                            value="{{ company.currency }}">
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label class="form-label">Receipt Footer</label>
+                        <textarea
+                            class="form-control"
+                            rows="4"
+                            name="receipt_footer">{{ company.receipt_footer }}</textarea>
+                    </div>
+
+                </div>
+
+                <button class="btn btn-success">
+                    <i class="fas fa-save"></i>
+                    Save Settings
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
