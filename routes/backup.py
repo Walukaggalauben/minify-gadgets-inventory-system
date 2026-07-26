@@ -1,0 +1,104 @@
+import os
+
+
+from flask import (
+    Blueprint,
+    render_template,
+    flash,
+    redirect,
+    url_for,
+    send_from_directory,
+    current_app,
+)
+
+from services.backup_service import BackupService
+
+backup_bp = Blueprint(
+    "backup",
+    __name__,
+    url_prefix="/backup",
+)
+
+
+@backup_bp.route("/")
+def index():
+
+    backup_dir = os.path.join(current_app.root_path, "backups")
+
+    os.makedirs(backup_dir, exist_ok=True)
+
+    backups = []
+
+    for file in os.listdir(backup_dir):
+
+        if file.endswith(".sql"):
+
+            filepath = os.path.join(backup_dir, file)
+
+            backups.append(
+                {
+                    "name": file,
+                    "size": round(os.path.getsize(filepath) / 1024, 2),
+                    "date": os.path.getmtime(filepath),
+                }
+            )
+
+    backups.sort(key=lambda x: x["date"], reverse=True)
+
+    return render_template("backup/index.html", backups=backups)
+
+
+@backup_bp.route("/create")
+def create_backup():
+
+    success, filename = BackupService.backup_database()
+
+    if success:
+        flash(
+            f"Database backup created successfully: {filename}",
+            "success",
+        )
+    else:
+        flash(
+            "Database backup failed.",
+            "danger",
+        )
+
+    return redirect(url_for("backup.index"))
+
+
+@backup_bp.route("/download/<filename>")
+def download_backup(filename):
+
+    backup_dir = os.path.join(current_app.root_path, "backups")
+
+    return send_from_directory(backup_dir, filename, as_attachment=True)
+
+@backup_bp.route("/delete/<filename>")
+def delete_backup(filename):
+
+    backup_dir = os.path.join(
+        current_app.root_path,
+        "backups"
+    )
+
+    filepath = os.path.join(
+        backup_dir,
+        filename
+    )
+
+    if os.path.exists(filepath):
+        os.remove(filepath)
+        flash(
+            "Backup deleted successfully.",
+            "success"
+        )
+    else:
+        flash(
+            "Backup file not found.",
+            "danger"
+        )
+
+    return redirect(
+        url_for("backup.index")
+    )

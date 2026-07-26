@@ -156,6 +156,14 @@
             <span>Reports</span>
           </a>
 
+          <a
+            href="{{ url_for('backup.index') }}"
+            class="nav-link {% if request.endpoint and request.endpoint.startswith('backup') %}active{% endif %}"
+          >
+            <i class="fas fa-database"></i>
+            <span>Backup & Restore</span>
+          </a>
+
           <!-- System -->
 
           <div class="menu-title">SYSTEM</div>

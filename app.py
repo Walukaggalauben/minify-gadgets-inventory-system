@@ -56,6 +56,7 @@ def create_app():
     from routes.sale import sale_bp
     from routes.company import company_bp
     from routes.report import report_bp
+    from routes.backup import backup_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
@@ -70,6 +71,7 @@ def create_app():
     app.register_blueprint(sale_bp)
     app.register_blueprint(company_bp)
     app.register_blueprint(report_bp)
+    app.register_blueprint(backup_bp)
     
 
     Migrate(app, db)
