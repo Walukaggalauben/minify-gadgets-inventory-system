@@ -529,76 +529,54 @@ const chart = document.getElementById("salesChart");
 if (chart) {
 
     new Chart(chart, {
-
-        type: "line",
-
-        data: {
-
-            labels: {{ stats.chart_labels|tojson }},
-
-            datasets: [{
-
+    type: "line",
+    data: {
+        labels: {{ stats.chart_labels|tojson }},
+        datasets: [
+            {
                 label: "Sales",
-
-                data: {{ stats.chart_values|tojson }},
-
+                data: {{ stats.sales_values|tojson }},
                 borderColor: "#16a34a",
-
                 backgroundColor: "rgba(22,163,74,.12)",
-
                 fill: true,
-
-                tension: .4,
-
+                tension: 0.4,
                 borderWidth: 3,
-
                 pointRadius: 4,
-
                 pointHoverRadius: 6
-
-            }]
-
-        },
-
-        options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            plugins: {
-
-                legend: {
-
-                    display: false
-
-                }
-
             },
-
-            scales: {
-
-                x: {
-
-                    grid: {
-
-                        display: false
-
-                    }
-
-                },
-
-                y: {
-
-                    beginAtZero: true
-
-                }
-
+            {
+                label: "Profit",
+                data: {{ stats.profit_values|tojson }},
+                borderColor: "#2563eb",
+                backgroundColor: "rgba(37,99,235,.10)",
+                fill: false,
+                tension: 0.4,
+                borderWidth: 3,
+                pointRadius: 4,
+                pointHoverRadius: 6
             }
-
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: true
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    display: false
+                }
+            },
+            y: {
+                beginAtZero: true
+            }
         }
-
-    });
+    }
+});
 
 }
 
