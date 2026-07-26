@@ -1,0 +1,363 @@
+{% extends "layout.html" %}
+
+{% block title %}Reports Dashboard{% endblock %}
+
+{% block page_title %}
+Reports Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- ===================== KPI CARDS ===================== -->
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-xl-3 col-md-6">
+            <div class="erp-card shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Total Sales</small>
+                        <h3 class="fw-bold mt-2">
+                            {{ dashboard.total_sales }}
+                        </h3>
+                    </div>
+
+                    <div class="bg-success text-white rounded-circle p-3">
+                        <i class="fas fa-cash-register"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="erp-card shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Revenue</small>
+
+                        <h3 class="fw-bold mt-2">
+                            UGX {{ "{:,.0f}".format(dashboard.total_revenue) }}
+                        </h3>
+                    </div>
+
+                    <div class="bg-primary text-white rounded-circle p-3">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="erp-card shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <small class="text-muted">Profit</small>
+
+                        <h3 class="fw-bold mt-2">
+                            UGX {{ "{:,.0f}".format(dashboard.total_profit) }}
+                        </h3>
+
+                    </div>
+
+                    <div class="bg-info text-white rounded-circle p-3">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="erp-card shadow-sm">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <small class="text-muted">Inventory Value</small>
+
+                        <h3 class="fw-bold mt-2">
+                            UGX {{ "{:,.0f}".format(dashboard.inventory_value) }}
+                        </h3>
+
+                    </div>
+
+                    <div class="bg-warning text-white rounded-circle p-3">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SECOND ROW -->
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-xl-4 col-md-6">
+
+            <div class="erp-card text-center">
+
+                <i class="fas fa-cart-shopping fa-2x text-warning mb-3"></i>
+
+                <h2>{{ dashboard.total_purchases }}</h2>
+
+                <p class="text-muted">Purchases</p>
+
+            </div>
+
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+
+            <div class="erp-card text-center">
+
+                <i class="fas fa-mobile-screen-button fa-2x text-primary mb-3"></i>
+
+                <h2>{{ dashboard.total_products }}</h2>
+
+                <p class="text-muted">Product Variants</p>
+
+            </div>
+
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+
+            <div class="erp-card text-center">
+
+                <i class="fas fa-triangle-exclamation fa-2x text-danger mb-3"></i>
+
+                <h2>{{ dashboard.low_stock }}</h2>
+
+                <p class="text-muted">Low Stock Items</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TABLES -->
+
+    <div class="row">
+
+        <!-- Recent Sales -->
+
+        <div class="col-lg-7">
+
+            <div class="erp-card">
+
+                <h5 class="mb-4">
+                    Recent Sales
+                </h5>
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead>
+
+                        <tr>
+
+                            <th>Invoice</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Date</th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        {% for sale in dashboard.recent_sales %}
+
+                        <tr>
+
+                            <td>{{ sale.invoice_number }}</td>
+
+                            <td>
+                                {{ sale.customer_name }}
+                            </td>
+
+                            <td>
+                                UGX {{ "{:,.0f}".format(sale.total_amount) }}
+                            </td>
+
+                            <td>{{ sale.sale_date.strftime("%d %b %Y") }}</td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+
+                            <td colspan="4" class="text-center text-muted">
+
+                                No sales available.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Low Stock -->
+
+        <div class="col-lg-5">
+
+            <div class="erp-card">
+
+                <h5 class="mb-4">
+
+                    Low Stock Products
+
+                </h5>
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover">
+
+                        <thead>
+
+                        <tr>
+
+                            <th>Product</th>
+
+                            <th>Stock</th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        {% for item in dashboard.low_stock_products %}
+
+                        <tr>
+
+                            <td>
+
+                                {{ item.product.name }}
+
+                                {% if item.colour %}
+    <br>
+    <small class="text-muted">
+        {{ item.colour }} /
+        {{ item.storage }}
+    </small>
+{% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <span class="badge bg-danger">
+
+                                    {{ item.quantity }}
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+
+                            <td colspan="2" class="text-center text-muted">
+
+                                No low stock products.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- QUICK REPORTS -->
+
+    <div class="erp-card mt-4">
+
+        <h5 class="mb-4">
+
+            Quick Reports
+
+        </h5>
+
+        <div class="row text-center">
+
+            <div class="col-md-2">
+                <a class="btn btn-success w-100" href="{{ url_for('report.sales_report') }}">
+                    Sales
+                </a>
+            </div>
+
+            <div class="col-md-2">
+                <a class="btn btn-primary w-100" href="{{ url_for('report.inventory_report') }}">
+                    Inventory
+                </a>
+            </div>
+
+            <div class="col-md-2">
+                <a class="btn btn-warning w-100" href="{{ url_for('report.purchase_report') }}">
+                    Purchases
+                </a>
+            </div>
+
+            <div class="col-md-2">
+                <a class="btn btn-info w-100" href="{{ url_for('report.profit_report') }}">
+                    Profit
+                </a>
+            </div>
+
+            <div class="col-md-2">
+                <a class="btn btn-secondary w-100" href="{{ url_for('report.imei_report') }}">
+                    IMEI
+                </a>
+            </div>
+
+            <div class="col-md-2">
+                <a class="btn btn-danger w-100" href="{{ url_for('report.low_stock_report') }}">
+                    Low Stock
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

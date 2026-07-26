@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}Purchase Report{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<h2 class="mb-4">Purchase Report</h2>
+
+<table class="table table-bordered table-striped">
+
+<thead class="table-dark">
+<tr>
+
+<th>Purchase No</th>
+<th>Supplier</th>
+<th>Date</th>
+<th>Status</th>
+<th>Total</th>
+
+</tr>
+</thead>
+
+<tbody>
+
+{% for purchase in purchases %}
+
+<tr>
+
+<td>{{ purchase.purchase_number }}</td>
+<td>{{ purchase.supplier.name }}</td>
+<td>{{ purchase.purchase_date }}</td>
+<td>{{ purchase.status }}</td>
+<td>UGX {{ "{:,.0f}".format(purchase.total_amount) }}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

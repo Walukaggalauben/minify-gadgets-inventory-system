@@ -110,6 +110,12 @@ class ProductVariant(db.Model):
     back_populates="product_variant",
     lazy=True
     )
+    
+    sale_items = db.relationship(
+    "SaleItem",
+    back_populates="product_variant",
+    lazy=True
+)
 
     def __repr__(self):
         return f"<Variant {self.sku}>"

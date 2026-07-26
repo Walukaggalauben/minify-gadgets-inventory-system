@@ -1,0 +1,217 @@
+{% extends "layout.html" %}
+
+{% block title %}Sales Report{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Sales Report</h2>
+            <p class="text-muted">
+                View sales transactions and business performance.
+            </p>
+        </div>
+
+        <a href="{{ url_for('report.sales_report_pdf',
+            start_date=start_date,
+            end_date=end_date) }}"
+           class="btn btn-danger">
+            <i class="fas fa-file-pdf"></i>
+            Export PDF
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <form method="GET">
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <label class="form-label">Start Date</label>
+
+                        <input
+                            type="date"
+                            name="start_date"
+                            class="form-control"
+                            value="{{ start_date or '' }}">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">End Date</label>
+
+                        <input
+                            type="date"
+                            name="end_date"
+                            class="form-control"
+                            value="{{ end_date or '' }}">
+                    </div>
+
+                    <div class="col-md-4 d-flex align-items-end">
+
+                        <button class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i>
+                            Generate Report
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Summary -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total Sales
+                    </h6>
+
+                    <h3 class="fw-bold text-primary">
+                        UGX {{ "{:,.0f}".format(summary.total_sales or 0) }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total Profit
+                    </h6>
+
+                    <h3 class="fw-bold text-success">
+                        UGX {{ "{:,.0f}".format(summary.total_profit or 0) }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Number of Sales
+                    </h6>
+
+                    <h3 class="fw-bold">
+                        {{ summary.total_transactions }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Sales Table -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <strong>Sales Transactions</strong>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            <table class="table table-hover table-striped mb-0">
+
+                <thead class="table-dark">
+
+                <tr>
+
+                    <th>Invoice</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Payment</th>
+                    <th>Total</th>
+                    <th>Profit</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for sale in sales %}
+
+                <tr>
+
+                    <td>{{ sale.invoice_number }}</td>
+
+                    <td>
+                        {{ sale.sale_date.strftime('%d/%m/%Y') }}
+                    </td>
+
+                    <td>{{ sale.customer_name }}</td>
+
+                    <td>{{ sale.payment_method }}</td>
+
+                    <td>
+                        UGX {{ "{:,.0f}".format(sale.total_amount) }}
+                    </td>
+
+                    <td>
+                        UGX {{ "{:,.0f}".format(sale.profit) }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                {% if not sales %}
+
+                <tr>
+
+                    <td colspan="6" class="text-center py-5">
+
+                        No sales found.
+
+                    </td>
+
+                </tr>
+
+                {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

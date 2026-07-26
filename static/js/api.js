@@ -63,9 +63,14 @@ async function loadVariants(productId, variantSelect, imeiSelect) {
             `${variant.sku} (${variant.storage}/${variant.ram})`;
 
         // Store additional information
-        option.dataset.price = variant.price;
-        option.dataset.stock = variant.stock;
+       option.dataset.price = variant.  price;
+       option.dataset.stock = variant.stock;
 
+        option.dataset.brand = variant.brand;
+        option.dataset.product = variant.product;
+        option.dataset.storage = variant.storage;
+        option.dataset.ram = variant.ram;
+        option.dataset.colour = variant.colour;
         variantSelect.appendChild(option);
 
     });

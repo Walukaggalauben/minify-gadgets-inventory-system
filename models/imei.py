@@ -50,10 +50,15 @@ class IMEI(db.Model):
     )
 
     product_variant = db.relationship(
-        "ProductVariant",
-        back_populates="imeis"
+    "ProductVariant",
+    back_populates="imeis"
     )
-    
+
+    sale_items = db.relationship(
+    "SaleItem",
+    back_populates="imei",
+    lazy=True
+    )        
     
 
     def __repr__(self):

@@ -30,21 +30,30 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // -----------------------------------
-  // Add To Cart
-  // -----------------------------------
-  addItemButton.addEventListener("click", function () {
+// Add To Cart
+// -----------------------------------
+addItemButton.addEventListener("click", function () {
+
+    // Product validation
     if (productSelect.value === "") {
-      alert("Please select a product.");
-      return;
+        alert("Please select a product.");
+        return;
     }
 
+    // Variant validation
     if (variantSelect.value === "") {
-      alert("Please select a variant.");
-      return;
+        alert("Please select a variant.");
+        return;
+    }
+
+    // IMEI validation
+    if (imeiSelect.options.length > 1 && imeiSelect.value === "") {
+        alert("Please select an IMEI.");
+        return;
     }
 
     const productText = productSelect.options[productSelect.selectedIndex].text;
-
+    
     const imeiText =
       imeiSelect.value !== ""
         ? imeiSelect.options[imeiSelect.selectedIndex].text
@@ -85,5 +94,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       total: total,
     });
-  });
-});
+
+// Refresh the available IMEIs for the current variant
+loadIMEIs(variantSelect.value, imeiSelect);
+
+// Reset quantity only
+document.querySelector("input[name='quantity']").value = 1;

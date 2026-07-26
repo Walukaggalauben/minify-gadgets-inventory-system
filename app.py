@@ -27,6 +27,7 @@ def create_app():
     from models.brand import Brand
     from models.product import Product
     from models.product_variant import ProductVariant
+    from models.imei import IMEI
     from models.supplier import Supplier
     from models.purchase import Purchase
     from models.purchase_item import PurchaseItem
@@ -43,6 +44,7 @@ def create_app():
 
     # Register Blueprints
     from routes.auth import auth_bp
+    from routes.user import user_bp
     from routes.dashboard import dashboard_bp
     from routes.category import category_bp
     from routes.brand import brand_bp
@@ -53,8 +55,10 @@ def create_app():
     from routes.purchase import purchase_bp
     from routes.sale import sale_bp
     from routes.company import company_bp
+    from routes.report import report_bp
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(user_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(category_bp)
     app.register_blueprint(brand_bp)
@@ -65,6 +69,7 @@ def create_app():
     app.register_blueprint(purchase_bp)
     app.register_blueprint(sale_bp)
     app.register_blueprint(company_bp)
+    app.register_blueprint(report_bp)
     
 
     Migrate(app, db)

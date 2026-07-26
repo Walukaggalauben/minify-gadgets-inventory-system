@@ -56,9 +56,13 @@ class SaleItem(db.Model):
     )
 
     product_variant = db.relationship(
-        "ProductVariant"
+    "ProductVariant",
+    back_populates="sale_items"
     )
 
     imei = db.relationship(
-    "IMEI"
+    "IMEI",
+    back_populates="sale_items"
     )
+
+   

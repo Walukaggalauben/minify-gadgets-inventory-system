@@ -3,8 +3,6 @@ from decimal import Decimal
 
 from db import db
 
-
-
 from models.sale import Sale
 from models.sale_item import SaleItem
 from models.product_variant import ProductVariant
@@ -35,17 +33,11 @@ class SaleService:
         try:
 
             sale = Sale(
-
                 invoice_number=SaleService.generate_invoice_number(),
-
                 customer_name=customer_name,
-
                 customer_phone=customer_phone,
-
                 payment_method=payment_method,
-
                 created_by=created_by
-
             )
 
             db.session.add(sale)
@@ -90,26 +82,33 @@ class SaleService:
                 )
 
                 sale_item = SaleItem(
-
                     product_variant_id=variant.id,
-
                     quantity=quantity,
-
                     buying_price=variant.buying_price,
-
                     selling_price=variant.selling_price,
-
                     total=line_total,
-
                     profit=line_profit
-
                 )
 
                 db.session.add(sale_item)
 
                 sale_item.sale = sale
 
+                # -----------------------------
+                # IMEI VALIDATION
+                # -----------------------------
                 imei_id = item.get("imei_id")
+
+                # If this variant has IMEIs,
+                # then an IMEI must be selected.
+                imei_count = IMEI.query.filter_by(
+                    product_variant_id=variant.id
+                ).count()
+
+                if imei_count > 0 and not imei_id:
+                    raise Exception(
+                        f"Please select an IMEI for {variant.sku}."
+                    )
 
                 if imei_id:
 
@@ -120,9 +119,9 @@ class SaleService:
                             "Selected IMEI was not found."
                         )
 
-                    if imei.status == "Sold":
+                    if imei.status != "In Stock":
                         raise Exception(
-                            "This IMEI has already been sold."
+                            "Selected IMEI is not available."
                         )
 
                     if imei.product_variant_id != variant.id:
@@ -130,13 +129,21 @@ class SaleService:
                             "Selected IMEI does not belong to the selected product."
                         )
 
+                    # IMEI tracked devices can only
+                    # be sold one at a time.
+                    if quantity != 1:
+                        raise Exception(
+                            "IMEI tracked products can only be sold one at a time."
+                        )
+
                     imei.status = "Sold"
 
                     sale_item.imei = imei
 
+                # -----------------------------
+                # Reduce Stock
+                # -----------------------------
                 variant.quantity -= quantity
-
-                
 
                 total_amount += line_total
                 total_profit += line_profit

@@ -71,7 +71,7 @@ body{
 
     top:0;
 
-    width:260px;
+    width:230px;
 
     height:100vh;
 
@@ -175,9 +175,9 @@ body{
 
 .main-content{
 
-    margin-left:260px;
+    margin-left:230px;
 
-    width:calc(100% - 260px);
+    width:calc(100% - 230px);
 
     min-height:100vh;
 
@@ -219,7 +219,8 @@ body{
 
 .content-area{
 
-    padding:30px;
+    padding:20px 24px;
+    max-width:none;
 
 }
 
@@ -603,5 +604,754 @@ label{
     grid-template-columns:1fr;
 
 }
+
+}
+
+/* =========================================================
+   PREMIUM DASHBOARD UI
+========================================================= */
+
+.card{
+
+    border:none !important;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    transition:.35s ease;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.06);
+
+}
+
+.card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 18px 45px rgba(0,0,0,.12);
+
+}
+
+.card-header{
+
+    background:white;
+
+    border-bottom:1px solid #eef2f7;
+
+    padding:18px 25px;
+
+}
+
+.card-header h5{
+
+    font-size:18px;
+
+    font-weight:700;
+
+    margin:0;
+
+}
+
+.card-body{
+
+    padding:25px;
+
+}
+
+/* Dashboard KPI */
+
+.card small{
+
+    font-size:13px;
+
+    color:#8b8b8b;
+
+    font-weight:600;
+
+}
+
+.card h2{
+
+    font-size:34px;
+
+    font-weight:700;
+
+    color:#0B7A3B;
+
+}
+
+.card h4{
+
+    font-size:24px;
+
+    font-weight:700;
+
+    color:#0B7A3B;
+
+}
+
+.card i.fa-3x{
+
+    opacity:.9;
+
+    transition:.3s;
+
+}
+
+.card:hover i.fa-3x{
+
+    transform:scale(1.12);
+
+}
+
+/* Welcome Card */
+
+.card:first-child{
+
+    background:linear-gradient(
+        135deg,
+        #0B7A3B,
+        #16a34a
+    );
+
+    color:white;
+
+}
+
+.card:first-child h3{
+
+    color:white;
+
+}
+
+.card:first-child p{
+
+    color:rgba(255,255,255,.85);
+
+}
+
+.card:first-child i{
+
+    color:white !important;
+
+}
+
+/* Tables */
+
+.table{
+
+    margin-bottom:0;
+
+}
+
+.table thead th{
+
+    background:#0B7A3B;
+
+    color:white;
+
+    border:none;
+
+}
+
+.table tbody tr{
+
+    transition:.2s;
+
+}
+
+.table tbody tr:hover{
+
+    background:#f6fff9;
+
+}
+
+/* Badges */
+
+.badge{
+
+    padding:8px 14px;
+
+    border-radius:30px;
+
+    font-size:12px;
+
+    font-weight:600;
+
+}
+
+/* Chart */
+
+canvas{
+
+    max-width:100%;
+
+}
+
+/* =========================================================
+   ERP DASHBOARD V3
+========================================================= */
+
+.erp-card{
+
+    background:#fff;
+
+    border-radius:18px;
+
+    padding:16px 20px;
+
+    min-height:110px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+    transition:.35s;
+
+    border:1px solid #edf2f7;
+
+    height:100%;
+
+}
+
+.erp-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 20px 45px rgba(0,0,0,.12);
+
+}
+
+.erp-icon{
+
+    width:54px;
+
+    height:54px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:white;
+
+    font-size:20px;
+
+    flex-shrink:0;
+
+}
+
+.erp-icon.green{
+
+    background:#16a34a;
+
+}
+
+.erp-icon.blue{
+
+    background:#2563eb;
+
+}
+
+.erp-icon.orange{
+
+    background:#f59e0b;
+
+}
+
+.erp-icon.red{
+
+    background:#ef4444;
+
+}
+
+.erp-card small{
+
+    display:block;
+
+    color:#8b8b8b;
+
+    font-weight:600;
+
+    margin-bottom:6px;
+
+    font-size:13px;
+
+}
+
+.erp-card h3{
+
+    margin:0;
+
+    font-size:26px;
+
+    font-weight:700;
+
+    color:#111827;
+
+}
+
+.erp-panel{
+
+    background:#fff;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+    border:1px solid #edf2f7;
+
+}
+
+.erp-panel-header{
+
+    padding:18px 24px;
+
+    border-bottom:1px solid #edf2f7;
+
+    background:white;
+
+}
+
+.erp-panel-header h5{
+
+    margin:0;
+
+    font-size:18px;
+
+    font-weight:700;
+
+}
+
+.erp-panel-body{
+
+    padding:24px;
+
+}
+
+.summary-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    padding:14px 0;
+
+    border-bottom:1px solid #f1f5f9;
+
+}
+
+.summary-item:last-child{
+
+    border-bottom:none;
+
+}
+
+/* Dashboard Header */
+
+.dashboard-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+    flex-wrap:wrap;
+
+    gap:20px;
+
+}
+
+.dashboard-title{
+
+    font-size:32px;
+
+    font-weight:700;
+
+    color:#1f2937;
+
+    margin:0;
+
+}
+
+.dashboard-subtitle{
+
+    color:#6b7280;
+
+    margin-top:8px;
+
+    margin-bottom:0;
+
+}
+
+.dashboard-actions{
+
+    display:flex;
+
+    gap:12px;
+
+}
+
+/* ===== DASHBOARD GRID ===== */
+
+.dashboard-wrapper{
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+}
+
+.kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(220px,1fr));
+    gap: 18px;
+}
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:20px;
+}
+
+.chart-panel{
+    min-height:340px;
+}
+
+.summary-panel{
+    min-height:420px;
+}
+
+.wide-panel{
+    min-height:420px;
+}
+
+.chart-panel canvas{
+    width:100% !important;
+    height:260px !important;
+}
+
+@media(max-width:1200px){
+
+.kpi-grid{
+    grid-template-columns:repeat(2,1fr);
+}
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:2.2fr 1fr;
+    gap:20px;
+    align-items:start;
+}
+
+}
+
+@media(max-width:768px){
+
+.kpi-grid{
+    grid-template-columns:1fr;
+}
+
+}
+
+/* =====================================================
+   MINIFY GADGETS ERP V2
+   PREMIUM LAYOUT
+===================================================== */
+
+/* ---------- Layout ---------- */
+
+.wrapper{
+    display:flex;
+    min-height:100vh;
+    background:#f5f7fb;
+}
+
+.sidebar{
+    width:230px;
+    min-width:230px;
+    background:#0f8a5f;
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    position:fixed;
+    top:0;
+    left:0;
+    bottom:0;
+    overflow-y:auto;
+    z-index:1000;
+    box-shadow:3px 0 18px rgba(0,0,0,.08);
+}
+
+.main-content{
+    margin-left:230px;
+    width:calc(100% - 230px);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:#f5f7fb;
+}
+
+/* ---------- Sidebar Header ---------- */
+
+.sidebar-header{
+    text-align:center;
+    padding:28px 20px 22px;
+}
+
+.company-logo{
+    width:80px;
+    height:80px;
+    object-fit:contain;
+    margin-bottom:14px;
+}
+
+.company-placeholder{
+    width:80px;
+    height:80px;
+    margin:auto;
+    border-radius:20px;
+    background:rgba(255,255,255,.15);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:34px;
+}
+
+.sidebar-header h3{
+    font-size:18px;
+    font-weight:700;
+    margin-top:15px;
+    margin-bottom:4px;
+}
+
+.sidebar-header span{
+    display:block;
+    font-size:13px;
+    opacity:.85;
+}
+
+.sidebar-header small{
+    display:block;
+    margin-top:6px;
+    opacity:.7;
+}
+
+/* ---------- Navigation ---------- */
+
+.sidebar-nav{
+    padding:8px 12px 30px;
+}
+
+.menu-title{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:1.5px;
+    color:rgba(255,255,255,.65);
+    margin:22px 12px 10px;
+    text-transform:uppercase;
+}
+
+.sidebar .nav-link{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    color:#fff;
+    border-radius:12px;
+    padding:12px 15px;
+    margin-bottom:6px;
+    transition:.25s;
+    text-decoration:none;
+    font-weight:500;
+}
+
+.sidebar .nav-link i{
+    width:22px;
+    text-align:center;
+    font-size:15px;
+}
+
+.sidebar .nav-link:hover{
+    background:rgba(255,255,255,.13);
+    transform:translateX(4px);
+}
+
+.sidebar .nav-link.active{
+    background:#fff;
+    color:#0f8a5f;
+    font-weight:700;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+.logout-link{
+    margin-top:25px;
+    color:#ffd7d7 !important;
+}
+
+/* ===========================
+   TOPBAR
+=========================== */
+
+.topbar{
+    height:80px;
+    background:#ffffff;
+    border-bottom:1px solid #e8ecf2;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:0 30px;
+
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.topbar-left h2{
+    margin:0;
+    font-size:30px;
+    font-weight:700;
+    color:#222;
+}
+
+.topbar-left small{
+    display:block;
+    margin-top:4px;
+    color:#7d8795;
+}
+
+.topbar-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.icon-btn{
+    width:42px;
+    height:42px;
+
+    border:none;
+    border-radius:12px;
+
+    background:#f4f6fb;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    cursor:pointer;
+    transition:.3s;
+}
+
+.icon-btn:hover{
+    background:#0f8a5f;
+    color:#fff;
+}
+
+.user-profile{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.avatar{
+    width:46px;
+    height:46px;
+
+    border-radius:50%;
+
+    background:#0f8a5f;
+    color:#fff;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-weight:bold;
+    font-size:18px;
+}
+
+.user-profile strong{
+    display:block;
+    margin-bottom:2px;
+}
+
+.user-profile small{
+    color:#888;
+}
+
+/* =====================================================
+   REPORTS
+===================================================== */
+
+.report-card{
+
+    background:#fff;
+
+    border-radius:16px;
+
+    padding:35px;
+
+    transition:.3s;
+
+    text-align:center;
+
+    min-height:220px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.05);
+
+}
+
+.report-card:hover{
+
+    transform:translateY(-6px);
+
+}
+
+.report-icon{
+
+    width:70px;
+
+    height:70px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    color:#fff;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:28px;
+
+    margin-bottom:20px;
+
+}
+
+.report-card h4{
+
+    font-weight:700;
+
+}
+
+.report-card p{
+
+    color:#777;
 
 }

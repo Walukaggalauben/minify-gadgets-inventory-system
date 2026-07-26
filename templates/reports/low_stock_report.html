@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}Low Stock Report{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<h2 class="mb-4">Low Stock Report</h2>
+
+<table class="table table-striped">
+
+<thead class="table-dark">
+
+<tr>
+
+<th>Product</th>
+<th>Variant</th>
+<th>Quantity</th>
+<th>Minimum Stock</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for product in products %}
+
+<tr>
+
+<td>{{ product.product.name }}</td>
+<td>{{ product.storage }} / {{ product.ram }}</td>
+<td>{{ product.quantity }}</td>
+<td>{{ product.minimum_stock }}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

@@ -24,169 +24,200 @@
 
   <body>
     <div class="wrapper">
-      <!-- Sidebar -->
+      <!-- ===========================
+         SIDEBAR
+    ============================ -->
+
       <aside class="sidebar">
-        <div class="logo text-center py-4">
+        <!-- Logo -->
+
+        <div class="sidebar-header">
           {% if company and company.logo %}
 
           <img
             src="{{ url_for('static', filename='uploads/' ~ company.logo) }}"
-            class="img-fluid mb-2"
-            style="width: 90px; height: 90px; object-fit: contain"
+            class="company-logo"
+            alt="Company Logo"
           />
 
           {% else %}
 
-          <i class="fas fa-mobile-screen-button fa-3x text-success mb-2"></i>
+          <div class="company-placeholder">
+            <i class="fas fa-mobile-screen-button"></i>
+          </div>
 
           {% endif %}
 
-          <h4 class="mb-0">
-            {{ company.business_name if company else "MINIFY GADGETS" }}
-          </h4>
+          <h3>{{ company.business_name if company else "MINIFY GADGETS" }}</h3>
 
-          <small class="text-light"> ERP Version 2 </small>
+          <span> Inventory Management </span>
+
+          <small> ERP Version 2 </small>
         </div>
 
-        <hr />
+        <!-- Navigation -->
 
-        <ul class="nav flex-column">
-          <li class="menu-title">Dashboard</li>
+        <nav class="sidebar-nav">
+          <div class="menu-title">MAIN</div>
 
-          <li>
-            <a
-              class="nav-link {% if request.endpoint=='dashboard.dashboard' %}active{% endif %}"
-              href="{{ url_for('dashboard.dashboard') }}"
-            >
-              <i class="fas fa-chart-line"></i>
-              <span>Dashboard</span>
-            </a>
-          </li>
+          <a
+            href="{{ url_for('dashboard.dashboard') }}"
+            class="nav-link {% if request.endpoint=='dashboard.dashboard' %}active{% endif %}"
+          >
+            <i class="fas fa-chart-pie"></i>
 
-          <li class="menu-title">Inventory</li>
+            <span>Dashboard</span>
+          </a>
+          <!-- Inventory -->
 
-          <li>
-            <a
-              class="nav-link {% if request.endpoint and request.endpoint.startswith('category') %}active{% endif %}"
-              href="{{ url_for('category.index') }}"
-            >
-              <i class="fas fa-layer-group"></i>
-              <span>Categories</span>
-            </a>
-          </li>
+          <div class="menu-title">INVENTORY</div>
 
-          <li>
-            <a
-              class="nav-link {% if request.endpoint and request.endpoint.startswith('brand') %}active{% endif %}"
-              href="{{ url_for('brand.index') }}"
-            >
-              <i class="fas fa-tags"></i>
-              <span>Brands</span>
-            </a>
-          </li>
+          <a
+            href="{{ url_for('category.index') }}"
+            class="nav-link {% if request.endpoint and request.endpoint.startswith('category') %}active{% endif %}"
+          >
+            <i class="fas fa-layer-group"></i>
+            <span>Categories</span>
+          </a>
 
-          <li>
-            <a
-              class="nav-link {% if request.endpoint and request.endpoint.startswith('product') %}active{% endif %}"
-              href="{{ url_for('product.index') }}"
-            >
-              <i class="fas fa-box"></i>
-              <span>Products</span>
-            </a>
-          </li>
+          <a
+            href="{{ url_for('brand.index') }}"
+            class="nav-link {% if request.endpoint and request.endpoint.startswith('brand') %}active{% endif %}"
+          >
+            <i class="fas fa-tags"></i>
+            <span>Brands</span>
+          </a>
 
-          <li>
-            <a
-              class="nav-link {% if request.endpoint and request.endpoint.startswith('variant') %}active{% endif %}"
-              href="{{ url_for('variant.index') }}"
-            >
-              <i class="fas fa-boxes-stacked"></i>
-              <span>Variants</span>
-            </a>
-          </li>
+          <a
+            href="{{ url_for('product.index') }}"
+            class="nav-link {% if request.endpoint and request.endpoint.startswith('product') %}active{% endif %}"
+          >
+            <i class="fas fa-box"></i>
+            <span>Products</span>
+          </a>
 
-          <li>
-            <a
-              class="nav-link {% if request.endpoint and request.endpoint.startswith('imei') %}active{% endif %}"
-              href="{{ url_for('imei.index') }}"
-            >
-              <i class="fas fa-mobile-screen"></i>
-              <span>IMEI Management</span>
-            </a>
-          </li>
+          <a
+            href="{{ url_for('variant.index') }}"
+            class="nav-link {% if request.endpoint and request.endpoint.startswith('variant') %}active{% endif %}"
+          >
+            <i class="fas fa-boxes-stacked"></i>
+            <span>Variants</span>
+          </a>
 
-          <li class="menu-title">Purchasing</li>
+          <a
+            href="{{ url_for('imei.index') }}"
+            class="nav-link {% if request.endpoint and request.endpoint.startswith('imei') %}active{% endif %}"
+          >
+            <i class="fas fa-mobile-screen"></i>
+            <span>IMEI Management</span>
+          </a>
 
-          <li>
-            <a
-              class="nav-link {% if request.endpoint and request.endpoint.startswith('supplier') %}active{% endif %}"
-              href="{{ url_for('supplier.index') }}"
-            >
-              <i class="fas fa-truck"></i>
-              <span>Suppliers</span>
-            </a>
-          </li>
+          <!-- Purchasing -->
 
-          <li>
-            <a
-              class="nav-link {% if request.endpoint and request.endpoint.startswith('purchase') %}active{% endif %}"
-              href="{{ url_for('purchase.create') }}"
-            >
-              <i class="fas fa-cart-shopping"></i>
-              <span>Purchases</span>
-            </a>
-          </li>
+          <div class="menu-title">PURCHASING</div>
 
-          <li class="menu-title">Sales</li>
+          <a
+            href="{{ url_for('supplier.index') }}"
+            class="nav-link {% if request.endpoint and request.endpoint.startswith('supplier') %}active{% endif %}"
+          >
+            <i class="fas fa-truck"></i>
+            <span>Suppliers</span>
+          </a>
 
-          <li>
-            <a
-              class="nav-link {% if request.endpoint and request.endpoint.startswith('sale') %}active{% endif %}"
-              href="{{ url_for('sale.index') }}"
-            >
-              <i class="fas fa-cash-register"></i>
-              <span>Sales</span>
-            </a>
-          </li>
+          <a
+            href="{{ url_for('purchase.create') }}"
+            class="nav-link {% if request.endpoint and request.endpoint.startswith('purchase') %}active{% endif %}"
+          >
+            <i class="fas fa-cart-shopping"></i>
+            <span>Purchases</span>
+          </a>
 
-          <li class="menu-title">System</li>
+          <!-- Sales -->
 
-          <li>
-            <a
-              class="nav-link {% if request.endpoint and request.endpoint.startswith('company') %}active{% endif %}"
-              href="{{ url_for('company.settings') }}"
-            >
-              <i class="fas fa-building"></i>
-              <span>Company Settings</span>
-            </a>
-          </li>
+          <div class="menu-title">SALES</div>
 
-          <li>
-            <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">
-              <i class="fas fa-right-from-bracket"></i>
-              <span>Logout</span>
-            </a>
-          </li>
-        </ul>
+          <a
+            href="{{ url_for('sale.index') }}"
+            class="nav-link {% if request.endpoint and request.endpoint.startswith('sale') %}active{% endif %}"
+          >
+            <i class="fas fa-cash-register"></i>
+            <span>Sales</span>
+          </a>
+
+          <!-- Reports -->
+
+          <div class="menu-title">REPORTS</div>
+
+          <a
+            href="{{ url_for('report.index') }}"
+            class="nav-link {% if request.endpoint and request.endpoint.startswith('report') %}active{% endif %}"
+          >
+            <i class="fas fa-chart-bar"></i>
+            <span>Reports</span>
+          </a>
+
+          <!-- System -->
+
+          <div class="menu-title">SYSTEM</div>
+
+          <a
+            href="{{ url_for('company.settings') }}"
+            class="nav-link {% if request.endpoint and request.endpoint.startswith('company') %}active{% endif %}"
+          >
+            <i class="fas fa-building"></i>
+            <span>Company Settings</span>
+          </a>
+
+          <a href="{{ url_for('auth.logout') }}" class="nav-link logout-link">
+            <i class="fas fa-right-from-bracket"></i>
+            <span>Logout</span>
+          </a>
+        </nav>
       </aside>
 
-      <!-- Main -->
+      <!-- ===========================
+         MAIN CONTENT
+    ============================ -->
+
       <main class="main-content">
-        <header class="topbar shadow-sm">
-          <div>
-            <h4 class="mb-0">
-              {% block page_title %} Dashboard {% endblock %}
-            </h4>
+        <!-- Top Bar -->
+
+        <header class="topbar">
+          <div class="topbar-left">
+            <h2>{% block page_title %} Dashboard {% endblock %}</h2>
+
+            <small>
+              Welcome back,
+              <strong>{{ session.username }}</strong>
+            </small>
           </div>
 
-          <div class="text-end">
-            <small class="text-muted"> Logged in as </small><br />
+          <div class="topbar-right">
+            <button class="icon-btn">
+              <i class="fas fa-bell"></i>
+            </button>
 
-            <strong> {{ session.username }} </strong>
+            <button class="icon-btn">
+              <i class="fas fa-gear"></i>
+            </button>
+
+            <div class="user-profile">
+              <div class="avatar">
+                {{ session.get('username', 'A')[0]|upper }}
+              </div>
+
+              <div>
+                <strong> {{ session.username }} </strong>
+
+                <small> Administrator </small>
+              </div>
+            </div>
           </div>
         </header>
 
-        <div class="container-fluid mt-3">
+        <!-- Flash Messages -->
+
+        <div class="content-area">
           {% with messages = get_flashed_messages(with_categories=true) %} {% if
           messages %} {% for category, message in messages %}
 
@@ -196,24 +227,31 @@
             <button class="btn-close" data-bs-dismiss="alert"></button>
           </div>
 
-          {% endfor %} {% endif %} {% endwith %}
+          {% endfor %} {% endif %} {% endwith %} {% block content %} {% endblock
+          %}
         </div>
 
-        <section class="container-fluid py-3">
-          {% block content %} {% endblock %}
-        </section>
+        <!-- Continue in Part 4 -->
+        <!-- Footer -->
 
-        <footer class="border-top py-3 text-center">
-          <strong>MINIFY GADGETS ERP V2</strong><br />
+        <footer class="footer">
+          <div class="footer-left">
+            © {{ company.business_name if company else "MINIFY GADGETS" }} ERP
+            V2
+          </div>
 
-          <small class="text-muted">
-            Inventory & Sales Management System
-          </small>
+          <div class="footer-right">
+            Inventory • Sales • Purchasing • IMEI Management
+          </div>
         </footer>
       </main>
     </div>
 
+    <!-- Bootstrap -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- App JS -->
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 

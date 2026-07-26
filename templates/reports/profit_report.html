@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}Profit Report{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<h2 class="mb-4">Profit Report</h2>
+
+<table class="table table-striped">
+
+<thead class="table-dark">
+
+<tr>
+
+<th>Invoice</th>
+<th>Customer</th>
+<th>Total Sale</th>
+<th>Profit</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for sale in sales %}
+
+<tr>
+
+<td>{{ sale.invoice_number }}</td>
+<td>{{ sale.customer_name }}</td>
+<td>UGX {{ "{:,.0f}".format(sale.total_amount) }}</td>
+<td>UGX {{ "{:,.0f}".format(sale.profit) }}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

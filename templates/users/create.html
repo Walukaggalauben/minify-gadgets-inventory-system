@@ -1,0 +1,452 @@
+{% extends "layout.html" %}
+
+{% block title %}Create User{% endblock %}
+{% block page_title %}Create User{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+                Create New User
+            </h2>
+
+            <p class="text-muted mb-0">
+                Add a new user and assign system permissions.
+            </p>
+
+        </div>
+
+        <a href="{{ url_for('user.index') }}"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left me-2"></i>
+
+            Back
+
+        </a>
+
+    </div>
+
+    <form method="POST"
+          enctype="multipart/form-data"
+          id="userForm">
+
+        <div class="row">
+
+            <!-- LEFT COLUMN -->
+
+            <div class="col-lg-5">
+
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="mb-0">
+
+                            <i class="bi bi-person-fill me-2 text-success"></i>
+
+                            Personal Information
+
+                        </h5>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="text-center mb-4">
+
+                            <img
+                                src="https://placehold.co/140x140?text=Photo"
+                                id="preview"
+                                class="rounded-circle border shadow-sm"
+                                width="140"
+                                height="140"
+                                style="object-fit:cover;">
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+
+                                Full Name *
+
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="full_name"
+                                value="{{ request.form.get('full_name','') }}"
+                                required>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+
+                                Email
+
+                            </label>
+
+                            <input
+                                type="email"
+                                class="form-control"
+                                name="email"
+                                value="{{ request.form.get('email','') }}">
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+
+                                Phone
+
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="phone"
+                                value="{{ request.form.get('phone','') }}">
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+
+                                Profile Photo
+
+                            </label>
+
+                            <input
+                                type="file"
+                                class="form-control"
+                                id="photo"
+                                name="profile_photo"
+                                accept="image/*">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN -->
+
+            <div class="col-lg-7">
+
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="mb-0">
+
+                            <i class="bi bi-shield-lock-fill me-2 text-success"></i>
+
+                            Account Information
+
+                        </h5>
+
+                    </div>
+
+                    <div class="card-body">
+                                                <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Username *
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    name="username"
+                                    value="{{ request.form.get('username','') }}"
+                                    required>
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Role *
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    name="role_id"
+                                    required>
+
+                                    <option value="">
+                                        Select Role
+                                    </option>
+
+                                    {% for role in roles %}
+
+                                    <option
+                                        value="{{ role.id }}"
+                                        {% if request.form.get('role_id') == role.id|string %}
+                                        selected
+                                        {% endif %}>
+
+                                        {{ role.name }}
+
+                                    </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+
+                                Password *
+
+                            </label>
+
+                            <div class="input-group">
+
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="password"
+                                    name="password"
+                                    required>
+
+                                <button
+                                    class="btn btn-outline-secondary"
+                                    type="button"
+                                    onclick="togglePassword('password',this)">
+
+                                    <i class="bi bi-eye"></i>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+
+                                Confirm Password *
+
+                            </label>
+
+                            <div class="input-group">
+
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="confirm_password"
+                                    name="confirm_password"
+                                    required>
+
+                                <button
+                                    class="btn btn-outline-secondary"
+                                    type="button"
+                                    onclick="togglePassword('confirm_password',this)">
+
+                                    <i class="bi bi-eye"></i>
+
+                                </button>
+
+                            </div>
+
+                            <div
+                                id="passwordMessage"
+                                class="small mt-2">
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+
+                                Status
+
+                            </label>
+
+                            <select
+                                class="form-select"
+                                name="is_active">
+
+                                <option value="1">
+                                    Active
+                                </option>
+
+                                <option value="0">
+                                    Inactive
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+                <div class="card border-0 shadow-sm">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <button
+                        type="reset"
+                        class="btn btn-outline-warning">
+
+                        <i class="bi bi-arrow-counterclockwise me-2"></i>
+
+                        Reset
+
+                    </button>
+
+                    <a
+                        href="{{ url_for('user.index') }}"
+                        class="btn btn-outline-secondary">
+
+                        <i class="bi bi-x-circle me-2"></i>
+
+                        Cancel
+
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-success px-4">
+
+                        <i class="bi bi-save me-2"></i>
+
+                        Save User
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+function togglePassword(id, button){
+
+    const input=document.getElementById(id);
+
+    const icon=button.querySelector("i");
+
+    if(input.type==="password"){
+
+        input.type="text";
+
+        icon.classList.remove("bi-eye");
+
+        icon.classList.add("bi-eye-slash");
+
+    }else{
+
+        input.type="password";
+
+        icon.classList.remove("bi-eye-slash");
+
+        icon.classList.add("bi-eye");
+
+    }
+
+}
+
+// Image Preview
+
+document.getElementById("photo").addEventListener("change",function(e){
+
+    const file=e.target.files[0];
+
+    if(file){
+
+        document.getElementById("preview").src=URL.createObjectURL(file);
+
+    }
+
+});
+
+// Password Match Validation
+
+const password=document.getElementById("password");
+
+const confirmPassword=document.getElementById("confirm_password");
+
+const message=document.getElementById("passwordMessage");
+
+function validatePasswords(){
+
+    if(confirmPassword.value===""){
+
+        message.innerHTML="";
+
+        return;
+
+    }
+
+    if(password.value===confirmPassword.value){
+
+        message.innerHTML="<span class='text-success'><i class='bi bi-check-circle-fill me-1'></i>Passwords match</span>";
+
+    }else{
+
+        message.innerHTML="<span class='text-danger'><i class='bi bi-x-circle-fill me-1'></i>Passwords do not match</span>";
+
+    }
+
+}
+
+password.addEventListener("keyup",validatePasswords);
+
+confirmPassword.addEventListener("keyup",validatePasswords);
+
+document.getElementById("userForm").addEventListener("submit",function(e){
+
+    if(password.value!==confirmPassword.value){
+
+        e.preventDefault();
+
+        alert("Passwords do not match.");
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

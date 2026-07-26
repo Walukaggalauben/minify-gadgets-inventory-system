@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block title %}IMEI Report{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<h2 class="mb-4">IMEI Report</h2>
+
+<table class="table table-striped">
+
+<thead class="table-dark">
+
+<tr>
+
+<th>IMEI</th>
+<th>Product</th>
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for imei in imeis %}
+
+<tr>
+
+<td>{{ imei.imei }}</td>
+<td>{{ imei.product_variant.product.name }}</td>
+<td>{{ imei.status }}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

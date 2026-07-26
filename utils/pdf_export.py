@@ -1,0 +1,482 @@
+from io import BytesIO
+from datetime import datetime
+
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Table,
+    TableStyle,
+)
+
+
+class PDFExporter:
+
+    @staticmethod
+    def create_table_pdf(
+        title,
+        headers,
+        rows,
+        summary=None
+    ):
+        """
+        Generic PDF Generator
+        """
+
+        buffer = BytesIO()
+
+        doc = SimpleDocTemplate(
+            buffer,
+            pagesize=(11 * inch, 8.5 * inch)
+        )
+
+        styles = getSampleStyleSheet()
+
+        title_style = styles["Heading1"]
+        title_style.alignment = TA_CENTER
+
+        normal = styles["Normal"]
+
+        elements = []
+
+        elements.append(
+            Paragraph(
+                "<b>MINIFY GADGETS</b>",
+                title_style
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                "Inventory Management System",
+                styles["Heading2"]
+            )
+        )
+
+        elements.append(Spacer(1, 12))
+
+        elements.append(
+            Paragraph(
+                f"<b>{title}</b>",
+                styles["Heading2"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                f"Generated: {datetime.now().strftime('%d %B %Y %I:%M %p')}",
+                normal
+            )
+        )
+
+        elements.append(Spacer(1, 15))
+
+        data = [headers]
+
+        for row in rows:
+            data.append(row)
+
+        table = Table(data, repeatRows=1)
+
+        table.setStyle(
+            TableStyle(
+                [
+
+                    (
+                        "BACKGROUND",
+                        (0, 0),
+                        (-1, 0),
+                        colors.HexColor("#0f766e"),
+                    ),
+
+                    (
+                        "TEXTCOLOR",
+                        (0, 0),
+                        (-1, 0),
+                        colors.white,
+                    ),
+
+                    (
+                        "FONTNAME",
+                        (0, 0),
+                        (-1, 0),
+                        "Helvetica-Bold",
+                    ),
+
+                    (
+                        "FONTSIZE",
+                        (0, 0),
+                        (-1, -1),
+                        9,
+                    ),
+
+                    (
+                        "GRID",
+                        (0, 0),
+                        (-1, -1),
+                        0.5,
+                        colors.grey,
+                    ),
+
+                    (
+                        "BACKGROUND",
+                        (0, 1),
+                        (-1, -1),
+                        colors.beige,
+                    ),
+
+                    (
+                        "BOTTOMPADDING",
+                        (0, 0),
+                        (-1, 0),
+                        10,
+                    ),
+
+                    (
+                        "ALIGN",
+                        (0, 0),
+                        (-1, -1),
+                        "CENTER",
+                    ),
+
+                    (
+                        "VALIGN",
+                        (0, 0),
+                        (-1, -1),
+                        "MIDDLE",
+                    ),
+
+                ]
+            )
+        )
+
+        elements.append(table)
+
+        if summary:
+
+            elements.append(Spacer(1, 20))
+
+            elements.append(
+                Paragraph(
+                    "<b>Summary</b>",
+                    styles["Heading2"]
+                )
+            )
+
+            for key, value in summary.items():
+
+                elements.append(
+                    Paragraph(
+                        f"<b>{key.replace('_',' ').title()}:</b> {value}",
+                        normal
+                    )
+                )
+
+        doc.build(elements)
+
+        pdf = buffer.getvalue()
+
+        buffer.close()
+
+        return pdf
+
+
+    # ==========================================================
+    # SALES REPORT
+    # ==========================================================
+
+    @staticmethod
+    def sales_report(
+        sales,
+        summary
+    ):
+
+        headers = [
+            "Invoice",
+            "Customer",
+            "Date",
+            "Total",
+            "Profit",
+        ]
+
+        rows = []
+
+        for sale in sales:
+
+            rows.append(
+                [
+                    sale.invoice_number,
+                    sale.customer_name or "-",
+                    sale.sale_date.strftime("%d/%m/%Y"),
+                    f"{float(sale.total_amount):,.2f}",
+                    f"{float(sale.profit):,.2f}",
+                ]
+            )
+
+        return PDFExporter.create_table_pdf(
+            title="Sales Report",
+            headers=headers,
+            rows=rows,
+            summary={
+                "Invoice Count": summary["invoice_count"],
+                "Total Sales": f"{summary['total_sales']:,.2f}",
+                "Total Profit": f"{summary['total_profit']:,.2f}",
+            },
+        )
+        # ==========================================================
+    # PURCHASE REPORT
+    # ==========================================================
+
+    @staticmethod
+    def purchase_report(
+        purchases,
+        summary
+    ):
+
+        headers = [
+            "Purchase No",
+            "Supplier",
+            "Date",
+            "Status",
+            "Total",
+        ]
+
+        rows = []
+
+        for purchase in purchases:
+
+            rows.append(
+                [
+                    purchase.purchase_number,
+                    purchase.supplier.name if purchase.supplier else "-",
+                    purchase.purchase_date.strftime("%d/%m/%Y"),
+                    purchase.status,
+                    f"{float(purchase.total_amount):,.2f}",
+                ]
+            )
+
+        return PDFExporter.create_table_pdf(
+            title="Purchase Report",
+            headers=headers,
+            rows=rows,
+            summary={
+                "Purchase Count": summary["count"],
+                "Total Purchases": f"{summary['total']:,.2f}",
+            },
+        )
+
+
+    # ==========================================================
+    # INVENTORY REPORT
+    # ==========================================================
+
+    @staticmethod
+    def inventory_report(
+        variants,
+        summary
+    ):
+
+        headers = [
+            "Product",
+            "SKU",
+            "Colour",
+            "Storage",
+            "Buying",
+            "Selling",
+            "Stock",
+        ]
+
+        rows = []
+
+        for item in variants:
+
+            rows.append(
+                [
+                    item.product.name,
+                    item.sku,
+                    item.colour or "-",
+                    item.storage or "-",
+                    f"{float(item.buying_price):,.2f}",
+                    f"{float(item.selling_price):,.2f}",
+                    item.quantity,
+                ]
+            )
+
+        return PDFExporter.create_table_pdf(
+            title="Inventory Report",
+            headers=headers,
+            rows=rows,
+            summary={
+                "Products": summary.get(
+                    "products",
+                    len(variants)
+                ),
+                "Total Stock": summary.get(
+                    "stock",
+                    sum(v.quantity for v in variants)
+                ),
+                "Inventory Value": f"{summary.get('value',0):,.2f}",
+            },
+        )    
+        # ==========================================================
+    # PROFIT REPORT
+    # ==========================================================
+
+    @staticmethod
+    def profit_report(
+        sales,
+        summary
+    ):
+
+        headers = [
+            "Invoice",
+            "Customer",
+            "Date",
+            "Sales",
+            "Profit",
+        ]
+
+        rows = []
+
+        for sale in sales:
+
+            rows.append(
+                [
+                    sale.invoice_number,
+                    sale.customer_name or "-",
+                    sale.sale_date.strftime("%d/%m/%Y"),
+                    f"{float(sale.total_amount):,.2f}",
+                    f"{float(sale.profit):,.2f}",
+                ]
+            )
+
+        return PDFExporter.create_table_pdf(
+            title="Profit Report",
+            headers=headers,
+            rows=rows,
+            summary={
+                "Sales": summary["sales"],
+                "Total Profit": f"{summary['profit']:,.2f}",
+                "Average Profit": f"{summary['average_profit']:,.2f}",
+            },
+        )
+
+
+    # ==========================================================
+    # IMEI REPORT
+    # ==========================================================
+
+    @staticmethod
+    def imei_report(
+        imeis,
+        summary=None
+    ):
+
+        headers = [
+            "IMEI",
+            "Product",
+            "SKU",
+            "Storage",
+            "Colour",
+            "Status",
+        ]
+
+        rows = []
+
+        for item in imeis:
+
+            variant = item.product_variant
+
+            product = (
+                variant.product.name
+                if variant and variant.product
+                else "-"
+            )
+
+            rows.append(
+                [
+                    item.imei,
+                    product,
+                    variant.sku if variant else "-",
+                    variant.storage if variant else "-",
+                    variant.colour if variant else "-",
+                    item.status,
+                ]
+            )
+
+        if summary is None:
+
+            summary = {
+                "Total IMEIs": len(imeis),
+                "In Stock": len(
+                    [
+                        i
+                        for i in imeis
+                        if i.status == "In Stock"
+                    ]
+                ),
+                "Sold": len(
+                    [
+                        i
+                        for i in imeis
+                        if i.status == "Sold"
+                    ]
+                ),
+            }
+
+        return PDFExporter.create_table_pdf(
+            title="IMEI Report",
+            headers=headers,
+            rows=rows,
+            summary=summary,
+        )    
+        # ==========================================================
+    # LOW STOCK REPORT
+    # ==========================================================
+
+    @staticmethod
+    def low_stock_report(
+        variants,
+        summary=None
+    ):
+
+        headers = [
+            "Product",
+            "SKU",
+            "Colour",
+            "Storage",
+            "Current Stock",
+            "Minimum Stock",
+        ]
+
+        rows = []
+
+        for item in variants:
+
+            rows.append(
+                [
+                    item.product.name if item.product else "-",
+                    item.sku,
+                    item.colour or "-",
+                    item.storage or "-",
+                    item.quantity,
+                    item.minimum_stock,
+                ]
+            )
+
+        if summary is None:
+
+            summary = {
+                "Low Stock Products": len(variants)
+            }
+
+        return PDFExporter.create_table_pdf(
+            title="Low Stock Report",
+            headers=headers,
+            rows=rows,
+            summary=summary,
+        )    

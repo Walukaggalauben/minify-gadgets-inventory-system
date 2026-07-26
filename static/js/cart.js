@@ -9,10 +9,20 @@ let cart = [];
 // -------------------------------
 function addToCart(item) {
 
+    if (item.imei_id) {
+
+        const exists = cart.find(i => i.imei_id == item.imei_id);
+
+        if (exists) {
+            alert("This IMEI is already in the cart.");
+            return;
+        }
+
+    }
+
     cart.push(item);
 
     renderCart();
-
 }
 
 // -------------------------------
@@ -37,6 +47,8 @@ function renderCart() {
 
     const grandTotal = document.getElementById("grandTotal");
 
+    const completeSaleBtn = document.getElementById("completeSaleBtn");
+
     cartBody.innerHTML = "";
 
     if (cart.length === 0) {
@@ -52,6 +64,8 @@ function renderCart() {
         itemCount.textContent = "0";
 
         grandTotal.textContent = "UGX 0";
+
+        completeSaleBtn.disabled = true;
 
         return;
     }
@@ -95,6 +109,8 @@ function renderCart() {
         itemCount.textContent = cart.length;
 
     grandTotal.textContent = "UGX " + total.toLocaleString();
+
+    completeSaleBtn.disabled = false;
 
     // Store the entire cart in the hidden input
     const cartInput = document.getElementById("cartItems");

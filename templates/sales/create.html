@@ -217,10 +217,7 @@ content %}
 
             <hr />
 
-            <input
-                type="hidden"
-                id="cartItems"
-                name="cart_items">
+            <input type="hidden" id="cartItems" name="cart_items" />
 
             <label class="form-label"> Payment Method </label>
 
@@ -231,7 +228,7 @@ content %}
               <option>Bank Transfer</option>
             </select>
 
-            <button class="btn btn-success w-100">
+            <button id="completeSaleBtn" class="btn btn-success w-100" disabled>
               <i class="fas fa-check-circle"></i>
 
               Complete Sale
@@ -243,9 +240,7 @@ content %}
   </form>
 </div>
 
-{% endblock %} 
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 
 <script src="{{ url_for('static', filename='js/api.js') }}"></script>
 

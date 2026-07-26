@@ -188,17 +188,21 @@ def get_variants(product_id):
     ).order_by(ProductVariant.sku).all()
 
     return jsonify([
-        {
-            "id": variant.id,
-            "sku": variant.sku,
-            "colour": variant.colour,
-            "storage": variant.storage,
-            "ram": variant.ram,
-            "price": float(variant.selling_price),
-            "stock": variant.quantity
-        }
-        for variant in variants
-    ])
+    {
+        "id": variant.id,
+        "sku": variant.sku,
+        "colour": variant.colour,
+        "storage": variant.storage,
+        "ram": variant.ram,
+        "price": float(variant.selling_price),
+        "stock": variant.quantity,
+
+        # NEW
+        "brand": variant.product.brand.name,
+        "product": variant.product.name
+    }
+    for variant in variants
+])
 
 
 @sale_bp.route("/api/imeis/<int:variant_id>")
