@@ -11,7 +11,7 @@ def create_app():
     app = Flask(__name__)
 
     app.config.from_object(Config)
-    
+
     # Upload configuration
     app.config["UPLOAD_FOLDER"] = os.path.join(app.static_folder, "uploads")
     app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024  # 2 MB
@@ -34,13 +34,12 @@ def create_app():
     from models.sale import Sale
     from models.sale_item import SaleItem
     from models.company import Company
-    
-     # Make company available in every template
+    from models.system_setting import SystemSetting
+
+    # Make company available in every template
     @app.context_processor
     def inject_company():
-        return {
-            "company": Company.query.first()
-        }
+        return {"company": Company.query.first()}
 
     # Register Blueprints
     from routes.auth import auth_bp
@@ -57,6 +56,7 @@ def create_app():
     from routes.company import company_bp
     from routes.report import report_bp
     from routes.backup import backup_bp
+    from routes.system_settings import system_settings_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
@@ -72,7 +72,7 @@ def create_app():
     app.register_blueprint(company_bp)
     app.register_blueprint(report_bp)
     app.register_blueprint(backup_bp)
-    
+    app.register_blueprint(system_settings_bp)
 
     Migrate(app, db)
 

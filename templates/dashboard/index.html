@@ -47,77 +47,272 @@
 
     </div>
 
-    <!-- KPI CARDS -->
+    
+<!-- ========================================================= -->
+<!-- EXECUTIVE KPI DASHBOARD -->
+<!-- ========================================================= -->
 
-    <div class="kpi-grid">
+<div class="row g-4 mb-5">
 
-        <div class="erp-card">
-
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="erp-card h-100">
             <div class="erp-icon green">
-
-                <i class="fas fa-mobile-alt"></i>
-
+                <i class="fas fa-wallet"></i>
             </div>
 
-            <div>
+            <div class="flex-grow-1">
+                <small>Total Revenue</small>
 
-                <small>Total Products</small>
+                <h3 class="erp-value">
+                    UGX {{ "{:,.0f}".format(stats.year_sales) }}
+                </h3>
 
-                <h3>{{ stats.total_products }}</h3>
-
+                <span class="text-success fw-semibold">
+                    Current Financial Year
+                </span>
             </div>
-
         </div>
+    </div>
 
-        <div class="erp-card">
-
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="erp-card h-100">
             <div class="erp-icon blue">
-
-                <i class="fas fa-boxes"></i>
-
+                <i class="fas fa-chart-line"></i>
             </div>
 
-            <div>
+            <div class="flex-grow-1">
+                <small>Total Profit</small>
 
+                <h3 class="erp-value">
+                    UGX {{ "{:,.0f}".format(stats.year_profit) }}
+                </h3>
+
+                <span class="text-primary fw-semibold">
+                    Current Financial Year
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="erp-card h-100">
+            <div class="erp-icon orange">
+                <i class="fas fa-warehouse"></i>
+            </div>
+
+            <div class="flex-grow-1">
+                <small>Inventory Value</small>
+
+                <h3 class="erp-value">
+                    UGX {{ "{:,.0f}".format(stats.inventory_value) }}
+                </h3>
+
+                <span class="text-warning fw-semibold">
+                    Selling Value
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="erp-card h-100">
+            <div class="erp-icon red">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+
+            <div class="flex-grow-1">
+                <small>Inventory Cost</small>
+
+                <h3 class="erp-value">
+                    UGX {{ "{:,.0f}".format(stats.inventory_cost) }}
+                </h3>
+
+                <span class="text-danger fw-semibold">
+                    Buying Cost
+                </span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4 mb-5">
+
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="erp-card h-100">
+            <div class="erp-icon green">
+                <i class="fas fa-sack-dollar"></i>
+            </div>
+
+            <div class="flex-grow-1">
+                <small>Expected Profit</small>
+
+                <h3 class="erp-value">
+                    UGX {{ "{:,.0f}".format(stats.expected_profit) }}
+                </h3>
+
+                <span class="text-success fw-semibold">
+                    Projected Profit
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="erp-card h-100">
+            <div class="erp-icon purple">
+                <i class="fas fa-boxes-stacked"></i>
+            </div>
+
+            <div class="flex-grow-1">
                 <small>Available Stock</small>
 
-                <h3>{{ stats.available_stock }}</h3>
+                <h3 class="erp-value">
+                    {{ stats.available_stock }}
+                </h3>
 
+                <span class="text-muted">
+                    Units Available
+                </span>
             </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-12 col-xl-4">
+        <div class="erp-card h-100">
+            <div class="erp-icon blue">
+                <i class="fas fa-barcode"></i>
+            </div>
+
+            <div class="flex-grow-1">
+                <small>Total IMEIs</small>
+
+                <h3 class="erp-value">
+                    {{ stats.total_imeis }}
+                </h3>
+
+                <span class="text-muted">
+                    Registered Devices
+                </span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ========================================================= -->
+
+<div class="row g-4 mb-4">
+
+    <div class="col-lg-2 col-md-4">
+
+        <div class="erp-card mini-card">
+
+            <small>Today's Sales</small>
+
+            <h4>
+                UGX {{ "{:,.0f}".format(stats.today_sales) }}
+            </h4>
 
         </div>
 
-        <div class="erp-card">
+    </div>
 
-            <div class="erp-icon orange">
+    <div class="col-lg-2 col-md-4">
 
-                <i class="fas fa-coins"></i>
+        <div class="erp-card mini-card">
 
-            </div>
+            <small>Today's Profit</small>
 
-            <div>
-
-                <small>Today's Sales</small>
-
-                <h3>UGX {{ "{:,.0f}".format(stats.today_sales) }}</h3>
-
-            </div>
+            <h4>
+                UGX {{ "{:,.0f}".format(stats.today_profit) }}
+            </h4>
 
         </div>
 
-        <div class="erp-card">
+    </div>
 
-            <div class="erp-icon red">
+    <div class="col-lg-2 col-md-4">
 
-                <i class="fas fa-chart-line"></i>
+        <div class="erp-card mini-card">
 
+            <small>Weekly Sales</small>
+
+            <h4>
+                UGX {{ "{:,.0f}".format(stats.week_sales) }}
+            </h4>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-2 col-md-4">
+
+        <div class="erp-card mini-card">
+
+            <small>Monthly Sales</small>
+
+            <h4>
+                UGX {{ "{:,.0f}".format(stats.month_sales) }}
+            </h4>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-2 col-md-4">
+
+        <div class="erp-card mini-card">
+
+            <small>Year Sales</small>
+
+            <h4>
+                UGX {{ "{:,.0f}".format(stats.year_sales) }}
+            </h4>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-2 col-md-4">
+
+        <div class="erp-card mini-card">
+
+            <small>Average Sale</small>
+
+            <h4>
+                UGX {{ "{:,.0f}".format(stats.average_sale) }}
+            </h4>
+
+        </div>
+
+    </div>
+
+</div>
+
+        <!-- ========================================================= -->
+<!-- ANALYTICS SECTION -->
+<!-- ========================================================= -->
+
+<div class="row g-4 mb-4">
+
+    <!-- Sales vs Profit -->
+    <div class="col-12 col-xl-6">
+
+        <div class="erp-panel h-100">
+
+            <div class="erp-panel-header">
+                <h5>
+                    <i class="fas fa-chart-line text-success me-2"></i>
+                    Sales vs Profit (30 Days)
+                </h5>
             </div>
 
-            <div>
+            <div class="erp-panel-body">
 
-                <small>Today's Profit</small>
-
-                <h3>UGX {{ "{:,.0f}".format(stats.today_profit) }}</h3>
+                <div class="dashboard-chart">
+                    <canvas id="salesProfitChart"></canvas>
+                </div>
 
             </div>
 
@@ -125,154 +320,197 @@
 
     </div>
 
-    <!-- Continue in Part 2 -->
 
-        <!-- Main Dashboard Grid -->
+    <!-- Monthly Sales vs Purchases -->
+    <div class="col-12 col-xl-6">
 
-    <div class="dashboard-grid">
-
-        <!-- Sales Analytics -->
-
-        <section class="erp-panel chart-panel">
+        <div class="erp-panel h-100">
 
             <div class="erp-panel-header">
-
                 <h5>
-
-                    <i class="fas fa-chart-area text-success me-2"></i>
-
-                    Sales Analytics
-
+                    <i class="fas fa-chart-column text-primary me-2"></i>
+                    Monthly Sales vs Purchases
                 </h5>
-
             </div>
 
             <div class="erp-panel-body">
 
-                <canvas id="salesChart"></canvas>
-
-            </div>
-
-        </section>
-
-        <!-- Inventory Summary -->
-
-        <aside class="erp-panel summary-panel">
-
-            <div class="erp-panel-header">
-
-                <h5>
-
-                    <i class="fas fa-chart-pie text-primary me-2"></i>
-
-                    Inventory Summary
-
-                </h5>
-
-            </div>
-
-            <div class="erp-panel-body">
-
-                <div class="summary-item">
-
-                    <span>Total Categories</span>
-
-                    <strong>{{ stats.total_categories }}</strong>
-
-                </div>
-
-                <div class="summary-item">
-
-                    <span>Total Brands</span>
-
-                    <strong>{{ stats.total_brands }}</strong>
-
-                </div>
-
-                <div class="summary-item">
-
-                    <span>Total Variants</span>
-
-                    <strong>{{ stats.total_variants }}</strong>
-
-                </div>
-
-                <div class="summary-item">
-
-                    <span>Inventory Value</span>
-
-                    <strong>
-
-                        UGX {{ "{:,.0f}".format(stats.inventory_value) }}
-
-                    </strong>
-
-                </div>
-
-                <div class="summary-item">
-
-                    <span>Low Stock</span>
-
-                    <strong class="text-warning">
-
-                        {{ stats.low_stock_count }}
-
-                    </strong>
-
-                </div>
-
-                <div class="summary-item">
-
-                    <span>Out of Stock</span>
-
-                    <strong class="text-danger">
-
-                        {{ stats.out_of_stock }}
-
-                    </strong>
-
+                <div class="dashboard-chart">
+                    <canvas id="monthlyChart"></canvas>
                 </div>
 
             </div>
 
-        </aside>
+        </div>
 
     </div>
 
-    <!-- Sales Section -->
+</div>
 
-    <div class="dashboard-grid mt-4">
 
-        <section class="erp-panel wide-panel">
+<!-- ========================================================= -->
+<!-- BUSINESS HEALTH -->
+<!-- ========================================================= -->
+
+<div class="row g-4 mb-4">
+
+    <div class="col-12">
+
+        <div class="erp-panel">
 
             <div class="erp-panel-header">
 
                 <h5>
-
-                    <i class="fas fa-clock text-success me-2"></i>
-
-                    Recent Sales
-
+                    <i class="fas fa-heart-pulse text-danger me-2"></i>
+                    Business Health
                 </h5>
 
             </div>
+
+            <div class="erp-panel-body">
+
+                <div class="row g-0">
+
+                    <div class="col-12 col-md-6 col-xl-3 px-xl-3">
+
+                        <div class="summary-item">
+                            <span>Inventory Value</span>
+
+                            <strong class="text-success">
+                                UGX {{ "{:,.0f}".format(stats.inventory_value) }}
+                            </strong>
+                        </div>
+
+                        <div class="summary-item">
+                            <span>Inventory Cost</span>
+
+                            <strong class="text-danger">
+                                UGX {{ "{:,.0f}".format(stats.inventory_cost) }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-12 col-md-6 col-xl-3 px-xl-3">
+
+                        <div class="summary-item">
+                            <span>Expected Profit</span>
+
+                            <strong class="text-primary">
+                                UGX {{ "{:,.0f}".format(stats.expected_profit) }}
+                            </strong>
+                        </div>
+
+                        <div class="summary-item">
+                            <span>Available Stock</span>
+
+                            <strong>
+                                {{ stats.available_stock }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-12 col-md-6 col-xl-3 px-xl-3">
+
+                        <div class="summary-item">
+                            <span>Low Stock</span>
+
+                            <strong class="text-warning">
+                                {{ stats.low_stock_count }}
+                            </strong>
+                        </div>
+
+                        <div class="summary-item">
+                            <span>Out of Stock</span>
+
+                            <strong class="text-danger">
+                                {{ stats.out_of_stock }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-12 col-md-6 col-xl-3 px-xl-3">
+
+                        <div class="summary-item">
+                            <span>Available IMEIs</span>
+
+                            <strong class="text-success">
+                                {{ stats.available_imeis }}
+                            </strong>
+                        </div>
+
+                        <div class="summary-item">
+                            <span>Reserved / Sold</span>
+
+                            <strong>
+                                {{ stats.reserved_imeis }} / {{ stats.sold_imeis }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+    <!-- ========================================================= -->
+<!-- SALES & PERFORMANCE -->
+<!-- ========================================================= -->
+
+<div class="row g-4 mb-4">
+
+    <!-- Recent Sales -->
+    <div class="col-12 col-xl-8">
+
+        <div class="erp-panel h-100">
+
+            <div class="erp-panel-header justify-content-between">
+
+                <div>
+
+                    <h5>
+                        <i class="fas fa-clock text-success me-2"></i>
+                        Recent Sales
+                    </h5>
+
+                    <small class="text-muted">
+                        Latest completed transactions
+                    </small>
+
+                </div>
+
+                <a
+                    href="{{ url_for('sale.index') }}"
+                    class="btn btn-success btn-sm px-3"
+                >
+                    View All
+                </a>
+
+            </div>
+
 
             <div class="table-responsive">
 
-                <table class="table align-middle">
+                <table class="table recent-sales-table align-middle">
 
                     <thead>
 
                         <tr>
-
                             <th>Invoice</th>
-
                             <th>Customer</th>
-
-                            <th>Total</th>
-
+                            <th class="text-end">Amount</th>
                             <th>Date</th>
-
                         </tr>
 
                     </thead>
@@ -283,20 +521,26 @@
 
                         <tr>
 
-                            <td>{{ sale.invoice_number }}</td>
-
-                            <td>{{ sale.customer_name }}</td>
+                            <td>
+                                <span class="invoice-badge">
+                                    {{ sale.invoice_number }}
+                                </span>
+                            </td>
 
                             <td>
+                                <strong>{{ sale.customer_name }}</strong>
+                            </td>
 
-                                UGX {{ "{:,.0f}".format(sale.total_amount) }}
+                            <td class="text-end">
+
+                                <span class="amount">
+                                    UGX {{ "{:,.0f}".format(sale.total_amount) }}
+                                </span>
 
                             </td>
 
                             <td>
-
                                 {{ sale.sale_date.strftime("%d %b %Y") }}
-
                             </td>
 
                         </tr>
@@ -305,10 +549,13 @@
 
                         <tr>
 
-                            <td colspan="4" class="text-center">
+                            <td
+                                colspan="4"
+                                class="text-center py-5 text-muted"
+                            >
+                                <i class="fas fa-receipt fa-2x mb-3"></i>
 
-                                No recent sales
-
+                                <div>No recent sales available</div>
                             </td>
 
                         </tr>
@@ -321,18 +568,21 @@
 
             </div>
 
-        </section>
+        </div>
 
-        <aside class="erp-panel">
+    </div>
+
+
+    <!-- Top Selling Products -->
+    <div class="col-12 col-xl-4">
+
+        <div class="erp-panel h-100">
 
             <div class="erp-panel-header">
 
                 <h5>
-
-                    <i class="fas fa-trophy text-warning me-2"></i>
-
-                    Top Products
-
+                    <i class="fas fa-fire text-danger me-2"></i>
+                    Top Selling Products
                 </h5>
 
             </div>
@@ -341,178 +591,353 @@
 
                 {% for item in stats.top_products %}
 
-                <div class="summary-item">
+                <div class="performance-row">
 
-                    <span>{{ item.product }}</span>
+                    <div>
 
-                    <strong>{{ item.sold }}</strong>
+                        <strong>
+                            {{ item.product }}
+                        </strong>
+
+                        <small>
+                            Units Sold
+                        </small>
+
+                    </div>
+
+                    <span class="performance-badge bg-success">
+                        {{ item.sold }}
+                    </span>
 
                 </div>
 
                 {% else %}
 
-                <p class="text-muted mb-0">
+                <div class="text-center text-muted py-5">
 
-                    No sales data available.
+                    <i class="fas fa-box-open fa-2x mb-3"></i>
 
-                </p>
+                    <div>No product sales yet.</div>
+
+                </div>
 
                 {% endfor %}
 
             </div>
 
-        </aside>
+        </div>
 
     </div>
 
-    <!-- Continue in Part 3 -->
+</div>
 
-        <!-- Bottom Section -->
 
-    <div class="dashboard-grid mt-4">
+<!-- ========================================================= -->
+<!-- BRAND PERFORMANCE -->
+<!-- ========================================================= -->
 
-        <section class="erp-panel wide-panel">
+<div class="row g-4 mb-4">
+
+    <div class="col-12">
+
+        <div class="erp-panel">
 
             <div class="erp-panel-header">
 
                 <h5>
-
-                    <i class="fas fa-triangle-exclamation text-danger me-2"></i>
-
-                    Low Stock Alerts
-
+                    <i class="fas fa-building text-primary me-2"></i>
+                    Brand Performance
                 </h5>
 
             </div>
 
-            <div class="table-responsive">
+            <div class="erp-panel-body">
 
-                <table class="table align-middle">
+                <div class="row g-4">
 
-                    <thead>
+                    {% for brand in stats.brand_performance %}
 
-                        <tr>
+                    <div class="col-12 col-sm-6 col-xl-3">
 
-                            <th>Brand</th>
-                            <th>Product</th>
-                            <th>Variant</th>
-                            <th>Stock</th>
+                        <div class="brand-performance-card">
 
-                        </tr>
+                            <div>
 
-                    </thead>
+                                <strong>
+                                    {{ brand.brand }}
+                                </strong>
 
-                    <tbody>
+                                <small>
+                                    Units Sold
+                                </small>
 
-                        {% for item in stats.low_stock %}
+                            </div>
 
-                        <tr>
+                            <span class="performance-badge bg-primary">
+                                {{ brand.sold }}
+                            </span>
 
-                            <td>{{ item.brand }}</td>
+                        </div>
 
-                            <td>{{ item.product }}</td>
+                    </div>
 
-                            <td>{{ item.variant }}</td>
+                    {% else %}
 
-                            <td>
+                    <div class="col-12">
 
-                                {% if item.quantity == 0 %}
+                        <div class="text-center text-muted py-4">
 
-                                <span class="badge bg-danger">
+                            <i class="fas fa-chart-line fa-2x mb-3"></i>
 
-                                    Out of Stock
+                            <div>No brand statistics available.</div>
 
-                                </span>
+                        </div>
 
-                                {% else %}
+                    </div>
 
-                                <span class="badge bg-warning text-dark">
+                    {% endfor %}
 
-                                    {{ item.quantity }}
-
-                                </span>
-
-                                {% endif %}
-
-                            </td>
-
-                        </tr>
-
-                        {% else %}
-
-                        <tr>
-
-                            <td colspan="4" class="text-center text-muted">
-
-                                No low stock items.
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
+                </div>
 
             </div>
 
-        </section>
-
-        <aside class="erp-panel">
-
-            <div class="erp-panel-header">
-
-                <h5>
-
-                    <i class="fas fa-bolt text-success me-2"></i>
-
-                    Quick Actions
-
-                </h5>
-
-            </div>
-
-            <div class="erp-panel-body d-grid gap-3">
-
-                <a href="{{ url_for('sale.index') }}" class="btn btn-success">
-
-                    <i class="fas fa-cash-register me-2"></i>
-
-                    New Sale
-
-                </a>
-
-                <a href="{{ url_for('purchase.create') }}" class="btn btn-primary">
-
-                    <i class="fas fa-cart-shopping me-2"></i>
-
-                    New Purchase
-
-                </a>
-
-                <a href="{{ url_for('product.index') }}" class="btn btn-warning">
-
-                    <i class="fas fa-mobile-screen-button me-2"></i>
-
-                    Products
-
-                </a>
-
-                <a href="{{ url_for('imei.index') }}" class="btn btn-dark">
-
-                    <i class="fas fa-barcode me-2"></i>
-
-                    IMEI Management
-
-                </a>
-
-            </div>
-
-        </aside>
+        </div>
 
     </div>
+
+</div>
+
+        <!-- ========================================================= -->
+<!-- INVENTORY & QUICK ACTIONS -->
+<!-- ========================================================= -->
+
+<!-- =========================================================
+     DASHBOARD OPERATIONS ROW
+========================================================= -->
+<div class="dashboard-operations-grid">
+
+    {% if settings.show_low_stock_dashboard %}
+
+    <!-- LOW STOCK ALERTS -->
+    <section class="erp-panel dashboard-low-stock">
+
+        <div class="erp-panel-header">
+            <div class="panel-title-group">
+                <div class="panel-icon warning">
+                    <i class="fas fa-triangle-exclamation"></i>
+                </div>
+
+                <div>
+                    <h5>Low Stock Alerts</h5>
+                    <small>Products requiring attention</small>
+                </div>
+            </div>
+
+            <span class="panel-count warning">
+                {{ stats.low_stock|length }}
+            </span>
+        </div>
+
+        <div class="erp-panel-body">
+
+            {% if stats.low_stock %}
+
+                <div class="stock-list">
+
+                    {% for item in stats.low_stock %}
+
+                    <div class="stock-row">
+
+                        <div class="stock-product">
+                            <strong>{{ item.product }}</strong>
+                            <small>{{ item.brand }}</small>
+                        </div>
+
+                        <div class="stock-quantity">
+                            <span>{{ item.quantity }}</span>
+                            <small>left</small>
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-stock-state">
+                    <i class="fas fa-circle-check"></i>
+                    <strong>Everything is well stocked</strong>
+                    <span>No products currently require attention.</span>
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+    {% endif %}
+
+
+    <!-- IMEI STATISTICS -->
+    <section class="erp-panel dashboard-imei">
+
+        <div class="erp-panel-header">
+
+            <div class="panel-title-group">
+
+                <div class="panel-icon primary">
+                    <i class="fas fa-barcode"></i>
+                </div>
+
+                <div>
+                    <h5>IMEI Statistics</h5>
+                    <small>Device tracking overview</small>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="erp-panel-body">
+
+            <div class="imei-stat-list">
+
+                <div class="imei-stat-item registered">
+
+                    <div class="imei-stat-icon">
+                        <i class="fas fa-barcode"></i>
+                    </div>
+
+                    <div>
+                        <span>Registered</span>
+                        <strong>{{ stats.total_imeis }}</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="imei-stat-item available">
+
+                    <div class="imei-stat-icon">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+
+                    <div>
+                        <span>Available</span>
+                        <strong>{{ stats.available_imeis }}</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="imei-stat-item sold">
+
+                    <div class="imei-stat-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+
+                    <div>
+                        <span>Sold</span>
+                        <strong>{{ stats.sold_imeis }}</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- QUICK ACTIONS -->
+    <section class="erp-panel dashboard-actions">
+
+        <div class="erp-panel-header">
+
+            <div class="panel-title-group">
+
+                <div class="panel-icon success">
+                    <i class="fas fa-bolt"></i>
+                </div>
+
+                <div>
+                    <h5>Quick Actions</h5>
+                    <small>Common operations</small>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="erp-panel-body">
+
+            <div class="dashboard-action-grid">
+
+                <a href="{{ url_for('sale.create') }}"
+                   class="dashboard-action-card sale">
+
+                    <div class="action-icon">
+                        <i class="fas fa-cash-register"></i>
+                    </div>
+
+                    <span>New Sale</span>
+
+                    <i class="fas fa-chevron-right action-arrow"></i>
+
+                </a>
+
+
+                <a href="{{ url_for('purchase.create') }}"
+                   class="dashboard-action-card purchase">
+
+                    <div class="action-icon">
+                        <i class="fas fa-cart-plus"></i>
+                    </div>
+
+                    <span>Purchase</span>
+
+                    <i class="fas fa-chevron-right action-arrow"></i>
+
+                </a>
+
+
+                <a href="{{ url_for('product.index') }}"
+                   class="dashboard-action-card product">
+
+                    <div class="action-icon">
+                        <i class="fas fa-mobile-screen"></i>
+                    </div>
+
+                    <span>Products</span>
+
+                    <i class="fas fa-chevron-right action-arrow"></i>
+
+                </a>
+
+
+                <a href="{{ url_for('imei.index') }}"
+                   class="dashboard-action-card imei">
+
+                    <div class="action-icon">
+                        <i class="fas fa-barcode"></i>
+                    </div>
+
+                    <span>IMEI Management</span>
+
+                    <i class="fas fa-chevron-right action-arrow"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
 
 </div>
 
@@ -524,61 +949,273 @@
 
 <script>
 
-const chart = document.getElementById("salesChart");
+document.addEventListener("DOMContentLoaded", function () {
 
-if (chart) {
+    // =====================================================
+    // COMMON CHART OPTIONS
+    // =====================================================
 
-    new Chart(chart, {
-    type: "line",
-    data: {
-        labels: {{ stats.chart_labels|tojson }},
-        datasets: [
-            {
-                label: "Sales",
-                data: {{ stats.sales_values|tojson }},
-                borderColor: "#16a34a",
-                backgroundColor: "rgba(22,163,74,.12)",
-                fill: true,
-                tension: 0.4,
-                borderWidth: 3,
-                pointRadius: 4,
-                pointHoverRadius: 6
+    Chart.defaults.font.family = "'Segoe UI', sans-serif";
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = "#6b7280";
+
+    // =====================================================
+    // SALES VS PROFIT (LAST 30 DAYS)
+    // =====================================================
+
+    const salesCanvas = document.getElementById("salesProfitChart");
+
+    if (salesCanvas) {
+
+        new Chart(salesCanvas, {
+
+            type: "line",
+
+            data: {
+
+                labels: {{ stats.chart_labels|tojson }},
+
+                datasets: [
+
+                    {
+
+                        label: "Sales",
+
+                        data: {{ stats.sales_values|tojson }},
+
+                        borderColor: "#16a34a",
+
+                        backgroundColor: "rgba(22,163,74,.15)",
+
+                        fill: true,
+
+                        tension: 0.35,
+
+                        borderWidth: 3,
+
+                        pointRadius: 3,
+
+                        pointHoverRadius: 6
+
+                    },
+
+                    {
+
+                        label: "Profit",
+
+                        data: {{ stats.profit_values|tojson }},
+
+                        borderColor: "#2563eb",
+
+                        backgroundColor: "rgba(37,99,235,.12)",
+
+                        fill: false,
+
+                        tension: 0.35,
+
+                        borderWidth: 3,
+
+                        pointRadius: 3,
+
+                        pointHoverRadius: 6
+
+                    }
+
+                ]
+
             },
-            {
-                label: "Profit",
-                data: {{ stats.profit_values|tojson }},
-                borderColor: "#2563eb",
-                backgroundColor: "rgba(37,99,235,.10)",
-                fill: false,
-                tension: 0.4,
-                borderWidth: 3,
-                pointRadius: 4,
-                pointHoverRadius: 6
-            }
-        ]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: true
-            }
-        },
-        scales: {
-            x: {
-                grid: {
-                    display: false
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                interaction: {
+
+                    mode: "index",
+
+                    intersect: false
+
+                },
+
+                plugins: {
+
+                    legend: {
+
+                        position: "top"
+
+                    },
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            label: function(context){
+
+                                return context.dataset.label +
+                                    ": UGX " +
+                                    Number(context.parsed.y).toLocaleString();
+
+                            }
+
+                        }
+
+                    }
+
+                },
+
+                scales: {
+
+                    x: {
+
+                        grid: {
+
+                            display: false
+
+                        }
+
+                    },
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        ticks: {
+
+                            callback: function(value){
+
+                                return "UGX " + value.toLocaleString();
+
+                            }
+
+                        }
+
+                    }
+
                 }
-            },
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
 
-}
+            }
+
+        });
+
+    }
+
+    // =====================================================
+    // MONTHLY SALES VS PURCHASES
+    // =====================================================
+
+    const monthlyCanvas = document.getElementById("monthlyChart");
+
+    if (monthlyCanvas) {
+
+        new Chart(monthlyCanvas, {
+
+            type: "bar",
+
+            data: {
+
+                labels: {{ stats.monthly_labels|tojson }},
+
+                datasets: [
+
+                    {
+
+                        label: "Sales",
+
+                        data: {{ stats.monthly_sales|tojson }},
+
+                        backgroundColor: "#16a34a",
+
+                        borderRadius: 8
+
+                    },
+
+                    {
+
+                        label: "Purchases",
+
+                        data: {{ stats.monthly_purchases|tojson }},
+
+                        backgroundColor: "#2563eb",
+
+                        borderRadius: 8
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+
+                        position: "top"
+
+                    },
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            label: function(context){
+
+                                return context.dataset.label +
+                                    ": UGX " +
+                                    Number(context.parsed.y).toLocaleString();
+
+                            }
+
+                        }
+
+                    }
+
+                },
+
+                scales: {
+
+                    x: {
+
+                        grid: {
+
+                            display: false
+
+                        }
+
+                    },
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        ticks: {
+
+                            callback: function(value){
+
+                                return "UGX " + value.toLocaleString();
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
+});
 
 </script>
 

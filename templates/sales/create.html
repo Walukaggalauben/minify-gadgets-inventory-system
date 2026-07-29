@@ -1,246 +1,639 @@
-{% extends "layout.html" %} {% block title %}New Sale{% endblock %} {% block
-content %}
+{% extends "layout.html" %}
+
+{% block title %}New Sale{% endblock %}
+
+{% block content %}
 
 <div class="container-fluid">
-  <!-- Page Header -->
+
+  <!-- ==================================================
+       PAGE HEADER
+  =================================================== -->
+
   <div class="d-flex justify-content-between align-items-center mb-4">
+
     <div>
+
       <h2 class="fw-bold text-success">
+
         <i class="fas fa-cash-register"></i>
         Sales POS
+
       </h2>
 
-      <small class="text-muted"> Create a new customer sale </small>
+      <small class="text-muted">
+        Create a new customer sale
+      </small>
+
     </div>
 
-    <a href="{{ url_for('sale.index') }}" class="btn btn-outline-secondary">
+    <a
+      href="{{ url_for('sale.index') }}"
+      class="btn btn-outline-secondary"
+    >
       <i class="fas fa-arrow-left"></i>
-
       Back
     </a>
+
   </div>
 
-  <form method="POST" id="saleForm">
-    <div class="row">
-      <!-- LEFT SIDE -->
-      <div class="col-lg-8">
-        <!-- Customer Card -->
-        <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-success text-white">
-            <strong>
-              <i class="fas fa-user"></i>
 
+  <!-- ==================================================
+       SALE FORM
+  =================================================== -->
+
+  <form method="POST" id="saleForm">
+
+    <div class="row">
+
+      <!-- ==================================================
+           LEFT SIDE
+      =================================================== -->
+
+      <div class="col-lg-8">
+
+
+        <!-- ==================================================
+             CUSTOMER INFORMATION
+        =================================================== -->
+
+        <div class="card shadow-sm border-0 mb-4">
+
+          <div class="card-header bg-success text-white">
+
+            <strong>
+
+              <i class="fas fa-user"></i>
               Customer Information
+
             </strong>
+
           </div>
 
+
           <div class="card-body">
+
             <div class="row">
+
+              <!-- Customer Name -->
+
               <div class="col-md-6 mb-3">
-                <label class="form-label"> Customer Name </label>
+
+                <label class="form-label">
+                  Customer Name
+                </label>
 
                 <input
                   type="text"
                   name="customer_name"
                   class="form-control"
                   placeholder="Walk-in Customer"
+                  {% if settings.require_customer_on_sale %}
                   required
+                  {% endif %}
                 />
+
               </div>
 
+
+              <!-- Customer Phone -->
+
               <div class="col-md-6 mb-3">
-                <label class="form-label"> Phone Number </label>
+
+                <label class="form-label">
+                  Phone Number
+                </label>
 
                 <input
                   type="text"
                   name="customer_phone"
                   class="form-control"
                   placeholder="07XXXXXXXX"
+                  {% if settings.require_customer_on_sale %}
+                  required
+                  {% endif %}
                 />
+
               </div>
+
             </div>
+
           </div>
+
         </div>
 
-        <!-- Add Product -->
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-success text-white">
-            <strong>
-              <i class="fas fa-cart-plus"></i>
 
+        <!-- ==================================================
+             ADD PRODUCT
+        =================================================== -->
+
+        <div class="card shadow-sm border-0">
+
+          <div class="card-header bg-success text-white">
+
+            <strong>
+
+              <i class="fas fa-cart-plus"></i>
               Add Product
+
             </strong>
+
           </div>
 
-          <div class="card-body">
-            <div class="row">
-              <!-- Brand -->
-              <div class="col-md-3 mb-3">
-                <label class="form-label"> Brand </label>
 
-                <select id="brand" class="form-select">
-                  <option value="">Select Brand</option>
+          <div class="card-body">
+
+
+            <!-- ==================================================
+                 PRODUCT SELECTION
+            =================================================== -->
+
+            <div class="row">
+
+
+              <!-- BRAND -->
+
+              <div class="col-md-3 mb-3">
+
+                <label class="form-label">
+                  Brand
+                </label>
+
+                <select
+                  id="brand"
+                  class="form-select"
+                >
+
+                  <option value="">
+                    Select Brand
+                  </option>
 
                   {% for brand in brands %}
 
-                  <option value="{{ brand.id }}">{{ brand.name }}</option>
+                  <option value="{{ brand.id }}">
+                    {{ brand.name }}
+                  </option>
 
                   {% endfor %}
+
                 </select>
+
               </div>
 
-              <!-- Product -->
+
+              <!-- PRODUCT -->
+
               <div class="col-md-3 mb-3">
-                <label class="form-label"> Product </label>
 
-                <select id="product" class="form-select">
-                  <option value="">Select Product</option>
+                <label class="form-label">
+                  Product
+                </label>
 
-                  {% for product in products %}
+                <select
+                  id="product"
+                  class="form-select"
+                >
 
-                  <option value="{{ product.id }}">{{ product.name }}</option>
+                  <option value="">
+                    Select Product
+                  </option>
 
-                  {% endfor %}
                 </select>
+
               </div>
 
-              <!-- Variant -->
+
+              <!-- VARIANT -->
+
               <div class="col-md-3 mb-3">
-                <label class="form-label"> Variant </label>
+
+                <label class="form-label">
+                  Variant
+                </label>
 
                 <select
                   id="variant"
-                  name="variant_id"
                   class="form-select"
-                  required
                 >
-                  <option value="">Select Variant</option>
 
-                  {% for variant in variants %}
+                  <option value="">
+                    Select Variant
+                  </option>
 
-                  <option value="{{ variant.id }}">{{ variant.sku }}</option>
-
-                  {% endfor %}
                 </select>
+
               </div>
 
-              <!-- IMEI -->
+
+              <!-- ==================================================
+                   IMEI / SERIAL SEARCH
+              =================================================== -->
+
               <div class="col-md-3 mb-3">
-                <label class="form-label"> IMEI </label>
 
-                <select id="imei" name="imei_id" class="form-select">
-                  <option value="">Select IMEI</option>
-
-                  {% for imei in imeis %}
-
-                  <option value="{{ imei.id }}">{{ imei.imei }}</option>
-
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-2">
-                <label class="form-label"> Quantity </label>
+                <label class="form-label">
+                  IMEI / Serial
+                </label>
 
                 <input
-                  type="number"
-                  name="quantity"
+                  type="text"
+                  id="imeiSearch"
                   class="form-control"
-                  value="1"
-                  min="1"
+                  placeholder="Type last digits..."
+                  autocomplete="off"
+                  inputmode="numeric"
+                  maxlength="15"
+                  pattern="[0-9]{1,15}"
+                  disabled
                 />
+
+
+                <!-- Actual IMEI database ID -->
+
+                <input
+                  type="hidden"
+                  id="imei"
+                />
+
+
+                <!-- Search Results -->
+
+                <div
+                  id="imeiSearchResults"
+                  class="list-group mt-1"
+                >
+                </div>
+
+
+                <!-- IMEI Status -->
+
+                <small
+                  id="selectedImeiText"
+                  class="text-muted"
+                >
+                  Select a variant first
+                </small>
+
               </div>
 
-              <div class="col-md-10 d-flex align-items-end">
-                <button type="button" id="addItem" class="btn btn-success">
+            </div>
+
+
+            <!-- ==================================================
+                 PRICE SECTION
+            =================================================== -->
+
+            <div class="row mt-2">
+
+
+              <!-- ==================================================
+                   VARIANT / REFERENCE PRICE
+              =================================================== -->
+
+              <div class="col-md-4 mb-3">
+
+                <label class="form-label">
+                  Variant Price
+                </label>
+
+                <div
+                  id="referencePrice"
+                  class="form-control bg-light text-muted"
+                >
+                  Select variant
+                </div>
+
+                <small class="text-muted">
+                  Standard selling price
+                </small>
+
+              </div>
+
+
+              <!-- ==================================================
+                   ACTUAL SELLING PRICE
+              =================================================== -->
+
+              <div class="col-md-4 mb-3">
+
+                <label class="form-label">
+                  Actual Selling Price
+                </label>
+
+
+                <div class="input-group">
+
+                  <span class="input-group-text">
+                    {{ settings.currency }}
+                  </span>
+
+
+                  <input
+                    type="number"
+                    id="sellingPrice"
+                    class="form-control"
+                    min="1"
+                    step="1"
+                    placeholder="Select variant first"
+                    {% if not settings.allow_price_override %}
+                    readonly
+                    {% endif %}
+                  />
+
+                </div>
+
+
+                <!-- ==============================================
+                     PRICE OVERRIDE DISABLED
+                     Cashier must explicitly approve negotiation
+                =============================================== -->
+
+                {% if not settings.allow_price_override %}
+
+                <button
+                  type="button"
+                  id="enableNegotiatedPrice"
+                  class="btn btn-sm btn-outline-warning mt-2"
+                >
+
+                  <i class="fas fa-handshake"></i>
+
+                  Negotiated Price
+
+                </button>
+
+                <small class="d-block text-muted mt-1">
+
+                  Unlock only when a different price
+                  has been agreed.
+
+                </small>
+
+
+                <!-- ==============================================
+                     PRICE OVERRIDE ENABLED GLOBALLY
+                =============================================== -->
+
+                {% else %}
+
+                <small class="d-block text-success mt-1">
+
+                  <i class="fas fa-unlock"></i>
+
+                  Price override enabled
+
+                </small>
+
+                {% endif %}
+
+              </div>
+
+
+              <!-- ==================================================
+                   ADD TO CART
+              =================================================== -->
+
+              <div
+                class="col-md-4 mb-3 d-flex align-items-end"
+              >
+
+                <button
+                  type="button"
+                  id="addItem"
+                  class="btn btn-success w-100"
+                >
+
                   <i class="fas fa-plus-circle"></i>
 
                   Add To Cart
+
                 </button>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
 
-      <!-- RIGHT SIDE -->
+
+      <!-- ==================================================
+           RIGHT SIDE
+      =================================================== -->
+
       <div class="col-lg-4">
+
+
+        <!-- ==================================================
+             SALE SUMMARY
+        =================================================== -->
+
         <div class="card shadow-sm border-0 sticky-top">
+
           <div class="card-header bg-dark text-white">
-            <strong> Sale Summary </strong>
+
+            <strong>
+
+              <i class="fas fa-receipt me-1"></i>
+
+              Sale Summary
+
+            </strong>
+
           </div>
 
+
           <div class="card-body">
+
+
+            <!-- ==================================================
+                 CART TABLE
+            =================================================== -->
+
             <div class="table-responsive mb-3">
-              <table class="table table-bordered table-hover align-middle">
+
+              <table
+                class="table table-bordered table-hover align-middle"
+              >
+
                 <thead class="table-light">
+
                   <tr>
-                    <th>Product</th>
 
-                    <th>IMEI</th>
+                    <th>
+                      Product
+                    </th>
 
-                    <th width="70">Qty</th>
+                    <th>
+                      IMEI
+                    </th>
 
-                    <th>Price</th>
+                    <th width="60">
+                      Qty
+                    </th>
 
-                    <th>Total</th>
+                    <th>
+                      Price
+                    </th>
 
-                    <th width="60">Action</th>
+                    <th>
+                      Total
+                    </th>
+
+                    <th width="60">
+                      Action
+                    </th>
+
                   </tr>
+
                 </thead>
 
+
                 <tbody id="cartBody">
+
                   <tr>
-                    <td colspan="6" class="text-center text-muted">
+
+                    <td
+                      colspan="6"
+                      class="text-center text-muted"
+                    >
+
                       No items added yet
+
                     </td>
+
                   </tr>
+
                 </tbody>
+
               </table>
+
             </div>
 
+
             <hr />
+
+
+            <!-- ==================================================
+                 ITEM COUNT
+            =================================================== -->
 
             <div class="d-flex justify-content-between">
-              <strong>Items</strong>
 
-              <strong id="itemCount">0</strong>
+              <strong>
+                Items
+              </strong>
+
+              <strong id="itemCount">
+                0
+              </strong>
+
             </div>
 
-            <div class="d-flex justify-content-between mt-2">
-              <strong>Grand Total</strong>
 
-              <strong class="text-success" id="grandTotal"> UGX 0 </strong>
+            <!-- ==================================================
+                 GRAND TOTAL
+            =================================================== -->
+
+            <div
+              class="d-flex justify-content-between mt-2"
+            >
+
+              <strong>
+                Grand Total
+              </strong>
+
+              <strong
+                class="text-success"
+                id="grandTotal"
+              >
+                {{ settings.currency }} 0
+              </strong>
+
             </div>
+
 
             <hr />
 
-            <input type="hidden" id="cartItems" name="cart_items" />
 
-            <label class="form-label"> Payment Method </label>
+            <!-- Cart JSON sent to Flask -->
 
-            <select name="payment_method" class="form-select mb-3">
-              <option>Cash</option>
-              <option>Mobile Money</option>
-              <option>Card</option>
-              <option>Bank Transfer</option>
+            <input
+              type="hidden"
+              id="cartItems"
+              name="cart_items"
+            />
+
+
+            <!-- ==================================================
+                 PAYMENT METHOD
+            =================================================== -->
+
+            <label class="form-label">
+              Payment Method
+            </label>
+
+            <select
+              name="payment_method"
+              class="form-select mb-3"
+              required
+            >
+
+              <option value="Cash">
+                Cash
+              </option>
+
+              <option value="Mobile Money">
+                Mobile Money
+              </option>
+
+              <option value="Card">
+                Card
+              </option>
+
+              <option value="Bank Transfer">
+                Bank Transfer
+              </option>
+
             </select>
 
-            <button id="completeSaleBtn" class="btn btn-success w-100" disabled>
+
+            <!-- ==================================================
+                 COMPLETE SALE
+            =================================================== -->
+
+            <button
+              type="submit"
+              id="completeSaleBtn"
+              class="btn btn-success w-100"
+              disabled
+            >
+
               <i class="fas fa-check-circle"></i>
 
               Complete Sale
+
             </button>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
+
   </form>
+
 </div>
 
-{% endblock %} {% block scripts %}
+{% endblock %}
+
+
+{% block scripts %}
 
 <script src="{{ url_for('static', filename='js/api.js') }}"></script>
 

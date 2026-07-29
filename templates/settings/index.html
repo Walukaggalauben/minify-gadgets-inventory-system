@@ -1,0 +1,498 @@
+{% extends "layout.html" %}
+
+{% block title %}System Settings | MINIFY GADGETS ERP{% endblock %}
+
+{% block page_title %}System Settings{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>System Settings</h2>
+        <p>Configure how MINIFY GADGETS ERP operates.</p>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('system_settings.index') }}">
+
+    <div class="row g-4">
+
+        <!-- =========================================
+             GENERAL SETTINGS
+        ========================================== -->
+        <div class="col-xl-6">
+
+            <div class="erp-panel h-100">
+
+                <div class="erp-panel-header">
+                    <h5>
+                        <i class="fas fa-sliders me-2 text-success"></i>
+                        General Settings
+                    </h5>
+                </div>
+
+                <div class="erp-panel-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Currency</label>
+
+                        <select
+                            name="currency"
+                            class="form-select"
+                        >
+                            <option
+                                value="UGX"
+                                {% if settings.currency == "UGX" %}selected{% endif %}
+                            >
+                                UGX — Uganda Shilling
+                            </option>
+
+                            <option
+                                value="USD"
+                                {% if settings.currency == "USD" %}selected{% endif %}
+                            >
+                                USD — US Dollar
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Timezone</label>
+
+                        <select
+                            name="timezone"
+                            class="form-select"
+                        >
+                            <option
+                                value="Africa/Kampala"
+                                {% if settings.timezone == "Africa/Kampala" %}selected{% endif %}
+                            >
+                                Africa/Kampala
+                            </option>
+
+                            <option
+                                value="UTC"
+                                {% if settings.timezone == "UTC" %}selected{% endif %}
+                            >
+                                UTC
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Date Format</label>
+
+                        <select
+                            name="date_format"
+                            class="form-select"
+                        >
+                            <option
+                                value="DD/MM/YYYY"
+                                {% if settings.date_format == "DD/MM/YYYY" %}selected{% endif %}
+                            >
+                                DD/MM/YYYY
+                            </option>
+
+                            <option
+                                value="MM/DD/YYYY"
+                                {% if settings.date_format == "MM/DD/YYYY" %}selected{% endif %}
+                            >
+                                MM/DD/YYYY
+                            </option>
+
+                            <option
+                                value="YYYY-MM-DD"
+                                {% if settings.date_format == "YYYY-MM-DD" %}selected{% endif %}
+                            >
+                                YYYY-MM-DD
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             INVENTORY SETTINGS
+        ========================================== -->
+        <div class="col-xl-6">
+
+            <div class="erp-panel h-100">
+
+                <div class="erp-panel-header">
+                    <h5>
+                        <i class="fas fa-boxes-stacked me-2 text-primary"></i>
+                        Inventory Settings
+                    </h5>
+                </div>
+
+                <div class="erp-panel-body">
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Default Minimum Stock
+                        </label>
+
+                        <input
+                            type="number"
+                            name="default_minimum_stock"
+                            class="form-control"
+                            min="0"
+                            value="{{ settings.default_minimum_stock }}"
+                        >
+
+                        <div class="form-text">
+                            Default low-stock threshold for new product variants.
+                        </div>
+
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="enable_low_stock_alerts"
+                            id="enableLowStock"
+                            {% if settings.enable_low_stock_alerts %}checked{% endif %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="enableLowStock"
+                        >
+                            Enable low-stock alerts
+                        </label>
+
+                    </div>
+
+                    <div class="form-check form-switch">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="prevent_negative_stock"
+                            id="preventNegativeStock"
+                            {% if settings.prevent_negative_stock %}checked{% endif %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="preventNegativeStock"
+                        >
+                            Prevent sales from creating negative stock
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             SALES SETTINGS
+        ========================================== -->
+        <div class="col-xl-6">
+
+            <div class="erp-panel h-100">
+
+                <div class="erp-panel-header">
+                    <h5>
+                        <i class="fas fa-cash-register me-2 text-success"></i>
+                        Sales Settings
+                    </h5>
+                </div>
+
+                <div class="erp-panel-body">
+
+                    <div class="form-check form-switch mb-3">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="require_customer_on_sale"
+                            id="requireCustomer"
+                            {% if settings.require_customer_on_sale %}checked{% endif %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="requireCustomer"
+                        >
+                            Require customer information on every sale
+                        </label>
+
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="require_imei_when_available"
+                            id="requireImei"
+                            {% if settings.require_imei_when_available %}checked{% endif %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="requireImei"
+                        >
+                            Require IMEI when an IMEI-tracked item is sold
+                        </label>
+
+                    </div>
+
+                    <div class="form-check form-switch">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="allow_price_override"
+                            id="priceOverride"
+                            {% if settings.allow_price_override %}checked{% endif %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="priceOverride"
+                        >
+                            Allow selling-price override during a sale
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             RECEIPT SETTINGS
+        ========================================== -->
+        <div class="col-xl-6">
+
+            <div class="erp-panel h-100">
+
+                <div class="erp-panel-header">
+                    <h5>
+                        <i class="fas fa-receipt me-2 text-primary"></i>
+                        Receipt Settings
+                    </h5>
+                </div>
+
+                <div class="erp-panel-body">
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Receipt Footer Message
+                        </label>
+
+                        <textarea
+                            name="receipt_footer"
+                            class="form-control"
+                            rows="3"
+                            maxlength="255"
+                        >{{ settings.receipt_footer or "" }}</textarea>
+
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="show_imei_on_receipt"
+                            id="showImei"
+                            {% if settings.show_imei_on_receipt %}checked{% endif %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="showImei"
+                        >
+                            Show IMEI on receipts
+                        </label>
+
+                    </div>
+
+                    <div class="form-check form-switch">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="show_cashier_on_receipt"
+                            id="showCashier"
+                            {% if settings.show_cashier_on_receipt %}checked{% endif %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="showCashier"
+                        >
+                            Show cashier/user on receipts
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             PURCHASING SETTINGS
+        ========================================== -->
+        <div class="col-xl-6">
+
+            <div class="erp-panel h-100">
+
+                <div class="erp-panel-header">
+                    <h5>
+                        <i class="fas fa-cart-shopping me-2 text-warning"></i>
+                        Purchasing Settings
+                    </h5>
+                </div>
+
+                <div class="erp-panel-body">
+
+                    <div class="form-check form-switch">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="auto_update_buying_price"
+                            id="autoBuyingPrice"
+                            {% if settings.auto_update_buying_price %}checked{% endif %}
+                        >
+
+                        <label
+                            class="form-check-label"
+                            for="autoBuyingPrice"
+                        >
+                            Automatically update variant buying price from purchases
+                        </label>
+
+                    </div>
+
+                    <div class="form-text mt-2">
+                        When enabled, the latest purchase cost can become the
+                        current buying price for that variant.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             APPLICATION SETTINGS
+        ========================================== -->
+        <div class="col-xl-6">
+
+            <div class="erp-panel h-100">
+
+                <div class="erp-panel-header">
+                    <h5>
+                        <i class="fas fa-gear me-2"></i>
+                        Application Settings
+                    </h5>
+                </div>
+
+                <div class="erp-panel-body">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Records Per Page
+                        </label>
+
+                        <select
+                            name="records_per_page"
+                            class="form-select"
+                        >
+                            {% for amount in [10, 25, 50, 100] %}
+
+                            <option
+                                value="{{ amount }}"
+                                {% if settings.records_per_page == amount %}selected{% endif %}
+                            >
+                                {{ amount }} records
+                            </option>
+
+                            {% endfor %}
+                        </select>
+
+                    </div>
+
+                    <div>
+
+                        <label class="form-label">
+                            Session Timeout
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                name="session_timeout_minutes"
+                                class="form-control"
+                                min="5"
+                                value="{{ settings.session_timeout_minutes }}"
+                            >
+
+                            <span class="input-group-text">
+                                minutes
+                            </span>
+
+                        </div>
+
+                        <div class="form-text">
+                            Controls how long an inactive login session may remain active.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         SAVE
+    ========================================== -->
+
+    <div class="d-flex justify-content-end mt-4">
+
+        <button
+            type="submit"
+            class="btn btn-success px-4"
+        >
+            <i class="fas fa-floppy-disk"></i>
+            Save System Settings
+        </button>
+
+    </div>
+
+</form>
+
+{% endblock %} 

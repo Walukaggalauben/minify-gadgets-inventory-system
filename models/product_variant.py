@@ -93,29 +93,55 @@ class ProductVariant(db.Model):
         onupdate=db.func.now()
     )
 
+    # ==========================================
+    # RELATIONSHIPS
+    # ==========================================
+
     product = db.relationship(
         "Product",
         back_populates="variants"
     )
-    
+
     imeis = db.relationship(
-    "IMEI",
-    back_populates="product_variant",
-    cascade="all, delete-orphan",
-    lazy=True
+        "IMEI",
+        back_populates="product_variant",
+        cascade="all, delete-orphan",
+        lazy=True
     )
-    
+
     purchase_items = db.relationship(
-    "PurchaseItem",
-    back_populates="product_variant",
-    lazy=True
+        "PurchaseItem",
+        back_populates="product_variant",
+        lazy=True
     )
-    
+
     sale_items = db.relationship(
-    "SaleItem",
-    back_populates="product_variant",
-    lazy=True
-)
+        "SaleItem",
+        back_populates="product_variant",
+        lazy=True
+    )
+
+    # ==========================================
+    # HELPER PROPERTIES
+    # ==========================================
+
+    @property
+    def is_low_stock(self):
+        return self.quantity <= self.minimum_stock
+
+    @property
+    def stock_status(self):
+        if self.quantity <= 0:
+            return "Out of Stock"
+
+        if self.quantity <= self.minimum_stock:
+            return "Low Stock"
+
+        return "In Stock"
+
+    # ==========================================
+    # REPRESENTATION
+    # ==========================================
 
     def __repr__(self):
         return f"<Variant {self.sku}>"

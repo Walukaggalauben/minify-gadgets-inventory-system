@@ -16,41 +16,27 @@ from models.brand import Brand
 from models.product import Product
 from models.sale import Sale
 from models.company import Company
+from models.system_setting import SystemSetting
 
-
-sale_bp = Blueprint(
-    "sale",
-    __name__,
-    url_prefix="/sales"
-)
+sale_bp = Blueprint("sale", __name__, url_prefix="/sales")
 
 
 @sale_bp.route("/")
 def index():
 
-    sales = Sale.query.order_by(
-        Sale.sale_date.desc()
-    ).all()
+    sales = Sale.query.order_by(Sale.sale_date.desc()).all()
 
     print("=" * 50)
     print("TOTAL SALES FOUND:", len(sales))
 
     for sale in sales:
-        print(
-            sale.id,
-            sale.invoice_number,
-            sale.customer_name,
-            sale.total_amount
-        )
+        print(sale.id, sale.invoice_number, sale.customer_name, sale.total_amount)
 
     print("=" * 50)
 
-    return render_template(
-        "sales/index.html",
-        sales=sales
-    )
-    
-    
+    return render_template("sales/index.html", sales=sales)
+
+
 @sale_bp.route("/create", methods=["GET", "POST"])
 def create():
 
@@ -61,162 +47,132 @@ def create():
             items = json.loads(request.form["cart_items"])
 
             SaleService.create_sale(
-
                 customer_name=request.form["customer_name"],
-
                 customer_phone=request.form["customer_phone"],
-
                 payment_method=request.form["payment_method"],
-
                 created_by=session["user_id"],
-
-                items=items
-
+                items=items,
             )
 
-            flash(
-                "Sale completed successfully.",
-                "success"
-            )
+            flash("Sale completed successfully.", "success")
 
-            return redirect(
-                url_for("sale.index")
-            )
+            return redirect(url_for("sale.index"))
 
         except Exception as e:
 
-            flash(
-                str(e),
-                "danger"
-            )
+            flash(str(e), "danger")
 
-    brands = Brand.query.order_by(
-        Brand.name
-    ).all()
+    brands = Brand.query.order_by(Brand.name).all()
 
-    products = Product.query.order_by(
-        Product.name
-    ).all()
+    products = Product.query.order_by(Product.name).all()
 
-    variants = ProductVariant.query.order_by(
-        ProductVariant.sku
-    ).all()
+    variants = ProductVariant.query.order_by(ProductVariant.sku).all()
 
-    imeis = IMEI.query.filter_by(
-        status="In Stock"
-    ).all()
+    imeis = IMEI.query.filter_by(status="In Stock").all()
+
+    settings = SystemSetting.get_settings()
 
     return render_template(
-
         "sales/create.html",
-
         brands=brands,
-
         products=products,
-
         variants=variants,
-
-        imeis=imeis
-
+        imeis=imeis,
+        settings=settings,
     )
+
 
 # ======================================================
 # VIEW SALE
 # ======================================================
+
 
 @sale_bp.route("/view/<int:sale_id>")
 def view_sale(sale_id):
 
     sale = Sale.query.get_or_404(sale_id)
 
-    return render_template(
-        "sales/view.html",
-        sale=sale
-    )
-    
-    
+    return render_template("sales/view.html", sale=sale)
+
+
 # ======================================================
 # PRINT SALE
 # ======================================================
 
+
 @sale_bp.route("/print/<int:sale_id>")
 def print_sale(sale_id):
+
     sale = Sale.query.get_or_404(sale_id)
 
     company = Company.query.first()
+
+    settings = SystemSetting.get_settings()
 
     if not company:
         company = Company(
             business_name="MINIFY GADGETS",
             tagline="Phones & Accessories",
             address="",
-            phone=""
+            phone="",
         )
 
     return render_template(
         "sales/print.html",
         sale=sale,
-        company=company
+        company=company,
+        settings=settings,
     )
+
+
 # ======================================================
 # API ROUTES
 # ======================================================
 
+
 @sale_bp.route("/api/products/<int:brand_id>")
 def get_products(brand_id):
 
-    products = Product.query.filter_by(
-        brand_id=brand_id,
-        is_active=True
-    ).order_by(Product.name).all()
+    products = (
+        Product.query.filter_by(brand_id=brand_id, is_active=True)
+        .order_by(Product.name)
+        .all()
+    )
 
-    return jsonify([
-        {
-            "id": product.id,
-            "name": product.name
-        }
-        for product in products
-    ])
+    return jsonify([{"id": product.id, "name": product.name} for product in products])
 
 
 @sale_bp.route("/api/variants/<int:product_id>")
 def get_variants(product_id):
 
-    variants = ProductVariant.query.filter_by(
-        product_id=product_id,
-        is_active=True
-    ).order_by(ProductVariant.sku).all()
+    variants = (
+        ProductVariant.query.filter_by(product_id=product_id, is_active=True)
+        .order_by(ProductVariant.sku)
+        .all()
+    )
 
-    return jsonify([
-    {
-        "id": variant.id,
-        "sku": variant.sku,
-        "colour": variant.colour,
-        "storage": variant.storage,
-        "ram": variant.ram,
-        "price": float(variant.selling_price),
-        "stock": variant.quantity,
-
-        # NEW
-        "brand": variant.product.brand.name,
-        "product": variant.product.name
-    }
-    for variant in variants
-])
+    return jsonify(
+        [
+            {
+                "id": variant.id,
+                "sku": variant.sku,
+                "colour": variant.colour,
+                "storage": variant.storage,
+                "ram": variant.ram,
+                "price": float(variant.selling_price),
+                "stock": variant.quantity,
+                # NEW
+                "brand": variant.product.brand.name,
+                "product": variant.product.name,
+            }
+            for variant in variants
+        ]
+    )
 
 
 @sale_bp.route("/api/imeis/<int:variant_id>")
 def get_imeis(variant_id):
 
-    imeis = IMEI.query.filter_by(
-        product_variant_id=variant_id,
-        status="In Stock"
-    ).all()
+    imeis = IMEI.query.filter_by(product_variant_id=variant_id, status="In Stock").all()
 
-    return jsonify([
-        {
-            "id": imei.id,
-            "imei": imei.imei
-        }
-        for imei in imeis
-    ])
+    return jsonify([{"id": imei.id, "imei": imei.imei} for imei in imeis])

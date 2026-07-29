@@ -1,5 +1,6 @@
 from db import db
 from models.product_variant import ProductVariant
+from models.system_setting import SystemSetting
 
 
 class ProductVariantService:
@@ -7,9 +8,7 @@ class ProductVariantService:
     @staticmethod
     def get_all():
         return ProductVariant.query.order_by(
-            ProductVariant.product_id,
-            ProductVariant.storage,
-            ProductVariant.ram
+            ProductVariant.product_id, ProductVariant.storage, ProductVariant.ram
         ).all()
 
     @staticmethod
@@ -18,6 +17,16 @@ class ProductVariantService:
 
     @staticmethod
     def create(data):
+
+        settings = SystemSetting.get_settings()
+
+        minimum_stock = data.get("minimum_stock")
+
+        if minimum_stock is None or str(minimum_stock).strip() == "":
+            minimum_stock = settings.default_minimum_stock
+
+        else:
+            minimum_stock = int(minimum_stock)
 
         variant = ProductVariant(
             product_id=data["product_id"],
@@ -30,10 +39,10 @@ class ProductVariantService:
             buying_price=data["buying_price"],
             selling_price=data["selling_price"],
             quantity=data["quantity"],
-            minimum_stock=data.get("minimum_stock", 1),
+            minimum_stock=minimum_stock,
             warranty_months=data.get("warranty_months", 12),
             image=data.get("image"),
-            is_active=True
+            is_active=True,
         )
 
         db.session.add(variant)
