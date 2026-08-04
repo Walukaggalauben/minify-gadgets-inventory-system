@@ -6,34 +6,17 @@ class ProductVariant(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    product_id = db.Column(
-        db.Integer,
-        db.ForeignKey("products.id"),
-        nullable=False
-    )
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
 
-    sku = db.Column(
-        db.String(100),
-        unique=True,
-        nullable=False
-    )
+    sku = db.Column(db.String(100), unique=True, nullable=False)
 
-    barcode = db.Column(
-        db.String(100),
-        unique=True
-    )
+    barcode = db.Column(db.String(100), unique=True)
 
-    storage = db.Column(
-        db.String(50)
-    )
+    storage = db.Column(db.String(50))
 
-    ram = db.Column(
-        db.String(50)
-    )
+    ram = db.Column(db.String(50))
 
-    colour = db.Column(
-        db.String(50)
-    )
+    colour = db.Column(db.String(50))
 
     condition = db.Column(
         db.Enum(
@@ -41,84 +24,55 @@ class ProductVariant(db.Model):
             "Refurbished",
             "Used Grade A",
             "Used Grade B",
-            name="product_condition"
+            name="product_condition",
         ),
         nullable=False,
-        default="Brand New"
+        default="Brand New",
     )
 
-    buying_price = db.Column(
-        db.Numeric(15, 2),
-        nullable=False
-    )
+    buying_price = db.Column(db.Numeric(15, 2), nullable=False)
 
-    selling_price = db.Column(
-        db.Numeric(15, 2),
-        nullable=False
-    )
+    selling_price = db.Column(db.Numeric(15, 2), nullable=False)
 
-    quantity = db.Column(
-        db.Integer,
-        default=0,
-        nullable=False
-    )
+    quantity = db.Column(db.Integer, default=0, nullable=False)
 
-    minimum_stock = db.Column(
-        db.Integer,
-        default=1
-    )
+    minimum_stock = db.Column(db.Integer, default=1)
 
-    warranty_months = db.Column(
-        db.Integer,
-        default=12
-    )
+    warranty_months = db.Column(db.Integer, default=12)
 
-    image = db.Column(
-        db.String(255)
-    )
+    image = db.Column(db.String(255))
 
-    is_active = db.Column(
-        db.Boolean,
-        default=True
-    )
+    is_active = db.Column(db.Boolean, default=True)
 
-    created_at = db.Column(
-        db.DateTime,
-        server_default=db.func.now()
-    )
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
 
     updated_at = db.Column(
-        db.DateTime,
-        server_default=db.func.now(),
-        onupdate=db.func.now()
+        db.DateTime, server_default=db.func.now(), onupdate=db.func.now()
     )
 
     # ==========================================
     # RELATIONSHIPS
     # ==========================================
 
-    product = db.relationship(
-        "Product",
-        back_populates="variants"
-    )
+    product = db.relationship("Product", back_populates="variants")
 
     imeis = db.relationship(
         "IMEI",
         back_populates="product_variant",
         cascade="all, delete-orphan",
-        lazy=True
+        lazy=True,
     )
 
     purchase_items = db.relationship(
-        "PurchaseItem",
-        back_populates="product_variant",
-        lazy=True
+        "PurchaseItem", back_populates="product_variant", lazy=True
     )
 
     sale_items = db.relationship(
-        "SaleItem",
-        back_populates="product_variant",
-        lazy=True
+        "SaleItem", back_populates="product_variant", lazy=True
+    )
+
+    trade_in_items = db.relationship(
+        "TradeInItem", back_populates="product_variant", lazy=True
     )
 
     # ==========================================

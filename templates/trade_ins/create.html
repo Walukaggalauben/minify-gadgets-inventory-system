@@ -1,0 +1,1456 @@
+{% extends "layout.html" %}
+
+{% block title %}New Trade-In{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <!-- ====================================================== -->
+    <!-- PAGE HEADER -->
+    <!-- ====================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h3 class="fw-bold mb-0">
+
+                <i class="fas fa-exchange-alt text-success"></i>
+
+                New Trade-In
+
+            </h3>
+
+            <small class="text-muted">
+
+                Receive customer devices into inventory
+
+            </small>
+
+        </div>
+
+        <a href="{{ url_for('trade_in.index') }}"
+           class="btn btn-secondary">
+
+            <i class="fas fa-arrow-left"></i>
+
+            Back
+
+        </a>
+
+    </div>
+
+    <form method="POST" id="tradeInForm">
+
+        <!-- ====================================================== -->
+        <!-- WIZARD -->
+        <!-- ====================================================== -->
+
+        <ul class="nav nav-pills nav-justified mb-4" id="tradeWizard">
+
+            <li class="nav-item">
+                <button class="nav-link active" type="button">
+                    1. Customer
+                </button>
+            </li>
+
+            <li class="nav-item">
+                <button class="nav-link" type="button">
+                    2. Device
+                </button>
+            </li>
+
+            <li class="nav-item">
+                <button class="nav-link" type="button">
+                    3. Inspection
+                </button>
+            </li>
+
+            <li class="nav-item">
+                <button class="nav-link" type="button">
+                    4. Valuation
+                </button>
+            </li>
+
+            <li class="nav-item">
+                <button class="nav-link" type="button">
+                    5. Review
+                </button>
+            </li>
+
+        </ul>
+
+        <!-- <!-- ===================================================== -->
+        <!-- STEP 1 : CUSTOMER INFORMATION -->
+        <!-- ===================================================== -->
+        <div class="wizard-step active-step" id="step1">
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-success text-white">
+
+            <h5 class="mb-0">
+                <i class="fas fa-user"></i>
+                Customer Information
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Customer Name *
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="customer_name"
+                        placeholder="Enter customer name"
+                        required>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Phone Number *
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="phone_number"
+                        placeholder="07XXXXXXXX"
+                        required>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Alternative Phone
+
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="alternative_phone">
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Business Name
+
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="business_name">
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        National ID
+
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="national_id">
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Email
+
+                    </label>
+
+                    <input
+                        type="email"
+                        class="form-control"
+                        name="email">
+
+                </div>
+
+                <div class="col-12">
+
+                    <label class="form-label">
+
+                        Address
+
+                    </label>
+
+                    <textarea
+                        class="form-control"
+                        rows="2"
+                        name="address"></textarea>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Trade Date
+
+                    </label>
+
+                    <input
+                        type="date"
+                        class="form-control"
+                        name="trade_in_date"
+                        value="{{ today }}"
+                        required>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Notes
+
+                    </label>
+
+                    <textarea
+                        class="form-control"
+                        rows="2"
+                        name="notes"></textarea>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="text-end">
+
+                <button
+                    type="button"
+                    class="btn btn-success nextStep">
+
+                    Continue
+
+                    <i class="fas fa-arrow-right ms-2"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ====================================================== -->
+<!-- STEP 2 : DEVICE -->
+<!-- ====================================================== -->
+
+<div class="wizard-step d-none" id="step2">
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-primary text-white">
+
+            <h5 class="mb-0">
+
+                <i class="fas fa-mobile-screen-button"></i>
+
+                Device Information
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-12 mb-4">
+
+                    <label class="form-label">
+
+                        Search Device *
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="deviceSearch"
+                        class="form-control form-control-lg"
+                        placeholder="Type iPhone 15, S24, Redmi Note, Pixel..."
+
+                        autocomplete="off">
+
+                    <div
+                        id="deviceSearchResults"
+                        class="list-group mt-2 shadow"
+                        style="display:none;
+                               max-height:250px;
+                               overflow-y:auto;">
+
+                    </div>
+
+                    <input
+                        type="hidden"
+                        id="selectedProductId">
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Product Variant *
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        id="variantSelect"
+                        name="variant_id[]"
+                        required>
+
+                        <option value="">
+
+                            Select Variant
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        IMEI *
+
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control imeiInput"
+                        name="imei[]"
+                        maxlength="15"
+                        required>
+
+                </div>
+
+            </div>
+
+            <div class="row mt-3">
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Serial Number
+
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="serial_number[]">
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div
+                id="deviceSummaryCard"
+                class="card border-success mt-3"
+                style="display:none;">
+
+                <div class="card-header bg-success text-white">
+
+                    Selected Device
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-3">
+
+                            <strong>Brand</strong>
+
+                            <p id="summaryBrand">-</p>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <strong>Model</strong>
+
+                            <p id="summaryModel">-</p>
+
+                        </div>
+
+                        <div class="col-md-2">
+
+                            <strong>Storage</strong>
+
+                            <p id="summaryStorage">-</p>
+
+                        </div>
+
+                        <div class="col-md-2">
+
+                            <strong>RAM</strong>
+
+                            <p id="summaryRam">-</p>
+
+                        </div>
+
+                        <div class="col-md-2">
+
+                            <strong>Colour</strong>
+
+                            <p id="summaryColour">-</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary prevStep">
+
+                    <i class="fas fa-arrow-left"></i>
+
+                    Previous
+
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-success nextStep">
+
+                    Continue
+
+                    <i class="fas fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- STEP 3 : DEVICE INSPECTION -->
+<!-- ====================================================== -->
+
+<div class="wizard-step d-none" id="step3">
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-warning">
+
+            <h5 class="mb-0">
+
+                <i class="fas fa-magnifying-glass"></i>
+
+                Device Inspection
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+
+                        Battery Health (%)
+
+                    </label>
+
+                    <input
+                        type="number"
+                        class="form-control"
+                        name="battery_health[]"
+                        min="0"
+                        max="100"
+                        placeholder="100">
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+
+                        Screen
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="screen_condition[]">
+
+                        <option value="">Select</option>
+                        <option>Excellent</option>
+                        <option>Good</option>
+                        <option>Fair</option>
+                        <option>Cracked</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+
+                        Back Glass
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="back_condition[]">
+
+                        <option value="">Select</option>
+                        <option>Excellent</option>
+                        <option>Good</option>
+                        <option>Scratched</option>
+                        <option>Cracked</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+
+                        Frame
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="frame_condition[]">
+
+                        <option value="">Select</option>
+                        <option>Excellent</option>
+                        <option>Good</option>
+                        <option>Dented</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+
+                        Camera
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="camera_condition[]">
+
+                        <option>Working</option>
+                        <option>Faulty</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+
+                        Face ID
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="face_id_status[]">
+
+                        <option>Working</option>
+                        <option>Not Working</option>
+                        <option>N/A</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+
+                        Fingerprint
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="fingerprint_status[]">
+
+                        <option>Working</option>
+                        <option>Not Working</option>
+                        <option>N/A</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+
+                        Charging Port
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="charging_port[]">
+
+                        <option>Working</option>
+                        <option>Faulty</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+
+                        Speaker
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="speaker_status[]">
+
+                        <option>Working</option>
+                        <option>Faulty</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+
+                        Microphone
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="microphone_status[]">
+
+                        <option>Working</option>
+                        <option>Faulty</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+
+                        WiFi
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="wifi_status[]">
+
+                        <option>Working</option>
+                        <option>Faulty</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <label class="form-label">
+
+                        Bluetooth
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="bluetooth_status[]">
+
+                        <option>Working</option>
+                        <option>Faulty</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Accessories Received
+
+                    </label>
+
+                    <div class="form-check">
+
+                        <input class="form-check-input" type="checkbox" name="box_received_0">
+
+                        <label class="form-check-label">Box</label>
+
+                    </div>
+
+                    <div class="form-check">
+
+                        <input class="form-check-input" type="checkbox" name="charger_received_0">
+
+                        <label class="form-check-label">Charger</label>
+
+                    </div>
+
+                    <div class="form-check">
+
+                        <input class="form-check-input" type="checkbox" name="cable_received_0">
+
+                        <label class="form-check-label">Cable</label>
+
+                    </div>
+
+                    <div class="form-check">
+
+                        <input class="form-check-input" type="checkbox" name="adapter_received_0">
+
+                        <label class="form-check-label">Adapter</label>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+
+                        Inspection Remarks
+
+                    </label>
+
+                    <textarea
+                        class="form-control"
+                        rows="6"
+                        name="remarks[]"></textarea>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary prevStep">
+
+                    <i class="fas fa-arrow-left"></i>
+
+                    Previous
+
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-success nextStep">
+
+                    Continue
+
+                    <i class="fas fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ====================================================== -->
+<!-- STEP 4 : TRADE VALUATION -->
+<!-- ====================================================== -->
+
+<div class="wizard-step d-none" id="step4">
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-success text-white">
+
+            <h5 class="mb-0">
+
+                <i class="fas fa-money-bill-wave"></i>
+
+                Trade Valuation
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <!-- Trade Type -->
+
+            <div class="row mb-4">
+
+                <div class="col-md-12">
+
+                    <label class="form-label fw-bold">
+
+                        Transaction Type
+
+                    </label>
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="trade_type"
+                            id="buyPhone"
+                            value="buy"
+                            checked>
+
+                        <label class="form-check-label" for="buyPhone">
+
+                            Buy Customer Phone
+
+                        </label>
+
+                    </div>
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="trade_type"
+                            id="swapPhone"
+                            value="swap">
+
+                        <label class="form-check-label" for="swapPhone">
+
+                            Swap / Upgrade
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <!-- Buy Phone Section -->
+
+            <div id="buySection">
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+
+                            Suggested Selling Price
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control sellingPrice"
+                            name="default_selling_price[]">
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+
+                            Agreed Trade Value
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control finalTradeValue"
+                            name="final_trade_value[]">
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+
+                            Cash Paid To Customer
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="cash_paid">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Swap Section -->
+
+            <div
+                id="swapSection"
+                style="display:none;">
+
+                <div class="alert alert-info mt-4">
+
+                    Customer is upgrading to another phone.
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+
+                            Search Desired Phone
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="swapSearch"
+                            placeholder="Search inventory...">
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+
+                            Selling Price
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            id="swapSellingPrice"
+                            readonly>
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+
+                            Customer Top-up
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            id="customerTopup"
+                            name="topup_received"
+                            readonly>
+
+                    </div>
+
+                </div>
+
+                <div class="row mt-3">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+
+                            Agreed Trade Value
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control finalTradeValue">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <!-- Profit -->
+
+            <div class="row">
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+
+                        Expected Profit
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="expectedProfit"
+                        class="form-control"
+                        readonly>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary prevStep">
+
+                    <i class="fas fa-arrow-left"></i>
+
+                    Previous
+
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-success nextStep">
+
+                    Continue
+
+                    <i class="fas fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div> 
+
+<!-- ====================================================== -->
+<!-- STEP 5 : REVIEW -->
+<!-- ====================================================== -->
+
+<div class="wizard-step d-none" id="step5">
+
+    <div class="card shadow-lg border-0">
+
+        <div class="card-header bg-dark text-white">
+
+            <h4 class="mb-0">
+
+                <i class="fas fa-clipboard-check"></i>
+
+                Review Trade-In
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <!-- CUSTOMER -->
+
+            <div class="card mb-4">
+
+                <div class="card-header bg-light">
+
+                    <strong>
+
+                        <i class="fas fa-user"></i>
+
+                        Customer Information
+
+                    </strong>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <p>
+
+                                <strong>Name</strong><br>
+
+                                <span id="reviewCustomer">-</span>
+
+                            </p>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <p>
+
+                                <strong>Phone</strong><br>
+
+                                <span id="reviewPhone">-</span>
+
+                            </p>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <p>
+
+                                <strong>Business</strong><br>
+
+                                <span id="reviewBusiness">-</span>
+
+                            </p>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <p>
+
+                                <strong>Date</strong><br>
+
+                                <span id="reviewDate">-</span>
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- DEVICE -->
+
+            <div class="card mb-4">
+
+                <div class="card-header bg-light">
+
+                    <strong>
+
+                        <i class="fas fa-mobile-screen-button"></i>
+
+                        Device Information
+
+                    </strong>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <p>
+
+                                <strong>Device</strong><br>
+
+                                <span id="reviewDevice">-</span>
+
+                            </p>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <p>
+
+                                <strong>IMEI</strong><br>
+
+                                <span id="reviewIMEI">-</span>
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- INSPECTION -->
+
+            <div class="card mb-4">
+
+                <div class="card-header bg-light">
+
+                    <strong>
+
+                        <i class="fas fa-magnifying-glass"></i>
+
+                        Inspection Summary
+
+                    </strong>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-3">
+
+                            <strong>Battery</strong>
+
+                            <p id="reviewBattery">-</p>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <strong>Screen</strong>
+
+                            <p id="reviewScreen">-</p>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <strong>Frame</strong>
+
+                            <p id="reviewFrame">-</p>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <strong>Camera</strong>
+
+                            <p id="reviewCamera">-</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- FINANCIAL -->
+
+            <div class="card border-success">
+
+                <div class="card-header bg-success text-white">
+
+                    <strong>
+
+                        <i class="fas fa-money-bill-wave"></i>
+
+                        Financial Summary
+
+                    </strong>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-3">
+
+                            <strong>Suggested Selling</strong>
+
+                            <h6 id="reviewSelling">
+
+                                UGX 0
+
+                            </h6>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <strong>Trade Value</strong>
+
+                            <h6 id="reviewTradeValue">
+
+                                UGX 0
+
+                            </h6>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <strong>Cash Paid</strong>
+
+                            <h6 id="reviewCash">
+
+                                UGX 0
+
+                            </h6>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <strong>Top-up</strong>
+
+                            <h6 id="reviewTopup">
+
+                                UGX 0
+
+                            </h6>
+
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="text-center">
+
+                        <h4>
+
+                            Expected Profit
+
+                        </h4>
+
+                        <h2
+                            class="text-success"
+                            id="reviewProfit">
+
+                            UGX 0
+
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary prevStep">
+
+                    <i class="fas fa-arrow-left"></i>
+
+                    Previous
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn btn-success btn-lg">
+
+                    <i class="fas fa-check-circle"></i>
+
+                    Complete Trade-In
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{{ url_for('static', filename='js/trade_ins.js') }}"></script>
+
+{% endblock %}
+

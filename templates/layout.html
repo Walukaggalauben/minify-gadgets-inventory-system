@@ -132,6 +132,14 @@
             <span>Purchases</span>
           </a>
 
+          <a
+            href="{{ url_for('trade_in.index') }}"
+            class="nav-link {% if request.endpoint and request.endpoint.startswith('trade_in') %}active{% endif %}"
+          >
+            <i class="fas fa-right-left"></i>
+            <span>Trade-Ins</span>
+          </a>
+
           <!-- Sales -->
 
           <div class="menu-title">SALES</div>
@@ -183,7 +191,7 @@
         </nav>
       </aside>
 
-    <!-- ===========================
+      <!-- ===========================
          MAIN CONTENT
     ============================ -->
 

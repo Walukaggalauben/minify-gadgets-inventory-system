@@ -60,6 +60,12 @@ class User(db.Model):
     back_populates="user",
     lazy=True
     )
+    
+    trade_ins = db.relationship(
+    "TradeIn",
+    back_populates="creator",
+    cascade="all, delete-orphan"
+)
 
     def set_password(self, password):
         self.password = generate_password_hash(password)

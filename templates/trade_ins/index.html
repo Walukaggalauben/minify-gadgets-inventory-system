@@ -1,0 +1,251 @@
+{% extends "layout.html" %}
+
+{% block title %}Trade-Ins{% endblock %}
+
+{% block page_title %}Trade-In Management{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h3 class="fw-bold">
+
+            <i class="fas fa-right-left text-success"></i>
+
+            Trade-In Management
+
+        </h3>
+
+        <small class="text-muted">
+
+            Receive, inspect and manage customer trade-ins
+
+        </small>
+
+    </div>
+
+    <a
+        href="{{ url_for('trade_in.create') }}"
+        class="btn btn-success">
+
+        <i class="fas fa-plus"></i>
+
+        New Trade-In
+
+    </a>
+
+</div>
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-header bg-white">
+
+        <div class="row">
+
+            <div class="col-md-6">
+
+                <input
+                    type="text"
+                    class="form-control"
+                    id="searchTradeIn"
+                    placeholder="Search customer, phone, IMEI...">
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>Date</th>
+
+                        <th>Customer</th>
+
+                        <th>Phone</th>
+
+                        <th>Business</th>
+
+                        <th>Devices</th>
+
+                        <th>Trade Value</th>
+
+                        <th>Cash Paid</th>
+
+                        <th>Top-up</th>
+
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% if trade_ins %}
+
+                    {% for trade in trade_ins %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ trade.id }}
+
+                        </td>
+
+                        <td>
+
+                            {{ trade.trade_in_date.strftime("%d %b %Y") }}
+
+                        </td>
+
+                        <td>
+
+                            {{ trade.customer_name }}
+
+                        </td>
+
+                        <td>
+
+                            {{ trade.phone_number }}
+
+                        </td>
+
+                        <td>
+
+                            {{ trade.business_name or "-" }}
+
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-primary">
+
+                                {{ trade.items|length }}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            UGX {{ "{:,.0f}".format(trade.total_trade_value or 0) }}
+
+                        </td>
+
+                        <td>
+
+                            UGX {{ "{:,.0f}".format(trade.cash_paid or 0) }}
+
+                        </td>
+
+                        <td>
+
+                            UGX {{ "{:,.0f}".format(trade.topup_received or 0) }}
+
+                        </td>
+
+                        <td>
+
+                            <div class="btn-group">
+
+                                <a
+                                    href="{{ url_for('trade_in.view', id=trade.id) }}"
+                                    class="btn btn-sm btn-outline-primary">
+
+                                    <i class="fas fa-eye"></i>
+
+                                </a>
+
+                                <a
+                                    href="{{ url_for('trade_in.print_trade_in', id=trade.id) }}"
+                                    class="btn btn-sm btn-outline-secondary">
+
+                                    <i class="fas fa-print"></i>
+
+                                </a>
+
+                                <a
+                                    href="{{ url_for('trade_in.delete', id=trade.id) }}"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Delete this trade-in?')">
+
+                                    <i class="fas fa-trash"></i>
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="10" class="text-center py-5">
+
+                            <i class="fas fa-right-left fa-3x text-muted mb-3"></i>
+
+                            <h5>No Trade-Ins Found</h5>
+
+                            <p class="text-muted">
+
+                                Click <strong>New Trade-In</strong> to record your first trade-in.
+
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+document.getElementById("searchTradeIn").addEventListener("keyup", function () {
+
+    let value = this.value.toLowerCase();
+
+    let rows = document.querySelectorAll("tbody tr");
+
+    rows.forEach(row => {
+
+        row.style.display =
+            row.innerText.toLowerCase().includes(value)
+                ? ""
+                : "none";
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

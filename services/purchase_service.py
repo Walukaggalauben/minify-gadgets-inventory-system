@@ -6,38 +6,37 @@ from db import db
 from models.purchase import Purchase
 from models.purchase_item import PurchaseItem
 from models.product_variant import ProductVariant
+from models.imei import IMEI
 
 
 class PurchaseService:
 
     @staticmethod
     def generate_purchase_number():
-        """
-        Generates:
-        PUR-2026-000001
-        """
 
         year = datetime.now().year
 
-        last_purchase = (
-            Purchase.query
-            .order_by(Purchase.id.desc())
-            .first()
-        )
+        last_purchase = Purchase.query.order_by(Purchase.id.desc()).first()
 
         if last_purchase:
+
             try:
-                last_number = int(
-                    last_purchase.purchase_number.split("-")[-1]
-                )
-            except (ValueError, IndexError):
+
+                last_number = int(last_purchase.purchase_number.split("-")[-1])
+
+            except Exception:
+
                 last_number = 0
+
         else:
+
             last_number = 0
 
-        next_number = last_number + 1
+        return f"PUR-{year}-{last_number + 1:06d}"
 
-        return f"PUR-{year}-{next_number:06d}"
+    # ============================================================
+    # CREATE PURCHASE
+    # ============================================================
 
     @staticmethod
     def create_purchase(
@@ -47,20 +46,8 @@ class PurchaseService:
         payment_method,
         notes,
         created_by,
-        items
+        items,
     ):
-        """
-        items example:
-
-        [
-            {
-                "product_variant_id": 1,
-                "quantity": 5,
-                "unit_cost": 2000000
-            },
-            ...
-        ]
-        """
 
         try:
 
@@ -73,47 +60,82 @@ class PurchaseService:
                 notes=notes,
                 created_by=created_by,
                 status="Received",
-                total_amount=Decimal("0.00")
+                total_amount=Decimal("0.00"),
             )
 
             db.session.add(purchase)
+
             db.session.flush()
 
-            total = Decimal("0.00")
+            grand_total = Decimal("0.00")
 
             for item in items:
 
-                variant = ProductVariant.query.get(
-                    item["product_variant_id"]
-                )
+                variant = ProductVariant.query.get(item["product_variant_id"])
 
                 if not variant:
                     raise Exception("Product Variant not found.")
 
                 quantity = int(item["quantity"])
 
-                unit_cost = Decimal(
-                    str(item["unit_cost"])
+                buying_price = Decimal(str(item["unit_cost"]))
+
+                selling_price = Decimal(
+                    str(item.get("default_selling_price", variant.selling_price))
                 )
 
-                subtotal = unit_cost * quantity
+                imeis = item.get("imeis", [])
+
+                if len(imeis) != quantity:
+
+                    raise Exception(
+                        f"{variant.product.name}: Quantity and IMEI count do not match."
+                    )
 
                 purchase_item = PurchaseItem(
                     purchase_id=purchase.id,
                     product_variant_id=variant.id,
                     quantity=quantity,
-                    unit_cost=unit_cost,
-                    subtotal=subtotal
+                    unit_cost=buying_price,
+                    subtotal=buying_price * quantity,
                 )
 
                 db.session.add(purchase_item)
 
-                # Update Stock
                 variant.quantity += quantity
 
-                total += subtotal
+                grand_total += buying_price * quantity
 
-            purchase.total_amount = total
+                # ==========================================
+                # CREATE IMEIs
+                # ==========================================
+
+                for imei_number in imeis:
+
+                    imei_number = imei_number.strip()
+
+                    if not imei_number:
+                        continue
+
+                    exists = IMEI.query.filter_by(imei=imei_number).first()
+
+                    if exists:
+
+                        raise Exception(f"IMEI already exists: {imei_number}")
+
+                    new_imei = IMEI(
+                        product_variant_id=variant.id,
+                        imei=imei_number,
+                        buying_price=buying_price,
+                        default_selling_price=selling_price,
+                        acquisition_source="Purchase",
+                        received_date=datetime.utcnow(),
+                        status="In Stock",
+                    )
+
+                    db.session.add(new_imei)
+
+            purchase.total_amount = grand_total
 
             db.session.commit()
 

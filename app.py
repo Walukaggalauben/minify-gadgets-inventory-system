@@ -52,10 +52,12 @@ def create_app():
     from routes.imei import imei_bp
     from routes.supplier import supplier_bp
     from routes.purchase import purchase_bp
+    from routes.trade_in import trade_in_bp
     from routes.sale import sale_bp
     from routes.company import company_bp
     from routes.report import report_bp
     from routes.backup import backup_bp
+    
     from routes.system_settings import system_settings_bp
 
     app.register_blueprint(auth_bp)
@@ -68,6 +70,7 @@ def create_app():
     app.register_blueprint(imei_bp)
     app.register_blueprint(supplier_bp)
     app.register_blueprint(purchase_bp)
+    app.register_blueprint(trade_in_bp)
     app.register_blueprint(sale_bp)
     app.register_blueprint(company_bp)
     app.register_blueprint(report_bp)
