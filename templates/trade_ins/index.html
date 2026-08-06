@@ -38,23 +38,162 @@
 
 </div>
 
-<div class="card shadow-sm border-0">
+<hr>
 
-    <div class="card-header bg-white">
+<div class="row text-center">
 
-        <div class="row">
+    <div class="col-md-4">
 
-            <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center">
 
-                <input
-                    type="text"
-                    class="form-control"
-                    id="searchTradeIn"
-                    placeholder="Search customer, phone, IMEI...">
+            <h6 class="text-muted">
+
+                Records Found
+
+            </h6>
+
+            <h3 class="text-success">
+
+                {{ trade_ins|length }}
+
+            </h3>
 
             </div>
 
         </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center">
+
+            <h6 class="text-muted">
+
+                Total Trade Value
+
+            </h6>
+
+            <h5>
+
+                UGX {{ "{:,.0f}".format(trade_ins|sum(attribute='total_trade_value')) }}
+
+            </h5>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center">
+
+            <h6 class="text-muted">
+
+                Cash Paid
+
+            </h6>
+
+            <h5>
+
+                UGX {{ "{:,.0f}".format(trade_ins|sum(attribute='cash_paid')) }}
+
+            </h5>
+
+        </div>
+
+    </div>
+
+</div>
+
+<hr>
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-header bg-white">
+
+        <form method="GET">
+
+<div class="row g-3 align-items-end">
+
+    <div class="col-lg-5">
+
+        <label class="form-label">
+
+            Search
+
+        </label>
+
+        <input
+            type="text"
+            class="form-control"
+            name="search"
+            value="{{ search }}"
+            placeholder="Trade No, Customer or Phone">
+
+    </div>
+
+    <div class="col-lg-2">
+
+        <label class="form-label">
+
+            From
+
+        </label>
+
+        <input
+            type="date"
+            class="form-control"
+            name="date_from"
+            value="{{ date_from }}">
+
+    </div>
+
+    <div class="col-lg-2">
+
+        <label class="form-label">
+
+            To
+
+        </label>
+
+        <input
+            type="date"
+            class="form-control"
+            name="date_to"
+            value="{{ date_to }}">
+
+    </div>
+
+    <div class="col-lg-3">
+
+        <button
+            class="btn btn-success">
+
+            <i class="fas fa-search"></i>
+
+            Search
+
+        </button>
+
+        <a
+            href="{{ url_for('trade_in.index') }}"
+            class="btn btn-secondary">
+
+            Clear
+
+        </a>
+
+    </div>
+
+</div>
+
+</form>
+
+
 
     </div>
 
@@ -227,25 +366,6 @@
 
 </div>
 
-<script>
 
-document.getElementById("searchTradeIn").addEventListener("keyup", function () {
-
-    let value = this.value.toLowerCase();
-
-    let rows = document.querySelectorAll("tbody tr");
-
-    rows.forEach(row => {
-
-        row.style.display =
-            row.innerText.toLowerCase().includes(value)
-                ? ""
-                : "none";
-
-    });
-
-});
-
-</script>
 
 {% endblock %}

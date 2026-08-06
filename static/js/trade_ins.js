@@ -58,84 +58,121 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-    showStep(0);
+    //showStep(0);
 
     // =====================================================
     // ELEMENTS
     // =====================================================
 
-    const tradeValue =
-        document.querySelector(".finalTradeValue");
+    const suggestedTradeValue =
+    document.getElementById("suggestedTradeValue");
 
-    const sellingPrice =
-        document.querySelector(".sellingPrice");
+const agreedTradeValue =
+    document.querySelector(".agreedTradeValue");
 
-    const expectedProfit =
-        document.getElementById("expectedProfit");
+const sellingPrice =
+    document.querySelector(".sellingPrice");
 
-    const battery =
-        document.querySelector(
-            'input[name="battery_health[]"]'
-        );
+const expectedProfit =
+    document.getElementById("expectedProfit");
 
-    const buyRadio =
-        document.getElementById("buyPhone");
+const battery =
+    document.querySelector(
+        'input[name="battery_health[]"]'
+    );
 
-    const swapRadio =
-        document.getElementById("swapPhone");
+const buyRadio =
+    document.getElementById("buyPhone");
 
-    const buySection =
-        document.getElementById("buySection");
+const upgradeRadio =
+    document.getElementById("upgradePhone");
 
-    const swapSection =
-        document.getElementById("swapSection");
+const downgradeRadio =
+    document.getElementById("downgradePhone");
 
-    const swapSellingPrice =
-        document.getElementById("swapSellingPrice");
+const cashPaidCustomer =
+    document.getElementById("cashPaidCustomer");
 
-    const customerTopup =
-        document.getElementById("customerTopup");
+const customerTopup =
+    document.getElementById("customerTopup");
 
     // =====================================================
     // BUY / SWAP SWITCHING
     // =====================================================
 
-    function updateTradeMode() {
+    function updateTransactionMode() {
 
-        if (!buyRadio || !swapRadio)
-            return;
+    const buyRadio =
+        document.getElementById("buyPhone");
 
-        if (buyRadio.checked) {
+    const upgradeRadio =
+        document.getElementById("upgradePhone");
 
-            buySection.style.display = "block";
+    const downgradeRadio =
+        document.getElementById("downgradePhone");
 
-            swapSection.style.display = "none";
+    const cashPaid =
+        document.getElementById("cashPaidCustomer");
 
-        }
+    const customerTopup =
+        document.getElementById("customerTopup");
 
-        if (swapRadio.checked) {
+    if (
+        !buyRadio ||
+        !upgradeRadio ||
+        !downgradeRadio
+    ) {
+        return;
+    }
 
-            buySection.style.display = "none";
+    if (buyRadio.checked) {
 
-            swapSection.style.display = "block";
+        cashPaid.parentElement.style.display =
+            "block";
 
-        }
-
-        calculateProfit();
+        customerTopup.parentElement.style.display =
+            "none";
 
     }
 
-    buyRadio?.addEventListener(
-        "change",
-        updateTradeMode
-    );
+    else if (upgradeRadio.checked) {
 
-    swapRadio?.addEventListener(
-        "change",
-        updateTradeMode
-    );
+        cashPaid.parentElement.style.display =
+            "none";
 
-    updateTradeMode();
+        customerTopup.parentElement.style.display =
+            "block";
+
+    }
+
+    else if (downgradeRadio.checked) {
+
+        cashPaid.parentElement.style.display =
+            "block";
+
+        customerTopup.parentElement.style.display =
+            "none";
+
+    }
+
+    calculateSettlement();
+
+}
+
+document
+    .querySelectorAll(
+        'input[name="transaction_type"]'
+    )
+    .forEach(radio => {
+
+        radio.addEventListener(
+            "change",
+            updateTransactionMode
+        );
+
+    });
+
+updateTransactionMode();
 
     // =====================================================
     // PROFIT
@@ -143,85 +180,269 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function calculateProfit() {
 
-        if (!tradeValue || !expectedProfit)
-            return;
+    const suggestedTradeValue =
+        document.getElementById("suggestedTradeValue");
 
-        let selling = 0;
+    const agreedTradeValue =
+        document.querySelector(".agreedTradeValue");
 
-        if (buyRadio && buyRadio.checked) {
+    const sellingPrice =
+        document.querySelector(".sellingPrice");
 
-            selling =
-                parseFloat(sellingPrice?.value) || 0;
+    const expectedProfit =
+        document.getElementById("expectedProfit");
 
-        }
+    if (!agreedTradeValue || !sellingPrice)
+        return;
 
-        if (swapRadio && swapRadio.checked) {
+    const suggested =
+        parseFloat(suggestedTradeValue?.value) || 0;
 
-            selling =
-                parseFloat(swapSellingPrice?.value) || 0;
+    const agreed =
+        parseFloat(agreedTradeValue.value) || 0;
 
-        }
+    const selling =
+        parseFloat(sellingPrice.value) || 0;
 
-        const buying =
-            parseFloat(tradeValue.value) || 0;
+    const profit =
+        selling - agreed;
 
-        const profit =
-            selling - buying;
+    if (expectedProfit) {
 
-        expectedProfit.value =
+        expectedProfit.textContent =
             "UGX " +
             profit.toLocaleString();
 
-        calculateTopup();
+    }
+
+    document.getElementById("summarySuggested").textContent =
+        "UGX " + suggested.toLocaleString();
+
+    document.getElementById("summaryAgreed").textContent =
+        "UGX " + agreed.toLocaleString();
+
+    document.getElementById("summarySelling").textContent =
+        "UGX " + selling.toLocaleString();
+
+}
+
+    suggestedTradeValue?.addEventListener(
+    "input",
+    () => {
+
+        calculateProfit();
+
+        updateReview();
+
+    }
+);
+
+agreedTradeValue?.addEventListener(
+    "input",
+    () => {
+
+        calculateProfit();
+
+        calculateSettlement();
+
+        updateReview();
+
+    }
+);
+
+sellingPrice?.addEventListener(
+    "input",
+    () => {
+
+        calculateProfit();
+
+        calculateSettlement();
+
+        updateReview();
+
+    }
+);
+
+    // =====================================================
+// SMART TRADE VALUATION
+// =====================================================
+
+async function calculateSuggestedValue() {
+
+    const suggestedTradeValue =
+        document.getElementById("suggestedTradeValue");
+
+    const agreedTradeValue =
+        document.querySelector(".agreedTradeValue");
+
+    if (!sellingPrice)
+        return;
+
+    try {
+
+        const response = await fetch(
+            "/trade-ins/api/valuation",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+
+                    selling_price:
+                        parseFloat(sellingPrice.value) || 0,
+
+                    battery_health:
+                        battery?.value || null,
+
+                    screen_condition:
+                        document.querySelector('[name="screen_condition[]"]')?.value,
+
+                    back_condition:
+                        document.querySelector('[name="back_condition[]"]')?.value,
+
+                    frame_condition:
+                        document.querySelector('[name="frame_condition[]"]')?.value,
+
+                    camera_condition:
+                        document.querySelector('[name="camera_condition[]"]')?.value,
+
+                    face_id_status:
+                        document.querySelector('[name="face_id_status[]"]')?.value,
+
+                    fingerprint_status:
+                        document.querySelector('[name="fingerprint_status[]"]')?.value,
+
+                    network_lock:
+                        document.querySelector('[name="network_lock[]"]')?.value,
+
+                    icloud_status:
+                        document.querySelector('[name="icloud_status[]"]')?.value,
+
+                    frp_status:
+                        document.querySelector('[name="frp_status[]"]')?.value,
+
+                    charger_received:
+                        document.querySelector('[name="charger_received[]"]')?.checked,
+
+                    box_received:
+                        document.querySelector('[name="box_received[]"]')?.checked
+
+                })
+
+            }
+        );
+
+        const result =
+            await response.json();
+
+        // ERP Recommendation
+
+        suggestedTradeValue.value =
+            result.suggested_trade_value;
+
+        // Only set Agreed Value automatically
+        // the first time.
+
+        if (
+            agreedTradeValue &&
+            !agreedTradeValue.value
+        ) {
+
+            agreedTradeValue.value =
+                result.suggested_trade_value;
+
+        }
+
+        calculateProfit();
+
+calculateSettlement();
+
+updateReview();
+    }
+
+    catch (err) {
+
+        console.error(err);
 
     }
 
-    tradeValue?.addEventListener(
-        "input",
-        calculateProfit
-    );
-
-    sellingPrice?.addEventListener(
-        "input",
-        calculateProfit
-    );
-
-    swapSellingPrice?.addEventListener(
-        "input",
-        calculateProfit
-    );
+}
 
     // =====================================================
     // TOP-UP CALCULATION
     // =====================================================
 
-    function calculateTopup() {
+    function calculateSettlement() {
 
-        if (!swapRadio?.checked)
-            return;
+    const agreedTradeValue =
+        document.querySelector(".agreedTradeValue");
 
-        const selling =
-            parseFloat(swapSellingPrice.value) || 0;
+    const cashPaid =
+        document.getElementById("cashPaidCustomer");
 
-        const trade =
-            parseFloat(tradeValue.value) || 0;
+    const customerTopup =
+        document.getElementById("customerTopup");
 
-        const difference =
-            selling - trade;
+    const buyRadio =
+        document.getElementById("buyPhone");
 
-        if (difference > 0) {
+    const upgradeRadio =
+        document.getElementById("upgradePhone");
 
-            customerTopup.value = difference;
+    const downgradeRadio =
+        document.getElementById("downgradePhone");
 
-        }
+    const agreed =
+        parseFloat(
+            agreedTradeValue?.value
+        ) || 0;
 
-        else {
+    const selling =
+        parseFloat(
+            sellingPrice?.value
+        ) || 0;
 
-            customerTopup.value = 0;
+    // BUY
+    if (buyRadio?.checked) {
 
-        }
+        cashPaid.value = agreed;
+
+        customerTopup.value = 0;
 
     }
+
+    // UPGRADE
+    else if (upgradeRadio?.checked) {
+
+        const topup =
+            Math.max(
+                selling - agreed,
+                0
+            );
+
+        customerTopup.value = topup;
+
+        cashPaid.value = 0;
+
+    }
+
+    // DOWNGRADE
+    else if (downgradeRadio?.checked) {
+
+        const refund =
+            Math.max(
+                agreed - selling,
+                0
+            );
+
+        cashPaid.value = refund;
+
+        customerTopup.value = 0;
+
+    }
+
+}
 
     // =====================================================
     // BATTERY WARNING
@@ -406,14 +627,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 variantSelect.innerHTML += `
                     <option
-                        value="${v.id}"
-                        data-brand="${v.brand}"
-                        data-model="${v.model}"
-                        data-storage="${v.storage}"
-                        data-ram="${v.ram}"
-                        data-colour="${v.colour}">
-                        ${v.storage} / ${v.ram} / ${v.colour}
-                    </option>`;
+    value="${v.id}"
+    data-brand="${v.brand}"
+    data-model="${v.model}"
+    data-storage="${v.storage}"
+    data-ram="${v.ram}"
+    data-colour="${v.colour}"
+    data-sku="${v.sku}"
+    data-stock="${v.stock}"
+    data-condition="${v.condition}"
+    data-price="${v.selling_price}">
+    ${v.storage} / ${v.ram} / ${v.colour}
+</option>`;
 
             });
 
@@ -433,42 +658,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
     variantSelect?.addEventListener("change", function () {
 
-        const option =
-            this.selectedOptions[0];
+    const option = this.selectedOptions[0];
 
-        if (!option || !option.value)
-            return;
+    if (!option || !option.value)
+        return;
 
-        document.getElementById(
-            "deviceSummaryCard"
-        ).style.display = "block";
+    document.getElementById("deviceSummaryCard").style.display = "block";
 
-        document.getElementById(
-            "summaryBrand"
-        ).textContent =
-            option.dataset.brand;
+    document.getElementById("summaryBrand").textContent =
+        option.dataset.brand;
 
-        document.getElementById(
-            "summaryModel"
-        ).textContent =
-            option.dataset.model;
+    document.getElementById("summaryModel").textContent =
+        option.dataset.model;
 
-        document.getElementById(
-            "summaryStorage"
-        ).textContent =
-            option.dataset.storage;
+    document.getElementById("summaryStorage").textContent =
+        option.dataset.storage;
 
-        document.getElementById(
-            "summaryRam"
-        ).textContent =
-            option.dataset.ram;
+    document.getElementById("summaryRam").textContent =
+        option.dataset.ram;
 
-        document.getElementById(
-            "summaryColour"
-        ).textContent =
-            option.dataset.colour;
+    document.getElementById("summaryColour").textContent =
+        option.dataset.colour;
 
-    });
+    document.getElementById("summarySku").textContent =
+        option.dataset.sku;
+
+    document.getElementById("summaryCondition").textContent =
+        option.dataset.condition;
+
+    document.getElementById("summaryStock").textContent =
+        option.dataset.stock + " Units";
+
+    document.getElementById("summarySellingPrice").textContent =
+        "UGX " +
+        Number(option.dataset.price).toLocaleString();
+
+    if (sellingPrice) {
+
+        sellingPrice.value = option.dataset.price;
+
+    }
+
+    calculateProfit();
+
+calculateSettlement();
+
+calculateSuggestedValue();
+
+updateReview();
+
+});
 
     // =====================================================
     // REVIEW PAGE
@@ -551,12 +790,12 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         setReview(
-            "reviewTradeValue",
-            "UGX " +
-            (
-                parseFloat(tradeValue?.value) || 0
-            ).toLocaleString()
-        );
+    "reviewTradeValue",
+    "UGX " +
+    (
+        parseFloat(agreedTradeValue?.value) || 0
+    ).toLocaleString()
+);
 
         setReview(
             "reviewSelling",
@@ -586,10 +825,17 @@ document.addEventListener("DOMContentLoaded", () => {
             ).toLocaleString()
         );
 
-        setReview(
-            "reviewProfit",
-            expectedProfit?.value
-        );
+        const agreed =
+    parseFloat(agreedTradeValue?.value) || 0;
+
+const selling =
+    parseFloat(sellingPrice?.value) || 0;
+
+setReview(
+    "reviewProfit",
+    "UGX " +
+    (selling - agreed).toLocaleString()
+);
 
         const selected =
             variantSelect?.selectedOptions[0];
@@ -616,7 +862,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             el.addEventListener(
                 "change",
-                updateReview
+                () => {
+
+                updateReview();
+
+                calculateSuggestedValue();
+
+                }
             );
 
         });
@@ -662,5 +914,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     updateReview();
+
+    showStep(0);
 
 });

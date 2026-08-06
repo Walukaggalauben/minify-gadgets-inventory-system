@@ -1,0 +1,324 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Trade-In Details
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold">
+
+                Trade-In Details
+
+            </h2>
+
+            <small class="text-muted">
+
+                {{ trade_in.trade_in_number }}
+
+            </small>
+
+        </div>
+
+        <div>
+
+            <a
+                href="{{ url_for('trade_in.print_trade_in', id=trade_in.id) }}"
+                class="btn btn-success">
+
+                <i class="fas fa-print"></i>
+
+                Print
+
+            </a>
+
+            <a
+                href="{{ url_for('trade_in.index') }}"
+                class="btn btn-secondary">
+
+                Back
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <!-- CUSTOMER -->
+
+        <div class="col-lg-4">
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header bg-primary text-white">
+
+                    Customer Information
+
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table table-borderless">
+
+                        <tr>
+                            <th>Name</th>
+                            <td>{{ trade_in.customer_name }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Phone</th>
+                            <td>{{ trade_in.phone_number }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Alternative</th>
+                            <td>{{ trade_in.alternative_phone or "-" }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Business</th>
+                            <td>{{ trade_in.business_name or "-" }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Email</th>
+                            <td>{{ trade_in.email or "-" }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>National ID</th>
+                            <td>{{ trade_in.national_id or "-" }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Address</th>
+                            <td>{{ trade_in.address or "-" }}</td>
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-success text-white">
+
+                    Financial Summary
+
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table">
+
+                        <tr>
+
+                            <th>Total Trade Value</th>
+
+                            <td>
+
+                                UGX {{ "{:,.0f}".format(trade_in.total_trade_value) }}
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <th>Cash Paid</th>
+
+                            <td>
+
+                                UGX {{ "{:,.0f}".format(trade_in.cash_paid) }}
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <th>Customer Top-up</th>
+
+                            <td>
+
+                                UGX {{ "{:,.0f}".format(trade_in.topup_received) }}
+
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- DEVICE -->
+
+        <div class="col-lg-8">
+
+            {% for item in trade_in.items %}
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header bg-dark text-white">
+
+                    Device {{ loop.index }}
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <table class="table table-sm">
+
+                                <tr>
+                                    <th>Product</th>
+                                    <td>{{ item.product_variant.product.name }}</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Variant</th>
+                                    <td>{{ item.product_variant.storage }} / {{ item.product_variant.ram }}</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Colour</th>
+                                    <td>{{ item.product_variant.colour }}</td>
+                                </tr>
+
+                                <tr>
+                                    <th>IMEI</th>
+                                    <td>{{ item.imei.imei }}</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Battery</th>
+                                    <td>{{ item.battery_health }}%</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Serial</th>
+                                    <td>{{ item.serial_number }}</td>
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <table class="table table-sm">
+
+                                <tr>
+                                    <th>Screen</th>
+                                    <td>{{ item.screen_condition }}</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Back</th>
+                                    <td>{{ item.back_condition }}</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Frame</th>
+                                    <td>{{ item.frame_condition }}</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Camera</th>
+                                    <td>{{ item.camera_condition }}</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Network</th>
+                                    <td>{{ item.network_lock }}</td>
+                                </tr>
+
+                                <tr>
+                                    <th>iCloud / FRP</th>
+                                    <td>{{ item.icloud_status }} / {{ item.frp_status }}</td>
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+
+                        <div class="col-md-4">
+
+                            <strong>Trade Value</strong><br>
+
+                            UGX {{ "{:,.0f}".format(item.final_trade_value) }}
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <strong>Selling Price</strong><br>
+
+                            UGX {{ "{:,.0f}".format(item.default_selling_price) }}
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <strong>Estimated Profit</strong><br>
+
+                            <span class="text-success fw-bold">
+
+                                UGX {{ "{:,.0f}".format(item.estimated_profit) }}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    {% if item.remarks %}
+
+                    <hr>
+
+                    <strong>Remarks</strong>
+
+                    <p>
+
+                        {{ item.remarks }}
+
+                    </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

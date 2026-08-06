@@ -1,0 +1,672 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Trade-In Receipt
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+@media print{
+
+    .no-print{
+        display:none !important;
+    }
+
+    body{
+        background:#fff;
+    }
+
+    .card{
+        border:none !important;
+        box-shadow:none !important;
+    }
+
+}
+
+.signature-box{
+
+    height:80px;
+    border-bottom:1px solid #000;
+    margin-bottom:10px;
+
+}
+
+.check-item{
+
+    display:inline-block;
+    width:220px;
+    margin-bottom:8px;
+
+}
+
+</style>
+
+<div class="container mt-4">
+
+<div class="card shadow">
+
+<div class="card-body">
+
+<div class="row mb-4">
+
+<div class="col-md-6">
+
+<h2 class="fw-bold">
+
+{{ company.company_name }}
+
+</h2>
+
+<p class="mb-1">
+
+{{ company.address }}
+
+</p>
+
+<p class="mb-1">
+
+{{ company.phone }}
+
+</p>
+
+<p>
+
+{{ company.email }}
+
+</p>
+
+</div>
+
+<div class="col-md-6 text-end">
+
+<h3 class="text-success">
+
+TRADE-IN RECEIPT
+
+</h3>
+
+<h5>
+
+{{ trade_in.trade_in_number }}
+
+</h5>
+
+<p>
+
+{{ trade_in.trade_in_date }}
+
+</p>
+
+</div>
+
+</div>
+
+<hr>
+
+<h5 class="mb-3">
+
+Customer Information
+
+</h5>
+
+<table class="table table-bordered">
+
+<tr>
+
+<th width="30%">
+
+Customer Name
+
+</th>
+
+<td>
+
+{{ trade_in.customer_name }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+
+Phone
+
+</th>
+
+<td>
+
+{{ trade_in.phone_number }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+
+Alternative Phone
+
+</th>
+
+<td>
+
+{{ trade_in.alternative_phone or "-" }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+
+Business
+
+</th>
+
+<td>
+
+{{ trade_in.business_name or "-" }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+
+Address
+
+</th>
+
+<td>
+
+{{ trade_in.address or "-" }}
+
+</td>
+
+</tr>
+
+</table>
+
+{% for item in trade_in.items %}
+
+<hr>
+
+<h5>
+
+Device {{ loop.index }}
+
+</h5>
+
+<table class="table table-bordered">
+
+<tr>
+
+<th width="25%">
+
+Product
+
+</th>
+
+<td>
+
+{{ item.product_variant.product.name }}
+
+</td>
+
+<th>
+
+IMEI
+
+</th>
+
+<td>
+
+{{ item.imei.imei }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+
+Storage
+
+</th>
+
+<td>
+
+{{ item.product_variant.storage }}
+
+</td>
+
+<th>
+
+RAM
+
+</th>
+
+<td>
+
+{{ item.product_variant.ram }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+
+Colour
+
+</th>
+
+<td>
+
+{{ item.product_variant.colour }}
+
+</td>
+
+<th>
+
+Battery
+
+</th>
+
+<td>
+
+{{ item.battery_health }}%
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+
+Network
+
+</th>
+
+<td>
+
+{{ item.network_lock }}
+
+</td>
+
+<th>
+
+iCloud
+
+</th>
+
+<td>
+
+{{ item.icloud_status }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+
+FRP
+
+</th>
+
+<td>
+
+{{ item.frp_status }}
+
+</td>
+
+<th>
+
+Serial
+
+</th>
+
+<td>
+
+{{ item.serial_number }}
+
+</td>
+
+</tr>
+
+</table>
+
+<h6 class="mt-4">
+
+Physical Inspection
+
+</h6>
+
+<div class="row">
+
+<div class="col-md-6">
+
+<div class="check-item">
+
+Screen:
+
+<strong>
+
+{{ item.screen_condition }}
+
+</strong>
+
+</div>
+
+<div class="check-item">
+
+Back:
+
+<strong>
+
+{{ item.back_condition }}
+
+</strong>
+
+</div>
+
+<div class="check-item">
+
+Frame:
+
+<strong>
+
+{{ item.frame_condition }}
+
+</strong>
+
+</div>
+
+<div class="check-item">
+
+Camera:
+
+<strong>
+
+{{ item.camera_condition }}
+
+</strong>
+
+</div>
+
+</div>
+
+<div class="col-md-6">
+
+<div class="check-item">
+
+Speaker:
+
+<strong>
+
+{{ item.speaker_status }}
+
+</strong>
+
+</div>
+
+<div class="check-item">
+
+Microphone:
+
+<strong>
+
+{{ item.microphone_status }}
+
+</strong>
+
+</div>
+
+<div class="check-item">
+
+Fingerprint:
+
+<strong>
+
+{{ item.fingerprint_status }}
+
+</strong>
+
+</div>
+
+<div class="check-item">
+
+Face ID:
+
+<strong>
+
+{{ item.face_id_status }}
+
+</strong>
+
+</div>
+
+</div>
+
+</div>
+
+<h6 class="mt-4">
+
+Accessories Received
+
+</h6>
+
+<div class="row">
+
+<div class="col-md-12">
+
+✓ Box :
+{{ "Yes" if item.box_received else "No" }}
+
+&nbsp;&nbsp;&nbsp;
+
+✓ Charger :
+{{ "Yes" if item.charger_received else "No" }}
+
+&nbsp;&nbsp;&nbsp;
+
+✓ Cable :
+{{ "Yes" if item.cable_received else "No" }}
+
+&nbsp;&nbsp;&nbsp;
+
+✓ Adapter :
+{{ "Yes" if item.adapter_received else "No" }}
+
+&nbsp;&nbsp;&nbsp;
+
+✓ Earphones :
+{{ "Yes" if item.earphones_received else "No" }}
+
+&nbsp;&nbsp;&nbsp;
+
+✓ Case :
+{{ "Yes" if item.case_received else "No" }}
+
+</div>
+
+</div>
+
+{% endfor %}
+
+<hr>
+
+<h5>
+
+Financial Summary
+
+</h5>
+
+<table class="table table-bordered">
+
+<tr>
+
+<th>
+
+Trade Value
+
+</th>
+
+<td>
+
+UGX {{ "{:,.0f}".format(trade_in.total_trade_value) }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+
+Cash Paid
+
+</th>
+
+<td>
+
+UGX {{ "{:,.0f}".format(trade_in.cash_paid) }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+
+Customer Top-up
+
+</th>
+
+<td>
+
+UGX {{ "{:,.0f}".format(trade_in.topup_received) }}
+
+</td>
+
+</tr>
+
+</table>
+
+{% if trade_in.notes %}
+
+<h5>
+
+Remarks
+
+</h5>
+
+<p>
+
+{{ trade_in.notes }}
+
+</p>
+
+{% endif %}
+
+<hr>
+
+<h5>
+
+Terms & Conditions
+
+</h5>
+
+<ol>
+
+<li>
+The customer confirms ownership of the device.
+</li>
+
+<li>
+MINIFY GADGETS reserves the right to reject stolen or blacklisted devices.
+</li>
+
+<li>
+All inspection findings above were agreed upon before completing this transaction.
+</li>
+
+<li>
+After completion of the transaction, ownership of the traded device transfers to MINIFY GADGETS.
+</li>
+
+</ol>
+
+<div class="row mt-5">
+
+<div class="col-md-6 text-center">
+
+<div class="signature-box"></div>
+
+Customer Signature
+
+</div>
+
+<div class="col-md-6 text-center">
+
+<div class="signature-box"></div>
+
+Authorized Staff
+
+</div>
+
+</div>
+
+<div class="text-center mt-5">
+
+Thank you for choosing
+
+<strong>
+
+{{ company.company_name }}
+
+</strong>
+
+</div>
+
+<div class="text-center mt-4 no-print">
+
+<button
+class="btn btn-success"
+onclick="window.print()">
+
+Print Receipt
+
+</button>
+
+<a
+href="{{ url_for('trade_in.index') }}"
+class="btn btn-secondary">
+
+Back
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

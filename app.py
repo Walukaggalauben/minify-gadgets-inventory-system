@@ -33,6 +33,7 @@ def create_app():
     from models.purchase_item import PurchaseItem
     from models.sale import Sale
     from models.sale_item import SaleItem
+    from models.trade_in_rule import TradeInRule
     from models.company import Company
     from models.system_setting import SystemSetting
 
@@ -53,11 +54,12 @@ def create_app():
     from routes.supplier import supplier_bp
     from routes.purchase import purchase_bp
     from routes.trade_in import trade_in_bp
+    from routes.trade_in_rules import trade_in_rules_bp
     from routes.sale import sale_bp
     from routes.company import company_bp
     from routes.report import report_bp
     from routes.backup import backup_bp
-    
+
     from routes.system_settings import system_settings_bp
 
     app.register_blueprint(auth_bp)
@@ -71,6 +73,7 @@ def create_app():
     app.register_blueprint(supplier_bp)
     app.register_blueprint(purchase_bp)
     app.register_blueprint(trade_in_bp)
+    app.register_blueprint(trade_in_rules_bp)
     app.register_blueprint(sale_bp)
     app.register_blueprint(company_bp)
     app.register_blueprint(report_bp)
@@ -78,6 +81,12 @@ def create_app():
     app.register_blueprint(system_settings_bp)
 
     Migrate(app, db)
+
+    with app.app_context():
+
+        from services.trade_in_rule_service import TradeInRuleService
+
+        TradeInRuleService.seed_defaults()
 
     return app
 

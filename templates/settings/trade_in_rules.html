@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Trade-In Valuation Rules
+{% endblock %}
+
+{% block page_title %}
+Trade-In Valuation Rules
+{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-header bg-success text-white">
+
+        <h4 class="mb-0">
+            <i class="fas fa-calculator"></i>
+            Trade-In Valuation Rules
+        </h4>
+
+        <small>
+            Configure automatic deductions used when calculating
+            suggested trade values.
+        </small>
+
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th width="60%">
+                                Rule
+                            </th>
+
+                            <th>
+                                Deduction (UGX)
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for rule in rules %}
+
+                        <tr>
+
+                            <td>
+
+                                {{ rule.rule_name }}
+
+                                <input
+                                    type="hidden"
+                                    name="id[]"
+                                    value="{{ rule.id }}">
+
+                            </td>
+
+                            <td>
+
+                                <input
+                                    type="number"
+                                    name="amount[]"
+                                    class="form-control"
+                                    value="{{ rule.deduction_amount }}"
+                                    min="0"
+                                    step="1000">
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="text-end">
+
+                <button
+                    class="btn btn-success">
+
+                    <i class="fas fa-save"></i>
+
+                    Save Changes
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

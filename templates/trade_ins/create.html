@@ -386,65 +386,75 @@
             <hr>
 
             <div
-                id="deviceSummaryCard"
-                class="card border-success mt-3"
-                style="display:none;">
+    id="deviceSummaryCard"
+    class="card border-success shadow-sm mt-4"
+    style="display:none;">
 
-                <div class="card-header bg-success text-white">
+    <div class="card-header bg-success text-white">
 
-                    Selected Device
+        <h6 class="mb-0">
+            <i class="fas fa-mobile-alt me-2"></i>
+            Selected Device
+        </h6>
 
-                </div>
+    </div>
 
-                <div class="card-body">
+    <div class="card-body">
 
-                    <div class="row">
+        <div class="row g-3">
 
-                        <div class="col-md-3">
-
-                            <strong>Brand</strong>
-
-                            <p id="summaryBrand">-</p>
-
-                        </div>
-
-                        <div class="col-md-3">
-
-                            <strong>Model</strong>
-
-                            <p id="summaryModel">-</p>
-
-                        </div>
-
-                        <div class="col-md-2">
-
-                            <strong>Storage</strong>
-
-                            <p id="summaryStorage">-</p>
-
-                        </div>
-
-                        <div class="col-md-2">
-
-                            <strong>RAM</strong>
-
-                            <p id="summaryRam">-</p>
-
-                        </div>
-
-                        <div class="col-md-2">
-
-                            <strong>Colour</strong>
-
-                            <p id="summaryColour">-</p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+            <div class="col-md-3">
+                <small class="text-muted">Brand</small>
+                <h6 id="summaryBrand">-</h6>
             </div>
+
+            <div class="col-md-3">
+                <small class="text-muted">Model</small>
+                <h6 id="summaryModel">-</h6>
+            </div>
+
+            <div class="col-md-2">
+                <small class="text-muted">Storage</small>
+                <h6 id="summaryStorage">-</h6>
+            </div>
+
+            <div class="col-md-2">
+                <small class="text-muted">RAM</small>
+                <h6 id="summaryRam">-</h6>
+            </div>
+
+            <div class="col-md-2">
+                <small class="text-muted">Colour</small>
+                <h6 id="summaryColour">-</h6>
+            </div>
+
+            <div class="col-md-3">
+                <small class="text-muted">SKU</small>
+                <h6 id="summarySku">-</h6>
+            </div>
+
+            <div class="col-md-3">
+                <small class="text-muted">Condition</small>
+                <h6 id="summaryCondition">-</h6>
+            </div>
+
+            <div class="col-md-3">
+                <small class="text-muted">Current Stock</small>
+                <h6 id="summaryStock">-</h6>
+            </div>
+
+            <div class="col-md-3">
+                <small class="text-muted">Selling Price</small>
+                <h6 class="text-success" id="summarySellingPrice">
+                    UGX 0
+                </h6>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
             <hr>
 
@@ -843,51 +853,117 @@
 
 </div>
 
-<!-- ====================================================== -->
+<!-- ===================================================== -->
 <!-- STEP 4 : TRADE VALUATION -->
-<!-- ====================================================== -->
+<!-- ===================================================== -->
 
 <div class="wizard-step d-none" id="step4">
 
-    <div class="card shadow-sm border-0">
+    <h4 class="fw-bold mb-4">
+        Trade Valuation
+    </h4>
 
-        <div class="card-header bg-success text-white">
+    <div class="row">
 
-            <h5 class="mb-0">
+        <!-- LEFT SIDE -->
 
-                <i class="fas fa-money-bill-wave"></i>
+        <div class="col-lg-8">
 
-                Trade Valuation
+            <div class="card shadow-sm mb-4">
 
-            </h5>
+                <div class="card-header bg-success text-white">
 
-        </div>
+                    ERP Valuation
 
-        <div class="card-body">
+                </div>
 
-            <!-- Trade Type -->
+                <div class="card-body">
 
-            <div class="row mb-4">
+                    <div class="mb-3">
 
-                <div class="col-md-12">
+                        <label class="form-label">
 
-                    <label class="form-label fw-bold">
+                            Suggested Trade Value
 
-                        Transaction Type
+                        </label>
 
-                    </label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            id="suggestedTradeValue"
+                            readonly>
+
+                        <small class="text-muted">
+
+                            Generated automatically using Trade-In Rules.
+
+                        </small>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Agreed Trade Value
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control agreedTradeValue"
+                            name="final_trade_value[]"
+                            required>
+
+                        <small class="text-muted">
+
+                            Final negotiated value with the customer.
+
+                        </small>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Expected Selling Price
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control sellingPrice"
+                            name="default_selling_price[]"
+                            required>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-primary text-white">
+
+                    Transaction Type
+
+                </div>
+
+                <div class="card-body">
 
                     <div class="form-check">
 
                         <input
                             class="form-check-input"
                             type="radio"
-                            name="trade_type"
+                            name="transaction_type"
                             id="buyPhone"
                             value="buy"
                             checked>
 
-                        <label class="form-check-label" for="buyPhone">
+                        <label class="form-check-label">
 
                             Buy Customer Phone
 
@@ -900,63 +976,40 @@
                         <input
                             class="form-check-input"
                             type="radio"
-                            name="trade_type"
-                            id="swapPhone"
-                            value="swap">
+                            name="transaction_type"
+                            id="upgradePhone"
+                            value="upgrade">
 
-                        <label class="form-check-label" for="swapPhone">
+                        <label class="form-check-label">
 
-                            Swap / Upgrade
+                            Upgrade
 
                         </label>
 
                     </div>
 
-                </div>
-
-            </div>
-
-            <hr>
-
-            <!-- Buy Phone Section -->
-
-            <div id="buySection">
-
-                <div class="row">
-
-                    <div class="col-md-4">
-
-                        <label class="form-label">
-
-                            Suggested Selling Price
-
-                        </label>
+                    <div class="form-check">
 
                         <input
-                            type="number"
-                            class="form-control sellingPrice"
-                            name="default_selling_price[]">
+                            class="form-check-input"
+                            type="radio"
+                            name="transaction_type"
+                            id="downgradePhone"
+                            value="downgrade">
 
-                    </div>
+                        <label class="form-check-label">
 
-                    <div class="col-md-4">
-
-                        <label class="form-label">
-
-                            Agreed Trade Value
+                            Downgrade
 
                         </label>
 
-                        <input
-                            type="number"
-                            class="form-control finalTradeValue"
-                            name="final_trade_value[]">
-
                     </div>
 
-                    <div class="col-md-4">
+                    <hr>
 
-                        <label class="form-label">
+                    <div class="mb-3">
+
+                        <label>
 
                             Cash Paid To Customer
 
@@ -965,63 +1018,14 @@
                         <input
                             type="number"
                             class="form-control"
+                            id="cashPaidCustomer"
                             name="cash_paid">
 
                     </div>
 
-                </div>
+                    <div class="mb-3">
 
-            </div>
-
-            <!-- Swap Section -->
-
-            <div
-                id="swapSection"
-                style="display:none;">
-
-                <div class="alert alert-info mt-4">
-
-                    Customer is upgrading to another phone.
-
-                </div>
-
-                <div class="row">
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-
-                            Search Desired Phone
-
-                        </label>
-
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="swapSearch"
-                            placeholder="Search inventory...">
-
-                    </div>
-
-                    <div class="col-md-3">
-
-                        <label class="form-label">
-
-                            Selling Price
-
-                        </label>
-
-                        <input
-                            type="number"
-                            class="form-control"
-                            id="swapSellingPrice"
-                            readonly>
-
-                    </div>
-
-                    <div class="col-md-3">
-
-                        <label class="form-label">
+                        <label>
 
                             Customer Top-up
 
@@ -1031,26 +1035,7 @@
                             type="number"
                             class="form-control"
                             id="customerTopup"
-                            name="topup_received"
-                            readonly>
-
-                    </div>
-
-                </div>
-
-                <div class="row mt-3">
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-
-                            Agreed Trade Value
-
-                        </label>
-
-                        <input
-                            type="number"
-                            class="form-control finalTradeValue">
+                            name="topup_received">
 
                     </div>
 
@@ -1058,53 +1043,93 @@
 
             </div>
 
-            <hr>
+        </div>
 
-            <!-- Profit -->
+        <!-- RIGHT SIDE -->
 
-            <div class="row">
+        <div class="col-lg-4">
 
-                <div class="col-md-4">
+            <div class="card shadow">
 
-                    <label class="form-label">
+                <div class="card-header bg-dark text-white">
 
-                        Expected Profit
-
-                    </label>
-
-                    <input
-                        type="text"
-                        id="expectedProfit"
-                        class="form-control"
-                        readonly>
+                    Financial Summary
 
                 </div>
 
-            </div>
+                <div class="card-body">
 
-            <hr>
+                    <table class="table">
 
-            <div class="d-flex justify-content-between">
+                        <tr>
 
-                <button
-                    type="button"
-                    class="btn btn-secondary prevStep">
+                            <th>
 
-                    <i class="fas fa-arrow-left"></i>
+                                Suggested
 
-                    Previous
+                            </th>
 
-                </button>
+                            <td id="summarySuggested">
 
-                <button
-                    type="button"
-                    class="btn btn-success nextStep">
+                                UGX 0
 
-                    Continue
+                            </td>
 
-                    <i class="fas fa-arrow-right"></i>
+                        </tr>
 
-                </button>
+                        <tr>
+
+                            <th>
+
+                                Agreed
+
+                            </th>
+
+                            <td id="summaryAgreed">
+
+                                UGX 0
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <th>
+
+                                Selling
+
+                            </th>
+
+                            <td id="summarySelling">
+
+                                UGX 0
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <th>
+
+                                Profit
+
+                            </th>
+
+                            <td
+                                id="expectedProfit"
+                                class="fw-bold text-success">
+
+                                UGX 0
+
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+                </div>
 
             </div>
 
@@ -1112,7 +1137,27 @@
 
     </div>
 
-</div> 
+    <div class="d-flex justify-content-between mt-4">
+
+        <button
+            type="button"
+            class="btn btn-secondary prevStep">
+
+            Previous
+
+        </button>
+
+        <button
+            type="button"
+            class="btn btn-success nextStep">
+
+            Continue
+
+        </button>
+
+    </div>
+
+</div>
 
 <!-- ====================================================== -->
 <!-- STEP 5 : REVIEW -->
