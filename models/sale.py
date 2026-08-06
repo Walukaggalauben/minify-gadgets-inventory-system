@@ -28,9 +28,26 @@ class Sale(db.Model):
     # CUSTOMER
     # =====================================================
 
-    customer_name = db.Column(db.String(150), nullable=False)
+    customer_id = db.Column(
+        db.Integer,
+        db.ForeignKey("customers.id"),
+        nullable=True,
+    )
 
-    customer_phone = db.Column(db.String(30))
+    customer_name = db.Column(
+        db.String(150),
+        nullable=False,
+    )
+
+    customer_phone = db.Column(
+        db.String(30),
+    )
+
+    customer = db.relationship(
+        "Customer",
+        backref="sales",
+        lazy="joined",
+    )
 
     # =====================================================
     # FINANCIALS

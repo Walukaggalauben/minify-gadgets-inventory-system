@@ -1,0 +1,214 @@
+{% extends "layout.html" %} {% block title %}Customer Profile{% endblock %} {%
+block page_title %}Customer Profile{% endblock %} {% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h3 class="fw-bold">
+      <i class="fas fa-user text-success"></i>
+
+      {{ customer.full_name }}
+    </h3>
+
+    <small class="text-muted"> {{ customer.customer_code }} </small>
+  </div>
+
+  <div>
+    <a
+      href="{{ url_for('customer.edit', id=customer.id) }}"
+      class="btn btn-warning"
+    >
+      <i class="fas fa-edit"></i>
+
+      Edit
+    </a>
+
+    <a href="{{ url_for('customer.index') }}" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i>
+
+      Back
+    </a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-4">
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-header bg-success text-white">Customer Information</div>
+
+      <div class="card-body">
+        <table class="table table-borderless mb-0">
+          <tr>
+            <th>Code</th>
+            <td>{{ customer.customer_code }}</td>
+          </tr>
+
+          <tr>
+            <th>Name</th>
+            <td>{{ customer.full_name }}</td>
+          </tr>
+
+          <tr>
+            <th>Phone</th>
+            <td>{{ customer.phone }}</td>
+          </tr>
+
+          <tr>
+            <th>Alternative</th>
+            <td>{{ customer.alternative_phone or "-" }}</td>
+          </tr>
+
+          <tr>
+            <th>Email</th>
+            <td>{{ customer.email or "-" }}</td>
+          </tr>
+
+          <tr>
+            <th>Business</th>
+            <td>{{ customer.business_name or "-" }}</td>
+          </tr>
+
+          <tr>
+            <th>National ID</th>
+            <td>{{ customer.national_id or "-" }}</td>
+          </tr>
+
+          <tr>
+            <th>Address</th>
+            <td>{{ customer.address or "-" }}</td>
+          </tr>
+
+          <tr>
+            <th>Type</th>
+            <td>
+              <span class="badge bg-info"> {{ customer.customer_type }} </span>
+            </td>
+          </tr>
+
+          <tr>
+            <th>Status</th>
+            <td>
+              {% if customer.is_active %}
+
+              <span class="badge bg-success"> Active </span>
+
+              {% else %}
+
+              <span class="badge bg-danger"> Inactive </span>
+
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="row">
+      <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body text-center">
+            <h6 class="text-muted">Purchases</h6>
+
+            <h2 class="text-success">{{ purchase_count }}</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body text-center">
+            <h6 class="text-muted">Trade-Ins</h6>
+
+            <h2 class="text-primary">0</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body text-center">
+            <h6 class="text-muted">Repairs</h6>
+
+            <h2 class="text-warning">0</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body text-center">
+            <h6 class="text-muted">Lifetime Spend</h6>
+
+            <h5 class="text-danger">
+              UGX {{ "{:,.0f}".format(lifetime_spend or 0) }}
+            </h5>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white">
+        <h5 class="mb-0">Recent Purchases</h5>
+      </div>
+
+      <div class="card-body p-0">
+        {% if recent_sales %}
+
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Invoice</th>
+
+                <th>Date</th>
+
+                <th>Amount</th>
+
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for sale in recent_sales %}
+
+              <tr>
+                <td>{{ sale.invoice_number }}</td>
+
+                <td>{{ sale.sale_date.strftime("%d %b %Y") }}</td>
+
+                <td>UGX {{ "{:,.0f}".format(sale.total_amount) }}</td>
+
+                <td>
+                  <a
+                    href="{{ url_for('sale.view_sale', sale_id=sale.id) }}"
+                    class="btn btn-sm btn-outline-primary"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </a>
+                </td>
+              </tr>
+
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        {% else %}
+
+        <div class="text-center py-5">
+          <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+
+          <h5>No Purchases Yet</h5>
+
+          <p class="text-muted">This customer has not made any purchases.</p>
+        </div>
+
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

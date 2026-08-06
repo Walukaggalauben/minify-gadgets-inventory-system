@@ -27,6 +27,7 @@ def create_app():
     from models.brand import Brand
     from models.product import Product
     from models.product_variant import ProductVariant
+    from models.customer import Customer
     from models.imei import IMEI
     from models.supplier import Supplier
     from models.purchase import Purchase
@@ -56,6 +57,7 @@ def create_app():
     from routes.trade_in import trade_in_bp
     from routes.trade_in_rules import trade_in_rules_bp
     from routes.sale import sale_bp
+    from routes.customer import customer_bp
     from routes.company import company_bp
     from routes.report import report_bp
     from routes.backup import backup_bp
@@ -75,6 +77,7 @@ def create_app():
     app.register_blueprint(trade_in_bp)
     app.register_blueprint(trade_in_rules_bp)
     app.register_blueprint(sale_bp)
+    app.register_blueprint(customer_bp)
     app.register_blueprint(company_bp)
     app.register_blueprint(report_bp)
     app.register_blueprint(backup_bp)

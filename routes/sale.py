@@ -47,12 +47,13 @@ def create():
             items = json.loads(request.form["cart_items"])
 
             SaleService.create_sale(
-                customer_name=request.form["customer_name"],
-                customer_phone=request.form["customer_phone"],
-                payment_method=request.form["payment_method"],
-                created_by=session["user_id"],
-                items=items,
-            )
+    customer_id=request.form.get("customer_id"),
+    customer_name=request.form.get("customer_name"),
+    customer_phone=request.form.get("customer_phone"),
+    payment_method=request.form["payment_method"],
+    created_by=session["user_id"],
+    items=items,
+)
 
             flash("Sale completed successfully.", "success")
 

@@ -4,10 +4,13 @@ from decimal import Decimal, InvalidOperation
 from db import db
 
 from models.sale import Sale
+from models.customer import Customer
 from models.sale_item import SaleItem
 from models.product_variant import ProductVariant
 from models.imei import IMEI
 from models.system_setting import SystemSetting
+from routes import customer
+from routes.company import settings
 
 
 class SaleService:
@@ -31,7 +34,14 @@ class SaleService:
     # ==========================================================
 
     @staticmethod
-    def create_sale(customer_name, customer_phone, payment_method, created_by, items):
+    def create_sale(
+        customer_id,
+        customer_name,
+        customer_phone,
+        payment_method,
+        created_by,
+        items,
+    ):
 
         try:
 
@@ -45,13 +55,29 @@ class SaleService:
             # CUSTOMER VALIDATION
             # ==================================================
 
+            customer = None
+
+            if customer_id:
+
+                customer = Customer.query.get(int(customer_id))
+
+                if not customer:
+
+                    raise Exception("Selected customer was not found.")
+
+                customer_name = customer.full_name
+
+                customer_phone = customer.phone
+
             if settings.require_customer_on_sale:
 
                 if not customer_name or not customer_name.strip():
+
                     raise Exception("Customer name is required for this sale.")
 
-                if not customer_phone or not customer_phone.strip():
-                    raise Exception("Customer phone number is required for this sale.")
+            if not customer_phone or not customer_phone.strip():
+
+                raise Exception("Customer phone number is required for this sale.")
 
             # ==================================================
             # CART VALIDATION
@@ -66,12 +92,12 @@ class SaleService:
 
             sale = Sale(
                 invoice_number=SaleService.generate_invoice_number(),
+                customer_id=customer.id if customer else None,
                 customer_name=customer_name,
                 customer_phone=customer_phone,
                 payment_method=payment_method,
                 created_by=created_by,
             )
-
             db.session.add(sale)
 
             # ==================================================
