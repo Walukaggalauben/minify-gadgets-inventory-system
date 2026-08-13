@@ -19,6 +19,14 @@ class ProductVariantService:
     def create(data):
 
         settings = SystemSetting.get_settings()
+        sku = (data.get("sku") or "").strip()
+        barcode = (data.get("barcode") or "").strip() or None
+        if not sku:
+            raise ValueError("SKU is required.")
+        if ProductVariant.query.filter_by(sku=sku).first():
+            raise ValueError("SKU already exists.")
+        if barcode and ProductVariant.query.filter_by(barcode=barcode).first():
+            raise ValueError("Barcode already exists.")
 
         minimum_stock = data.get("minimum_stock")
 
@@ -30,8 +38,8 @@ class ProductVariantService:
 
         variant = ProductVariant(
             product_id=data["product_id"],
-            sku=data["sku"],
-            barcode=data.get("barcode"),
+            sku=sku,
+            barcode=barcode,
             storage=data.get("storage"),
             ram=data.get("ram"),
             colour=data.get("colour"),
@@ -53,9 +61,18 @@ class ProductVariantService:
     @staticmethod
     def update(variant, data):
 
+        sku = (data.get("sku") or "").strip()
+        barcode = (data.get("barcode") or "").strip() or None
+        if not sku:
+            raise ValueError("SKU is required.")
+        if ProductVariant.query.filter(ProductVariant.sku == sku, ProductVariant.id != variant.id).first():
+            raise ValueError("SKU already exists.")
+        if barcode and ProductVariant.query.filter(ProductVariant.barcode == barcode, ProductVariant.id != variant.id).first():
+            raise ValueError("Barcode already exists.")
+
         variant.product_id = data["product_id"]
-        variant.sku = data["sku"]
-        variant.barcode = data.get("barcode")
+        variant.sku = sku
+        variant.barcode = barcode
         variant.storage = data.get("storage")
         variant.ram = data.get("ram")
         variant.colour = data.get("colour")

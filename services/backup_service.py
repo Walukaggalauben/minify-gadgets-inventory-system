@@ -13,7 +13,7 @@ class BackupService:
 
         database_uri = current_app.config["SQLALCHEMY_DATABASE_URI"]
 
-        mysqldump_path = r"D:\xampp\mysql\bin\mysqldump.exe"
+        mysqldump_path = current_app.config.get("MYSQLDUMP_PATH") or "mysqldump"
 
         parsed = urlparse(database_uri)
 

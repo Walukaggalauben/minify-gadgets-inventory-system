@@ -65,9 +65,11 @@ def index():
 
 @customer_bp.route("/create", methods=["GET", "POST"])
 def create():
-
     if not login_required():
         return redirect(url_for("auth.login"))
+
+    # Where should we return after creating the customer?
+    return_to = request.args.get("return_to") or request.form.get("return_to")
 
     if request.method == "POST":
 
@@ -87,7 +89,6 @@ def create():
         )
 
         db.session.add(customer)
-
         db.session.commit()
 
         flash(
@@ -95,9 +96,25 @@ def create():
             "success",
         )
 
+        # ======================================================
+        # RETURN TO SALES POS WITH NEW CUSTOMER
+        # ======================================================
+
+        if return_to == "sale":
+            return redirect(
+                url_for(
+                    "sale.create",
+                    customer_id=customer.id,
+                )
+            )
+
+        # Normal customer creation
         return redirect(url_for("customer.index"))
 
-    return render_template("customers/create.html")
+    return render_template(
+        "customers/create.html",
+        return_to=return_to,
+    )
 
 
 # ==========================================================
@@ -114,6 +131,12 @@ def view(id):
     customer = Customer.query.get_or_404(id)
 
     purchase_count = Sale.query.filter_by(customer_id=customer.id).count()
+
+    outstanding_balance = (
+        db.session.query(db.func.coalesce(db.func.sum(Sale.balance_due), 0))
+        .filter(Sale.customer_id == customer.id, Sale.balance_due > 0)
+        .scalar()
+    )
 
     lifetime_spend = (
         db.session.query(db.func.coalesce(db.func.sum(Sale.total_amount), 0))
@@ -133,6 +156,7 @@ def view(id):
         customer=customer,
         purchase_count=purchase_count,
         lifetime_spend=lifetime_spend,
+        outstanding_balance=outstanding_balance,
         recent_sales=recent_sales,
     )
 
@@ -275,6 +299,11 @@ def search():
                 "code": c.customer_code,
                 "name": c.full_name,
                 "phone": c.phone,
+                "alternative_phone": c.alternative_phone,
+                "business_name": c.business_name,
+                "email": c.email,
+                "national_id": c.national_id,
+                "address": c.address,
             }
             for c in customers
         ]

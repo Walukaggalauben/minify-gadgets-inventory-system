@@ -1,442 +1,331 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const container = document.getElementById("purchaseItemsContainer");
+    const addButton = document.getElementById("addItem");
+    const template = document.getElementById("purchaseItemTemplate");
+    const purchaseForm = document.getElementById("purchaseForm");
 
-    const container =
-        document.getElementById("purchaseItemsContainer");
+    const grandCost = document.getElementById("grandCost");
+    const grandSales = document.getElementById("grandSales");
+    const grandProfit = document.getElementById("grandProfit");
 
-    const addButton =
-        document.getElementById("addItem");
+    if (!container || !addButton || !template || !purchaseForm) return;
 
-    const template =
-        document.getElementById("purchaseItemTemplate");
-
-    const grandCost =
-        document.getElementById("grandCost");
-
-    const grandSales =
-        document.getElementById("grandSales");
-
-    const grandProfit =
-        document.getElementById("grandProfit");
-
-
-
-    //----------------------------------------------------
-    // Currency
-    //----------------------------------------------------
+    function number(value) {
+        const n = Number(value);
+        return Number.isFinite(n) ? n : 0;
+    }
 
     function money(value) {
-
-        return Number(value || 0).toLocaleString();
-
+        return Math.round(number(value)).toLocaleString("en-US");
     }
 
-
-
-    //----------------------------------------------------
-    // Count IMEIs
-    //----------------------------------------------------
-
-    function imeiCount(card) {
-
-        const textarea =
-            card.querySelector(".imeiList");
-
-        if (!textarea)
-            return 0;
+    function getImeis(card) {
+        const textarea = card.querySelector(".imeiList");
+        if (!textarea) return [];
 
         return textarea.value
-            .split("\n")
-            .map(i => i.trim())
-            .filter(i => i !== "")
-            .length;
-
+            .split(/\r?\n/)
+            .map(value => value.trim())
+            .filter(Boolean);
     }
 
+    function updateItemNumbers() {
+        container.querySelectorAll(".purchase-item").forEach((card, index) => {
+            const numberEl = card.querySelector(".item-number");
+            if (numberEl) numberEl.textContent = String(index + 1).padStart(2, "0");
+        });
+    }
 
+    function updateVariantOptions(card, searchValue = "") {
+        const select = card.querySelector(".variant");
+        if (!select) return;
 
-    //----------------------------------------------------
-    // Update single card
-    //----------------------------------------------------
+        const term = searchValue.trim().toLowerCase();
+
+        Array.from(select.options).forEach(option => {
+            if (!option.value) {
+                option.hidden = false;
+                return;
+            }
+
+            option.hidden = term !== "" &&
+                !option.textContent.toLowerCase().includes(term);
+        });
+
+        // If the currently selected option was filtered out, clear it.
+        if (select.selectedOptions[0]?.hidden) {
+            select.value = "";
+        }
+    }
+
+    function loadVariantPrices(card) {
+        const select = card.querySelector(".variant");
+        const selected = select?.selectedOptions?.[0];
+
+        if (!selected || !selected.value) return;
+
+        const buying = number(selected.dataset.buying);
+        const selling = number(selected.dataset.selling);
+
+        const buyingInput = card.querySelector(".buyingPrice");
+        const sellingInput = card.querySelector(".sellingPrice");
+
+        if (buyingInput) buyingInput.value = buying;
+        if (sellingInput) sellingInput.value = selling;
+    }
 
     function updateCard(card) {
+        const qtyInput = card.querySelector(".quantity");
+        const buyingInput = card.querySelector(".buyingPrice");
+        const sellingInput = card.querySelector(".sellingPrice");
 
-        const qty =
-            Number(
-                card.querySelector(".quantity").value || 0
-            );
+        const qty = Math.max(0, Math.floor(number(qtyInput?.value)));
+        const buying = Math.max(0, number(buyingInput?.value));
+        const selling = Math.max(0, number(sellingInput?.value));
+        const imeis = getImeis(card);
 
-        const buying =
-            Number(
-                card.querySelector(".buyingPrice").value || 0
-            );
+        if (qtyInput && qty < 1) qtyInput.value = 1;
 
-        const selling =
-            Number(
-                card.querySelector(".sellingPrice").value || 0
-            );
+        const imeiCount = card.querySelector(".imeiCount");
+        const requiredCount = card.querySelector(".requiredCount");
+        const inventoryCost = card.querySelector(".inventoryCost");
+        const expectedSales = card.querySelector(".expectedSales");
+        const validation = card.querySelector(".validationBox");
 
-        const imeis =
-            imeiCount(card);
+        if (imeiCount) imeiCount.textContent = imeis.length.toLocaleString();
+        if (requiredCount) requiredCount.textContent = qty.toLocaleString();
+        if (inventoryCost) inventoryCost.textContent = `UGX ${money(qty * buying)}`;
+        if (expectedSales) expectedSales.textContent = `UGX ${money(qty * selling)}`;
 
-        card.querySelector(".imeiCount").innerText =
-            imeis;
+        if (validation) {
+            validation.classList.add("d-none");
+            validation.innerHTML = "";
+        }
 
-        card.querySelector(".requiredCount").innerText =
-            qty;
-
-        card.querySelector(".inventoryCost").innerText =
-            "UGX " + money(
-                qty * buying
-            );
-
-        card.querySelector(".expectedSales").innerText =
-            "UGX " + money(
-                qty * selling
-            );
-
-        const validation =
-            card.querySelector(".validationBox");
-
-        validation.classList.add("d-none");
-
-        validation.innerHTML = "";
-
-        if (imeis !== qty) {
-
+        // Empty IMEIs are allowed for non-IMEI stock.
+        // Once an IMEI is started, require one per unit.
+        if (imeis.length > 0 && imeis.length !== qty && validation) {
             validation.classList.remove("d-none");
-
             validation.innerHTML =
-                "<strong>IMEI count must equal Quantity.</strong>";
-
+                `<i class="fas fa-triangle-exclamation me-1"></i>
+                 This item has ${imeis.length} IMEI(s), but the quantity is ${qty}.
+                 Enter one IMEI for every unit or clear the IMEI field for non-IMEI stock.`;
         }
 
         updateGrandTotals();
-
     }
-
-
-
-    //----------------------------------------------------
-    // Grand Totals
-    //----------------------------------------------------
 
     function updateGrandTotals() {
-
         let totalCost = 0;
-
         let totalSales = 0;
 
-        document
-            .querySelectorAll(".purchase-item")
-            .forEach(card => {
+        container.querySelectorAll(".purchase-item").forEach(card => {
+            const qty = Math.max(0, Math.floor(number(card.querySelector(".quantity")?.value)));
+            const buying = Math.max(0, number(card.querySelector(".buyingPrice")?.value));
+            const selling = Math.max(0, number(card.querySelector(".sellingPrice")?.value));
 
-                const qty =
-                    Number(
-                        card.querySelector(".quantity").value || 0
-                    );
+            totalCost += qty * buying;
+            totalSales += qty * selling;
+        });
 
-                const buying =
-                    Number(
-                        card.querySelector(".buyingPrice").value || 0
-                    );
-
-                const selling =
-                    Number(
-                        card.querySelector(".sellingPrice").value || 0
-                    );
-
-                totalCost += qty * buying;
-
-                totalSales += qty * selling;
-
-            });
-
-        grandCost.innerText =
-            money(totalCost);
-
-        grandSales.innerText =
-            money(totalSales);
-
-        grandProfit.innerText =
-            money(totalSales - totalCost);
-
+        grandCost.textContent = money(totalCost);
+        grandSales.textContent = money(totalSales);
+        grandProfit.textContent = money(totalSales - totalCost);
     }
-        //----------------------------------------------------
-    // Attach Events
-    //----------------------------------------------------
+
+    function showValidation(card, message) {
+        const box = card.querySelector(".validationBox");
+        if (!box) return;
+
+        box.classList.remove("d-none");
+        box.innerHTML = `<i class="fas fa-triangle-exclamation me-1"></i>${message}`;
+    }
 
     function attachEvents(card) {
+        const quantity = card.querySelector(".quantity");
+        const buying = card.querySelector(".buyingPrice");
+        const selling = card.querySelector(".sellingPrice");
+        const imeiList = card.querySelector(".imeiList");
+        const variant = card.querySelector(".variant");
+        const variantSearch = card.querySelector(".variantSearch");
+        const imeiMode = card.querySelector(".imeiMode");
+        const removeButton = card.querySelector(".removeItem");
 
-        card.querySelector(".quantity")
-            .addEventListener("input", () => {
-                updateCard(card);
-            });
+        quantity?.addEventListener("input", () => updateCard(card));
+        buying?.addEventListener("input", () => updateCard(card));
+        selling?.addEventListener("input", () => updateCard(card));
+        imeiList?.addEventListener("input", () => updateCard(card));
 
-        card.querySelector(".buyingPrice")
-            .addEventListener("input", () => {
-                updateCard(card);
-            });
+        variant?.addEventListener("change", () => {
+            loadVariantPrices(card);
+            updateCard(card);
+        });
 
-        card.querySelector(".sellingPrice")
-            .addEventListener("input", () => {
-                updateCard(card);
-            });
+        variantSearch?.addEventListener("input", () => {
+            updateVariantOptions(card, variantSearch.value);
+        });
 
-        card.querySelector(".imeiList")
-            .addEventListener("input", () => {
-                updateCard(card);
-            });
+        imeiMode?.addEventListener("change", () => {
+            if (!imeiList) return;
 
-        card.querySelector(".removeItem")
-            .addEventListener("click", () => {
+            if (imeiMode.value === "scanner") {
+                imeiList.placeholder = "Scan each IMEI. Most USB scanners will add a new line automatically.";
+                imeiList.focus();
+            } else if (imeiMode.value === "paste") {
+                imeiList.placeholder = "Paste one IMEI per line...";
+            } else {
+                imeiList.placeholder = "Enter one IMEI per line";
+            }
+        });
 
-                if (
-                    document.querySelectorAll(".purchase-item").length === 1
-                ) {
+        removeButton?.addEventListener("click", () => {
+            const cards = container.querySelectorAll(".purchase-item");
 
-                    alert(
-                        "At least one purchase item is required."
-                    );
+            if (cards.length === 1) {
+                alert("At least one purchase item is required.");
+                return;
+            }
 
-                    return;
+            card.remove();
+            updateItemNumbers();
+            updateGrandTotals();
+        });
 
+        updateVariantOptions(card);
+        updateCard(card);
+    }
+
+    function findDuplicateImeis() {
+        const seen = new Set();
+        const duplicates = new Set();
+
+        container.querySelectorAll(".imeiList").forEach(textarea => {
+            getImeis(textarea.closest(".purchase-item")).forEach(imei => {
+                const normalized = imei.toUpperCase();
+
+                if (seen.has(normalized)) {
+                    duplicates.add(imei);
+                } else {
+                    seen.add(normalized);
                 }
-
-                card.remove();
-
-                updateGrandTotals();
-
             });
+        });
 
+        return Array.from(duplicates);
     }
-
-
-
-    //----------------------------------------------------
-    // Duplicate IMEI Check
-    //----------------------------------------------------
-
-    function duplicateIMEIs() {
-
-        let seen = [];
-
-        let duplicates = [];
-
-        document
-            .querySelectorAll(".imeiList")
-            .forEach(box => {
-
-                box.value
-                    .split("\n")
-                    .map(i => i.trim())
-                    .filter(i => i !== "")
-                    .forEach(i => {
-
-                        if (seen.includes(i)) {
-
-                            duplicates.push(i);
-
-                        }
-
-                        else {
-
-                            seen.push(i);
-
-                        }
-
-                    });
-
-            });
-
-        return duplicates;
-
-    }
-
-
-
-    //----------------------------------------------------
-    // Validate Form
-    //----------------------------------------------------
 
     function validatePurchase() {
-
         let valid = true;
 
-        document
-            .querySelectorAll(".purchase-item")
-            .forEach(card => {
+        const cards = container.querySelectorAll(".purchase-item");
 
-                updateCard(card);
-
-                const qty =
-                    Number(
-                        card.querySelector(".quantity").value || 0
-                    );
-
-                const imeis =
-                    imeiCount(card);
-
-                if (qty !== imeis) {
-
-                    valid = false;
-
-                }
-
-            });
-
-        const dup = duplicateIMEIs();
-
-        if (dup.length > 0) {
-
-            alert(
-                "Duplicate IMEIs found:\n\n" +
-                dup.join("\n")
-            );
-
-            return false;
-
-        }
-
-        if (!valid) {
-
-            alert(
-                "Some purchase items have incorrect IMEI counts."
-            );
-
-            return false;
-
-        }
-
-        return true;
-
-    }
-
-
-
-    //----------------------------------------------------
-    // Add Item
-    //----------------------------------------------------
-
-    addButton.addEventListener("click", () => {
-
-        const clone =
-            template.content.cloneNode(true);
-
-        container.appendChild(clone);
-
-        const cards =
-            document.querySelectorAll(".purchase-item");
-
-        const newCard =
-            cards[cards.length - 1];
-
-        attachEvents(newCard);
-
-        updateCard(newCard);
-
-    });
-        //----------------------------------------------------
-    // Initialise Existing Card
-    //----------------------------------------------------
-
-    document
-        .querySelectorAll(".purchase-item")
-        .forEach(card => {
-
-            attachEvents(card);
+        cards.forEach(card => {
+            const variant = card.querySelector(".variant");
+            const qty = Math.floor(number(card.querySelector(".quantity")?.value));
+            const buying = number(card.querySelector(".buyingPrice")?.value);
+            const selling = number(card.querySelector(".sellingPrice")?.value);
+            const imeis = getImeis(card);
 
             updateCard(card);
 
-        });
-
-
-
-    //----------------------------------------------------
-    // Form Submit Validation
-    //----------------------------------------------------
-
-    const purchaseForm =
-        document.getElementById("purchaseForm");
-
-    purchaseForm.addEventListener(
-        "submit",
-        function (e) {
-
-            if (!validatePurchase()) {
-
-                e.preventDefault();
-
+            if (!variant?.value) {
+                valid = false;
+                showValidation(card, "Please select a product variant.");
                 return;
-
             }
 
-        }
-    );
+            if (qty < 1) {
+                valid = false;
+                showValidation(card, "Quantity must be at least 1.");
+                return;
+            }
 
+            if (buying < 0 || selling < 0) {
+                valid = false;
+                showValidation(card, "Prices cannot be negative.");
+                return;
+            }
 
+            // Empty IMEI list means non-IMEI stock.
+            if (imeis.length > 0 && imeis.length !== qty) {
+                valid = false;
+                showValidation(card, `IMEI count (${imeis.length}) must match quantity (${qty}).`);
+            }
 
-    //----------------------------------------------------
-    // Barcode Scanner Mode
-    // (Preparation for Scanner Integration)
-    //----------------------------------------------------
-
-    document
-        .querySelectorAll(".imeiMode")
-        .forEach(select => {
-
-            select.addEventListener(
-                "change",
-                function () {
-
-                    const card =
-                        this.closest(".purchase-item");
-
-                    const textarea =
-                        card.querySelector(".imeiList");
-
-                    if (this.value === "scanner") {
-
-                        textarea.placeholder =
-                            "Scan each barcode one after another...";
-
-                        textarea.focus();
-
-                    }
-
-                    else if (this.value === "paste") {
-
-                        textarea.placeholder =
-                            "Paste one IMEI per line...";
-
-                    }
-
-                    else {
-
-                        textarea.placeholder =
-                            "Enter one IMEI per line";
-
-                    }
-
-                }
-            );
-
+            const unique = new Set(imeis.map(i => i.toUpperCase()));
+            if (unique.size !== imeis.length) {
+                valid = false;
+                showValidation(card, "Duplicate IMEIs exist inside this item. Remove duplicates before saving.");
+            }
         });
 
+        const duplicates = findDuplicateImeis();
 
+        if (duplicates.length) {
+            valid = false;
+            alert(
+                "Duplicate IMEIs found across purchase items:\n\n" +
+                duplicates.join("\n")
+            );
+        }
 
-    //----------------------------------------------------
-    // Future Features
-    //----------------------------------------------------
-    //
-    // ✔ Live barcode scanner (USB)
-    // ✔ Camera barcode scanner
-    // ✔ Import CSV IMEIs
-    // ✔ Duplicate IMEI check against database
-    // ✔ Auto-fill variant from scanned IMEI
-    // ✔ Draft purchase saving
-    // ✔ Resume draft purchase
-    // ✔ Supplier catalogue integration
-    //
-    //----------------------------------------------------
+        if (!valid) {
+            window.scrollTo({ top: container.offsetTop - 90, behavior: "smooth" });
+        }
 
+        return valid;
+    }
+
+    addButton.addEventListener("click", () => {
+        const clone = template.content.cloneNode(true);
+        container.appendChild(clone);
+
+        const cards = container.querySelectorAll(".purchase-item");
+        const newCard = cards[cards.length - 1];
+
+        attachEvents(newCard);
+        updateItemNumbers();
+
+        newCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    container.querySelectorAll(".purchase-item").forEach(attachEvents);
+    updateItemNumbers();
+    updateGrandTotals();
+
+    purchaseForm.addEventListener("submit", event => {
+        if (!validatePurchase()) {
+            event.preventDefault();
+            return;
+        }
+
+        const button = document.getElementById("completePurchase");
+        if (button) {
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving Purchase...';
+        }
+    });
+});
+
+/* Barcode scanner support for receiving purchases */
+document.addEventListener("keydown", async (event) => {
+    const target = event.target;
+    if (!target?.classList?.contains("itemBarcode") || event.key !== "Enter") return;
+    event.preventDefault();
+    const code = target.value.trim();
+    if (!code) return;
+    const card = target.closest(".purchase-item");
+    try {
+        const response = await fetch(`/inventory/api/barcode/${encodeURIComponent(code)}`);
+        if (!response.ok) throw new Error("not found");
+        const data = await response.json();
+        const select = card.querySelector(".variant");
+        select.value = String(data.id);
+        select.dispatchEvent(new Event("change"));
+        target.value = "";
+        const note = card.querySelector(".imei-method-note");
+        if (note) note.innerHTML = `<i class="fas fa-barcode"></i> Scanned <strong>${data.sku}</strong> — ${data.product}`;
+    } catch (_) {
+        alert(`No product variant matches barcode "${code}".`);
+    }
 });

@@ -1,50 +1,31 @@
 # Python
 __pycache__/
-<<<<<<< HEAD
-*.pyc
-*.pyo
-*.pyd
-
-# Virtual Environment
-venv/
-=======
 *.py[cod]
 *.pyo
 
-# Virtual Environment
+# Virtual environments
 venv/
 env/
 
 # Environment variables
 .env
->>>>>>> main
 
-# VS Code
+# IDE
 .vscode/
+.idea/
 
-<<<<<<< HEAD
-# Logs
+# Flask/runtime
+instance/
 *.log
 
-# Windows
-Thumbs.db
-
-# macOS
-.DS_Store
-=======
-# Flask
-instance/
-
-# Uploads
-uploads/
-
-# SQLAlchemy
+# Local database
 *.db
 *.sqlite3
 
-# macOS
-.DS_Store
+# Generated uploads/backups
+uploads/
+backups/*.sql
 
-# Windows
+# OS
+.DS_Store
 Thumbs.db
->>>>>>> main

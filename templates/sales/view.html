@@ -1,131 +1,64 @@
-{% extends "layout.html" %} {% block title %}Sale Details{% endblock %} {% block
-page_title %}Sale Details{% endblock %} {% block content %}
-
+{% extends "layout.html" %}
+{% block title %}Sale Details{% endblock %}
+{% block page_title %}Sale Details{% endblock %}
+{% block content %}
 <div class="container-fluid">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h3 class="fw-bold">Sales Invoice</h3>
-      <p class="text-muted mb-0">{{ sale.invoice_number }}</p>
+    <div><h3 class="fw-bold">Sales Invoice</h3><p class="text-muted mb-0">{{ sale.invoice_number }}</p></div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('sale.print_sale', sale_id=sale.id) }}" target="_blank" class="btn btn-success"><i class="fas fa-print me-1"></i> Print Invoice</a>
+      <a href="{{ url_for('sale.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-1"></i> Back</a>
     </div>
+  </div>
 
-    <div>
-      <div class="d-flex gap-2">
-        <a
-          href="{{ url_for('sale.print_sale', sale_id=sale.id) }}"
-          target="_blank"
-          class="btn btn-success"
-        >
-          <i class="fas fa-print"></i>
-          Print Invoice
-        </a>
-
-        <a href="{{ url_for('sale.index') }}" class="btn btn-secondary">
-          <i class="fas fa-arrow-left"></i>
-          Back
-        </a>
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6"><h5>Customer</h5><p class="mb-1"><strong>{{ sale.customer_name or 'Walk-in Customer' }}</strong></p><p class="mb-0">{{ sale.customer_phone or '-' }}</p></div>
+        <div class="col-md-6 text-md-end"><h5>Invoice Information</h5><p class="mb-1"><strong>{{ sale.invoice_number }}</strong></p><p class="mb-1">{{ sale.sale_date.strftime("%d %B %Y %I:%M %p") }}</p><p class="mb-0">Payment: {{ sale.payment_method }}</p></div>
       </div>
     </div>
   </div>
 
-  <div class="card shadow-sm">
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle mb-0">
+        <thead class="table-success"><tr><th>Product</th><th>IMEI</th><th class="text-center">Qty</th><th class="text-end">Price</th><th class="text-end">Total</th></tr></thead>
+        <tbody>{% for item in sale.items %}<tr>
+          <td>{{ item.product_variant.product.brand.name }} {{ item.product_variant.product.name }}<small class="d-block text-muted">{{ item.product_variant.storage or '' }} / {{ item.product_variant.ram or '' }} / {{ item.product_variant.colour or '' }}</small></td>
+          <td>{{ item.imei.imei if item.imei else '-' }}</td><td class="text-center">{{ item.quantity }}</td>
+          <td class="text-end">UGX {{ "{:,.0f}".format(item.selling_price) }}</td><td class="text-end">UGX {{ "{:,.0f}".format(item.total) }}</td>
+        </tr>{% else %}<tr><td colspan="5" class="text-center py-4 text-muted">No sale items.</td></tr>{% endfor %}</tbody>
+        <tfoot><tr><th colspan="4" class="text-end">Total</th><th class="text-end">UGX {{ "{:,.0f}".format(sale.total_amount) }}</th></tr>
+        <tr><th colspan="4" class="text-end">Profit</th><th class="text-end text-success">UGX {{ "{:,.0f}".format(sale.profit) }}</th></tr></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white"><strong><i class="fas fa-money-check-dollar text-success me-1"></i> Payment Status</strong></div>
     <div class="card-body">
-      <div class="row mb-4">
-        <div class="col-md-6">
-          <h5>Customer Information</h5>
-
-          <p class="mb-1">
-            <strong>{{ sale.customer_name }}</strong>
-          </p>
-
-          <p class="mb-1">{{ sale.customer_phone }}</p>
-        </div>
-
-        <div class="col-md-6 text-end">
-          <h5>Invoice Information</h5>
-
-          <p class="mb-1">
-            Invoice:
-            <strong>{{ sale.invoice_number }}</strong>
-          </p>
-
-          <p class="mb-1">{{ sale.sale_date.strftime("%d %B %Y %I:%M %p") }}</p>
-
-          <p class="mb-0">Payment: {{ sale.payment_method }}</p>
-        </div>
+      <div class="row g-3">
+        <div class="col-md-3"><small class="text-muted">Status</small><div><span class="badge {% if sale.payment_status=='Paid' %}bg-success{% elif sale.payment_status=='Partial' %}bg-warning text-dark{% else %}bg-danger{% endif %}">{{ sale.payment_status }}</span></div></div>
+        <div class="col-md-3"><small class="text-muted">Paid</small><div class="fw-bold">UGX {{ "{:,.0f}".format(sale.amount_paid or 0) }}</div></div>
+        <div class="col-md-3"><small class="text-muted">Balance</small><div class="fw-bold text-danger">UGX {{ "{:,.0f}".format(sale.balance_due or 0) }}</div></div>
+        <div class="col-md-3"><small class="text-muted">Due Date</small><div>{{ sale.due_date or '-' }}</div></div>
       </div>
-
-      <div class="table-responsive">
-        <table class="table table-bordered align-middle">
-          <thead class="table-success">
-            <tr>
-              <th>Product</th>
-              <th>IMEI</th>
-              <th class="text-center">Qty</th>
-              <th class="text-end">Price</th>
-              <th class="text-end">Total</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {% for item in sale.items %}
-
-            <tr>
-              <td>
-                {{ item.product_variant.product.brand.name }} {{
-                item.product_variant.product.name }}
-
-                <br />
-
-                <small class="text-muted">
-                  {{ item.product_variant.storage }} / {{
-                  item.product_variant.ram }} / {{ item.product_variant.colour
-                  }}
-                </small>
-              </td>
-
-              <td>
-                {% if item.imei %} {{ item.imei.imei }} {% else %} - {% endif %}
-              </td>
-
-              <td class="text-center">{{ item.quantity }}</td>
-
-              <td class="text-end">
-                UGX {{ "{:,.0f}".format(item.selling_price) }}
-              </td>
-
-              <td class="text-end">UGX {{ "{:,.0f}".format(item.total) }}</td>
-            </tr>
-
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div class="row mt-4">
-        <div class="col-md-8"></div>
-
-        <div class="col-md-4">
-          <table class="table">
-            <tr>
-              <th>Total</th>
-
-              <td class="text-end">
-                UGX {{ "{:,.0f}".format(sale.total_amount) }}
-              </td>
-            </tr>
-
-            <tr>
-              <th>Profit</th>
-
-              <td class="text-end text-success">
-                UGX {{ "{:,.0f}".format(sale.profit) }}
-              </td>
-            </tr>
-          </table>
-        </div>
-      </div>
+      {% if sale.balance_due and sale.balance_due > 0 %}
+      <hr>
+      <h6>Record Customer Payment</h6>
+      <form method="post" action="{{ url_for('sale.add_payment', sale_id=sale.id) }}" class="row g-2">
+        <div class="col-md-3"><input class="form-control" type="number" name="amount" min="1" max="{{ sale.balance_due }}" step="0.01" placeholder="Amount" required></div>
+        <div class="col-md-3"><select class="form-select" name="payment_method"><option>Cash</option><option>Mobile Money</option><option>Bank Transfer</option><option>Card</option></select></div>
+        <div class="col-md-3"><input class="form-control" name="reference" placeholder="Reference"></div>
+        <div class="col-md-3"><button class="btn btn-success w-100">Record Payment</button></div>
+      </form>
+      {% endif %}
+      {% if sale.payments %}
+      <hr><h6>Payment History</h6>
+      <div class="table-responsive"><table class="table table-sm"><thead><tr><th>Date</th><th>Method</th><th>Reference</th><th class="text-end">Amount</th></tr></thead><tbody>{% for p in sale.payments|sort(attribute='payment_date', reverse=True) %}<tr><td>{{ p.payment_date.strftime("%d %b %Y %H:%M") }}</td><td>{{ p.payment_method }}</td><td>{{ p.reference or '-' }}</td><td class="text-end">UGX {{ "{:,.0f}".format(p.amount) }}</td></tr>{% endfor %}</tbody></table></div>
+      {% endif %}
     </div>
   </div>
 </div>
-
 {% endblock %}

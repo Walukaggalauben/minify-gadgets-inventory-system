@@ -56,18 +56,30 @@ content %}
                   class="form-control"
                   placeholder="Search customer by name, phone or customer code..."
                   autocomplete="off"
+                  value="{% if selected_customer %}{{ selected_customer.full_name }} ({{ selected_customer.phone }}){% endif %}"
                 />
 
                 <div id="customerSearchResults" class="list-group mt-2"></div>
 
-                <input type="hidden" id="customer_id" name="customer_id" />
+                <input
+                  type="hidden"
+                  id="customer_id"
+                  name="customer_id"
+                  value="{% if selected_customer %}{{ selected_customer.id }}{% endif %}"
+                />
 
-                <input type="hidden" id="customer_name" name="customer_name" />
+                <input
+                  type="hidden"
+                  id="customer_name"
+                  name="customer_name"
+                  value="{% if selected_customer %}{{ selected_customer.full_name }}{% endif %}"
+                />
 
                 <input
                   type="hidden"
                   id="customer_phone"
                   name="customer_phone"
+                  value="{% if selected_customer %}{{ selected_customer.phone }}{% endif %}"
                 />
               </div>
             </div>
@@ -99,6 +111,32 @@ content %}
           </div>
 
           <div class="card-body">
+            <div
+              class="alert alert-light border d-flex flex-wrap align-items-center gap-2 mb-3"
+            >
+              <strong
+                ><i class="fas fa-barcode text-success me-1"></i> Fast Barcode
+                Sale</strong
+              >
+              <input
+                id="barcodeScanner"
+                class="form-control"
+                style="max-width: 420px"
+                placeholder="Scan product barcode and press Enter"
+                autocomplete="off"
+              />
+              <button
+                type="button"
+                id="cameraScanBtn"
+                class="btn btn-outline-success"
+              >
+                <i class="fas fa-camera me-1"></i> Camera
+              </button>
+              <small id="barcodeStatus" class="text-muted"
+                >USB/Bluetooth scanners work as keyboard input.</small
+              >
+            </div>
+
             <!-- ==================================================
                  PRODUCT SELECTION
             =================================================== -->
@@ -379,7 +417,40 @@ content %}
               <option value="Card">Card</option>
 
               <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Credit">Credit / Installment</option>
             </select>
+
+            <div id="creditFields" class="border rounded p-3 mb-3 d-none">
+              <label class="form-label">Amount Paid Now</label>
+              <input
+                type="number"
+                name="amount_paid"
+                id="amountPaid"
+                class="form-control mb-2"
+                min="0"
+                step="0.01"
+                value="0"
+              />
+              <label class="form-label">Due Date</label>
+              <input
+                type="date"
+                name="due_date"
+                id="dueDate"
+                class="form-control mb-2"
+              />
+              <input
+                type="text"
+                name="payment_reference"
+                class="form-control mb-2"
+                placeholder="Payment reference (optional)"
+              />
+              <textarea
+                name="payment_notes"
+                class="form-control"
+                rows="2"
+                placeholder="Installment / credit notes (optional)"
+              ></textarea>
+            </div>
 
             <!-- ==================================================
                  COMPLETE SALE

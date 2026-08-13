@@ -1,0 +1,68 @@
+<input
+    type="hidden"
+    id="customer_id"
+    name="customer_id">
+
+<div class="card border-success shadow-sm mb-4">
+
+    <div class="card-header bg-success text-white">
+
+        <h5 class="mb-0">
+
+            <i class="fas fa-user"></i>
+
+            Customer
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <label class="form-label">
+
+            Search Customer
+
+        </label>
+
+        <input
+            type="text"
+            id="customerSearch"
+            class="form-control"
+            placeholder="Search name or phone..."
+            autocomplete="off">
+
+        <div
+            id="customerResults"
+            class="list-group mt-2"
+            style="display:none; max-height:250px; overflow-y:auto;">
+
+        </div>
+
+        <div
+            id="selectedCustomerCard"
+            class="alert alert-success mt-3"
+            style="display:none;">
+
+            <strong id="selectedCustomerName"></strong>
+
+            <br>
+
+            <small id="selectedCustomerPhone"></small>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn btn-outline-success mt-3"
+            id="registerCustomerBtn">
+
+            <i class="fas fa-user-plus"></i>
+
+            Register New Customer
+
+        </button>
+
+    </div>
+
+</div>

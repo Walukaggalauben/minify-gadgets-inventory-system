@@ -138,6 +138,14 @@ block page_title %}Customer Profile{% endblock %} {% block content %}
       <div class="col-md-3 mb-3">
         <div class="card border-0 shadow-sm">
           <div class="card-body text-center">
+            <h6 class="text-muted">Outstanding Credit</h6>
+            <h5 class="text-danger">UGX {{ "{:,.0f}".format(outstanding_balance or 0) }}</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body text-center">
             <h6 class="text-muted">Lifetime Spend</h6>
 
             <h5 class="text-danger">

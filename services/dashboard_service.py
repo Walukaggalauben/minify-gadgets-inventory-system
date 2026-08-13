@@ -15,6 +15,7 @@ from models.sale import Sale
 from models.sale_item import SaleItem
 from models.supplier import Supplier
 from models.system_setting import SystemSetting
+from models.expense import Expense
 
 
 class DashboardService:
@@ -25,6 +26,10 @@ class DashboardService:
         today = date.today()
 
         settings = SystemSetting.get_settings()
+
+        # Operating expenses and customer credit
+        total_expenses = db.session.query(func.coalesce(func.sum(Expense.amount), 0)).scalar() or 0
+        outstanding_credit = db.session.query(func.coalesce(func.sum(Sale.balance_due), 0)).filter(Sale.balance_due > 0).scalar() or 0
 
         # ==================================================
         # BASIC COUNTS
@@ -497,6 +502,9 @@ class DashboardService:
             "year_sales": year_sales,
             "year_profit": year_profit,
             "average_sale": average_sale,
+            "total_expenses": total_expenses,
+            "outstanding_credit": outstanding_credit,
+            "net_profit_after_expenses": float(year_profit) - float(total_expenses),
             "sales_summary": sales_summary,
             "profit_summary": profit_summary,
             "purchase_summary": purchase_summary,

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, session, redirect, url_for
 from flask_migrate import Migrate
 import os
 
@@ -37,6 +37,8 @@ def create_app():
     from models.trade_in_rule import TradeInRule
     from models.company import Company
     from models.system_setting import SystemSetting
+    from models.expense import Expense
+    from models.sale_payment import SalePayment
 
     # Make company available in every template
     @app.context_processor
@@ -63,6 +65,8 @@ def create_app():
     from routes.backup import backup_bp
 
     from routes.system_settings import system_settings_bp
+    from routes.expenses import expenses_bp
+    from routes.inventory import inventory_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
@@ -82,6 +86,17 @@ def create_app():
     app.register_blueprint(report_bp)
     app.register_blueprint(backup_bp)
     app.register_blueprint(system_settings_bp)
+    app.register_blueprint(expenses_bp)
+    app.register_blueprint(inventory_bp)
+
+    @app.before_request
+    def enforce_session_auth():
+        public_endpoints = {"auth.login", "static"}
+        if request.endpoint in public_endpoints or request.path.startswith("/static/"):
+            return None
+        if "user_id" not in session:
+            return redirect(url_for("auth.login"))
+        return None
 
     Migrate(app, db)
 

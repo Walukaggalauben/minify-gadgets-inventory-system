@@ -39,85 +39,44 @@ def index():
     # SEARCH
     # =====================================
 
-    
-
     if search:
 
         query = (
-
-            query
-
-                .outerjoin(TradeInItem)
-
-                .outerjoin(IMEI)
-
-                .outerjoin(ProductVariant)
-
-                .outerjoin(Product)
-
-                .filter(
-
-                    or_(
-
-                        TradeIn.trade_in_number.ilike(f"%{search}%"),
-
-                        TradeIn.customer_name.ilike(f"%{search}%"),
-
-                        TradeIn.phone_number.ilike(f"%{search}%"),
-
-                        Product.name.ilike(f"%{search}%"),
-
-                        IMEI.imei.ilike(f"%{search}%")
-
-                    )
-
+            query.outerjoin(TradeInItem)
+            .outerjoin(IMEI)
+            .outerjoin(ProductVariant)
+            .outerjoin(Product)
+            .filter(
+                or_(
+                    TradeIn.trade_in_number.ilike(f"%{search}%"),
+                    TradeIn.customer_name.ilike(f"%{search}%"),
+                    TradeIn.phone_number.ilike(f"%{search}%"),
+                    Product.name.ilike(f"%{search}%"),
+                    IMEI.imei.ilike(f"%{search}%"),
                 )
-
-                .distinct()
-
-    )
+            )
+            .distinct()
+        )
     # =====================================
     # DATE FILTER
     # =====================================
 
     if date_from:
 
-        query = query.filter(
-            TradeIn.trade_in_date >= date_from
-        )
+        query = query.filter(TradeIn.trade_in_date >= date_from)
 
     if date_to:
 
-        query = query.filter(
-            TradeIn.trade_in_date <= date_to
-        )
+        query = query.filter(TradeIn.trade_in_date <= date_to)
 
-    trade_ins = (
-
-        query
-
-        .order_by(
-
-            TradeIn.trade_in_date.desc()
-
-        )
-
-        .all()
-
-    )
+    trade_ins = query.order_by(TradeIn.trade_in_date.desc()).all()
 
     return render_template(
-
         "trade_ins/index.html",
-
         trade_ins=trade_ins,
-
         search=search,
-
         date_from=date_from,
-
-        date_to=date_to
-
+        date_to=date_to,
     )
 
 
@@ -264,7 +223,10 @@ def create():
         try:
 
             TradeInService.create_trade_in(
-                customer_data=customer_data, items=items, created_by=session["user_id"]
+                customer_id=request.form.get("customer_id"),
+                customer_data=customer_data,
+                items=items,
+                created_by=session["user_id"],
             )
 
             flash("Trade-In created successfully.", "success")
@@ -334,16 +296,16 @@ def delete(id):
 
     try:
 
-        # Restore stock before deleting
-
+        # A trade-in cannot be deleted after its device has already been sold.
         for item in trade_in.items:
+            if item.imei and item.imei.status == "Sold":
+                raise Exception("This trade-in contains a device that has already been sold and cannot be deleted.")
 
+        # Restore stock before deleting.
+        for item in trade_in.items:
             if item.imei:
-
                 db.session.delete(item.imei)
-
             if item.product_variant:
-
                 item.product_variant.quantity -= 1
 
         db.session.delete(trade_in)

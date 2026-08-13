@@ -9,8 +9,7 @@ from models.sale_item import SaleItem
 from models.product_variant import ProductVariant
 from models.imei import IMEI
 from models.system_setting import SystemSetting
-from routes import customer
-from routes.company import settings
+from models.sale_payment import SalePayment
 
 
 class SaleService:
@@ -27,7 +26,7 @@ class SaleService:
         Example:
         INV-20260728-183045
         """
-        return datetime.now().strftime("INV-%Y%m%d-%H%M%S")
+        return datetime.now().strftime("INV-%Y%m%d-%H%M%S-%f")[:-3]
 
     # ==========================================================
     # CREATE SALE
@@ -41,6 +40,10 @@ class SaleService:
         payment_method,
         created_by,
         items,
+        amount_paid=None,
+        due_date=None,
+        payment_reference=None,
+        payment_notes=None,
     ):
 
         try:
@@ -75,9 +78,11 @@ class SaleService:
 
                     raise Exception("Customer name is required for this sale.")
 
-            if not customer_phone or not customer_phone.strip():
+            if not customer_phone:
+                customer_phone = customer.phone if customer else ""
 
-                raise Exception("Customer phone number is required for this sale.")
+            if settings.require_customer_on_sale and (not customer_phone or not customer_phone.strip()):
+                raise Exception("Customer phone number is required when customer details are required.")
 
             # ==================================================
             # CART VALIDATION
@@ -97,6 +102,10 @@ class SaleService:
                 customer_phone=customer_phone,
                 payment_method=payment_method,
                 created_by=created_by,
+                amount_paid=Decimal("0.00"),
+                balance_due=Decimal("0.00"),
+                payment_status="Paid",
+                due_date=due_date,
             )
             db.session.add(sale)
 
@@ -156,6 +165,22 @@ class SaleService:
 
                 standard_price = Decimal(str(variant.selling_price))
 
+                # For an individually tracked device, its stored selling price is
+                # the default price and its own acquisition cost is the true cost.
+                selected_imei_id = item.get("imei_id")
+                selected_imei_obj = None
+                if selected_imei_id:
+                    selected_imei_obj = IMEI.query.get(int(selected_imei_id))
+                    if not selected_imei_obj:
+                        raise Exception("Selected IMEI was not found.")
+                    if selected_imei_obj.status != "In Stock":
+                        raise Exception("Selected IMEI is not available.")
+                    if selected_imei_obj.product_variant_id != variant.id:
+                        raise Exception("Selected IMEI does not belong to the selected product.")
+
+                    if selected_imei_obj.default_selling_price is not None:
+                        standard_price = Decimal(str(selected_imei_obj.default_selling_price))
+
                 submitted_price = item.get("price")
 
                 price_override_requested = bool(item.get("price_override", False))
@@ -205,7 +230,11 @@ class SaleService:
                 # BUYING PRICE
                 # ==================================================
 
-                buying_price = Decimal(str(variant.buying_price))
+                buying_price = (
+                    Decimal(str(selected_imei_obj.buying_price))
+                    if selected_imei_obj is not None and selected_imei_obj.buying_price is not None
+                    else Decimal(str(variant.buying_price))
+                )
 
                 # ==================================================
                 # LINE TOTAL
@@ -261,18 +290,7 @@ class SaleService:
 
                 if imei_id:
 
-                    imei = IMEI.query.get(int(imei_id))
-
-                    if not imei:
-                        raise Exception("Selected IMEI was not found.")
-
-                    if imei.status != "In Stock":
-                        raise Exception("Selected IMEI is not available.")
-
-                    if imei.product_variant_id != variant.id:
-                        raise Exception(
-                            "Selected IMEI does not belong " "to the selected product."
-                        )
+                    imei = selected_imei_obj
 
                     # ------------------------------------------------
                     # ONE IMEI = ONE PHYSICAL DEVICE
@@ -314,6 +332,36 @@ class SaleService:
 
             sale.total_amount = total_amount
             sale.profit = total_profit
+
+            # ======================================================
+            # PAYMENT / CREDIT / INSTALLMENT
+            # ======================================================
+            paid = Decimal(str(amount_paid if amount_paid is not None else total_amount))
+
+            if paid < 0 or paid > total_amount:
+                raise Exception("Amount paid cannot be negative or exceed the sale total.")
+
+            if payment_method in ("Credit", "Installment"):
+                if not customer:
+                    raise Exception("A registered customer is required for credit/installment sales.")
+                if due_date is None:
+                    raise Exception("A due date is required for credit/installment sales.")
+            else:
+                paid = total_amount
+
+            sale.amount_paid = paid
+            sale.balance_due = total_amount - paid
+            sale.payment_status = "Paid" if sale.balance_due <= 0 else ("Partial" if paid > 0 else "Unpaid")
+
+            if paid > 0:
+                db.session.add(SalePayment(
+                    sale=sale,
+                    amount=paid,
+                    payment_method=payment_method,
+                    reference=payment_reference,
+                    notes=payment_notes,
+                    received_by=created_by,
+                ))
 
             # ======================================================
             # SAVE EVERYTHING

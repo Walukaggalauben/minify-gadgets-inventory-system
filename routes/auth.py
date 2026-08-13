@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import (
     Blueprint,
     render_template,
@@ -33,7 +35,10 @@ def login():
 
             session["user_id"] = user.id
             session["username"] = user.username
-            session["role"] = user.role.name
+            session["role"] = user.role.name if user.role else ""
+            user.last_login = datetime.utcnow()
+            from db import db
+            db.session.commit()
 
             return redirect(
                 url_for("dashboard.dashboard")

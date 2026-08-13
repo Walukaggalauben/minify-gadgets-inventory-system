@@ -1,0 +1,731 @@
+{% extends "layout.html" %}
+
+{% block title %}Edit Purchase{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <!-- ======================================================
+         PAGE HEADER
+    ======================================================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h3 class="fw-bold mb-0">
+                Edit Purchase
+            </h3>
+
+            <small class="text-muted">
+                {{ purchase.purchase_number }}
+            </small>
+        </div>
+
+        <a href="{{ url_for('purchase.view', purchase_id=purchase.id) }}"
+           class="btn btn-outline-secondary">
+
+            ← Back to Purchase
+
+        </a>
+
+    </div>
+
+
+    <form method="POST"
+          action="{{ url_for('purchase.edit', purchase_id=purchase.id) }}">
+
+
+        <!-- ==================================================
+             PURCHASE INFORMATION
+        =================================================== -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-white">
+
+                <h5 class="mb-0 fw-bold">
+                    Purchase Information
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <!-- Supplier -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+                            Supplier
+                        </label>
+
+                        <select name="supplier_id"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                Select Supplier
+                            </option>
+
+                            {% for supplier in suppliers %}
+
+                            <option value="{{ supplier.id }}"
+                                {% if supplier.id == purchase.supplier_id %}
+                                    selected
+                                {% endif %}>
+
+                                {{ supplier.name }}
+
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Purchase Date -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+                            Purchase Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="purchase_date"
+                            class="form-control"
+                            value="{{ purchase.purchase_date.strftime('%Y-%m-%d') }}"
+                            required>
+
+                    </div>
+
+
+                    <!-- Invoice -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+                            Invoice Number
+                        </label>
+
+                        <input
+                            type="text"
+                            name="invoice_number"
+                            class="form-control"
+                            value="{{ purchase.invoice_number or '' }}"
+                            placeholder="Optional">
+
+                    </div>
+
+
+                    <!-- Payment Method -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+                            Payment Method
+                        </label>
+
+                        <select name="payment_method"
+                                class="form-select">
+
+                            <option value="">
+                                Select Payment Method
+                            </option>
+
+                            <option value="Cash"
+                                {% if purchase.payment_method == "Cash" %}
+                                    selected
+                                {% endif %}>
+                                Cash
+                            </option>
+
+                            <option value="Mobile Money"
+                                {% if purchase.payment_method == "Mobile Money" %}
+                                    selected
+                                {% endif %}>
+                                Mobile Money
+                            </option>
+
+                            <option value="Bank"
+                                {% if purchase.payment_method == "Bank" %}
+                                    selected
+                                {% endif %}>
+                                Bank
+                            </option>
+
+                            <option value="Credit"
+                                {% if purchase.payment_method == "Credit" %}
+                                    selected
+                                {% endif %}>
+                                Credit
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Notes -->
+
+                    <div class="col-md-8">
+
+                        <label class="form-label fw-semibold">
+                            Notes
+                        </label>
+
+                        <textarea
+                            name="notes"
+                            class="form-control"
+                            rows="2"
+                            placeholder="Optional notes">{{ purchase.notes or '' }}</textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             PURCHASE ITEMS
+        =================================================== -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-white
+                        d-flex justify-content-between
+                        align-items-center">
+
+                <h5 class="mb-0 fw-bold">
+                    Purchase Items
+                </h5>
+
+                <button type="button"
+                        class="btn btn-success btn-sm"
+                        id="addItemBtn">
+
+                    + Add Item
+
+                </button>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div id="purchaseItems">
+
+
+                    {% for item in purchase.items %}
+
+                    <div class="purchase-item border rounded p-3 mb-3">
+
+                        <div class="row g-3 align-items-end">
+
+
+                            <!-- Variant -->
+
+                            <div class="col-md-4">
+
+                                <label class="form-label fw-semibold">
+                                    Product Variant
+                                </label>
+
+                                <select
+                                    name="variant_id[]"
+                                    class="form-select variant-select"
+                                    required>
+
+                                    <option value="">
+                                        Select Variant
+                                    </option>
+
+                                    {% for variant in variants %}
+
+                                    <option
+                                        value="{{ variant.id }}"
+                                        data-buying="{{ variant.buying_price or 0 }}"
+                                        data-selling="{{ variant.selling_price or 0 }}"
+                                        {% if variant.id == item.product_variant_id %}
+                                            selected
+                                        {% endif %}>
+
+                                        {{ variant.product.brand.name }}
+                                        {{ variant.product.name }}
+
+                                        {% if variant.storage %}
+                                            - {{ variant.storage }}
+                                        {% endif %}
+
+                                        {% if variant.ram %}
+                                            / {{ variant.ram }}
+                                        {% endif %}
+
+                                        {% if variant.colour %}
+                                            / {{ variant.colour }}
+                                        {% endif %}
+
+                                        ({{ variant.sku }})
+
+                                    </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- Quantity -->
+
+                            <div class="col-md-2">
+
+                                <label class="form-label fw-semibold">
+                                    Quantity
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="quantity[]"
+                                    class="form-control quantity-input"
+                                    min="1"
+                                    value="{{ item.quantity }}"
+                                    required>
+
+                            </div>
+
+
+                            <!-- Buying Price -->
+
+                            <div class="col-md-2">
+
+                                <label class="form-label fw-semibold">
+                                    Buying Price
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="unit_cost[]"
+                                    class="form-control buying-price"
+                                    min="0"
+                                    step="0.01"
+                                    value="{{ item.unit_cost }}"
+                                    required>
+
+                            </div>
+
+
+                            <!-- Selling Price -->
+
+                            <div class="col-md-2">
+
+                                <label class="form-label fw-semibold">
+                                    Selling Price
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="default_selling_price[]"
+                                    class="form-control selling-price"
+                                    min="0"
+                                    step="0.01"
+                                    value="{{ item.product_variant.selling_price or 0 }}"
+                                    required>
+
+                            </div>
+
+
+                            <!-- Remove -->
+
+                            <div class="col-md-2">
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-danger w-100 remove-item">
+
+                                    Remove
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Subtotal -->
+
+                        <div class="text-end mt-3">
+
+                            <strong>
+                                Subtotal:
+                                UGX
+                                <span class="item-subtotal">
+                                    {{ "{:,.0f}".format(item.subtotal) }}
+                                </span>
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+
+                </div>
+
+
+                <!-- ==================================================
+                     TOTAL
+                =================================================== -->
+
+                <div class="border-top pt-3">
+
+                    <div class="row">
+
+                        <div class="col-md-8"></div>
+
+                        <div class="col-md-4">
+
+                            <div class="d-flex justify-content-between">
+
+                                <strong>
+                                    Purchase Total
+                                </strong>
+
+                                <strong>
+                                    UGX
+                                    <span id="purchaseTotal">
+                                        {{ "{:,.0f}".format(purchase.total_amount) }}
+                                    </span>
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             ACTIONS
+        =================================================== -->
+
+        <div class="d-flex justify-content-end gap-2 mb-5">
+
+            <a href="{{ url_for('purchase.view', purchase_id=purchase.id) }}"
+               class="btn btn-outline-secondary">
+
+                Cancel
+
+            </a>
+
+            <button type="submit"
+                    class="btn btn-success">
+
+                Save Changes
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- ==========================================================
+     EDIT PURCHASE JAVASCRIPT
+=========================================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const itemsContainer =
+        document.getElementById("purchaseItems");
+
+    const totalElement =
+        document.getElementById("purchaseTotal");
+
+    const addItemButton =
+        document.getElementById("addItemBtn");
+
+
+    function formatNumber(value) {
+
+        return Number(value || 0).toLocaleString(
+            "en-US",
+            {
+                maximumFractionDigits: 0
+            }
+        );
+
+    }
+
+
+    function calculateTotals() {
+
+        let total = 0;
+
+
+        document
+            .querySelectorAll(".purchase-item")
+            .forEach(function (row) {
+
+                const quantity =
+                    parseFloat(
+                        row.querySelector(
+                            ".quantity-input"
+                        )?.value || 0
+                    );
+
+                const buyingPrice =
+                    parseFloat(
+                        row.querySelector(
+                            ".buying-price"
+                        )?.value || 0
+                    );
+
+                const subtotal =
+                    quantity * buyingPrice;
+
+                total += subtotal;
+
+
+                const subtotalElement =
+                    row.querySelector(
+                        ".item-subtotal"
+                    );
+
+                if (subtotalElement) {
+
+                    subtotalElement.textContent =
+                        formatNumber(subtotal);
+
+                }
+
+            });
+
+
+        totalElement.textContent =
+            formatNumber(total);
+
+    }
+
+
+    function setupRow(row) {
+
+        const quantity =
+            row.querySelector(
+                ".quantity-input"
+            );
+
+        const buyingPrice =
+            row.querySelector(
+                ".buying-price"
+            );
+
+        const sellingPrice =
+            row.querySelector(
+                ".selling-price"
+            );
+
+        const variantSelect =
+            row.querySelector(
+                ".variant-select"
+            );
+
+
+        quantity?.addEventListener(
+            "input",
+            calculateTotals
+        );
+
+        buyingPrice?.addEventListener(
+            "input",
+            calculateTotals
+        );
+
+
+        variantSelect?.addEventListener(
+            "change",
+            function () {
+
+                const option =
+                    this.options[
+                        this.selectedIndex
+                    ];
+
+                if (!option) {
+                    return;
+                }
+
+                const buying =
+                    option.dataset.buying;
+
+                const selling =
+                    option.dataset.selling;
+
+
+                if (
+                    buying !== undefined &&
+                    buyingPrice.value === ""
+                ) {
+
+                    buyingPrice.value =
+                        buying;
+
+                }
+
+
+                if (
+                    selling !== undefined &&
+                    sellingPrice.value === ""
+                ) {
+
+                    sellingPrice.value =
+                        selling;
+
+                }
+
+
+                calculateTotals();
+
+            }
+        );
+
+
+        const removeButton =
+            row.querySelector(
+                ".remove-item"
+            );
+
+
+        removeButton?.addEventListener(
+            "click",
+            function () {
+
+                const rows =
+                    document.querySelectorAll(
+                        ".purchase-item"
+                    );
+
+                if (rows.length <= 1) {
+
+                    alert(
+                        "A purchase must contain at least one item."
+                    );
+
+                    return;
+
+                }
+
+                row.remove();
+
+                calculateTotals();
+
+            }
+        );
+
+    }
+
+
+    document
+        .querySelectorAll(".purchase-item")
+        .forEach(setupRow);
+
+
+    addItemButton.addEventListener(
+        "click",
+        function () {
+
+            const firstRow =
+                document.querySelector(
+                    ".purchase-item"
+                );
+
+            if (!firstRow) {
+                return;
+            }
+
+
+            const newRow =
+                firstRow.cloneNode(true);
+
+
+            newRow
+                .querySelectorAll("input")
+                .forEach(function (input) {
+
+                    if (
+                        input.classList.contains(
+                            "quantity-input"
+                        )
+                    ) {
+
+                        input.value = 1;
+
+                    } else {
+
+                        input.value = "";
+
+                    }
+
+                });
+
+
+            newRow
+                .querySelector(
+                    ".variant-select"
+                )
+                .selectedIndex = 0;
+
+
+            const subtotalElement =
+                newRow.querySelector(
+                    ".item-subtotal"
+                );
+
+            if (subtotalElement) {
+
+                subtotalElement.textContent =
+                    "0";
+
+            }
+
+
+            itemsContainer.appendChild(
+                newRow
+            );
+
+
+            setupRow(newRow);
+
+            calculateTotals();
+
+        }
+    );
+
+
+    calculateTotals();
+
+});
+
+</script>
+
+{% endblock %}

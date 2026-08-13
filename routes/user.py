@@ -9,7 +9,7 @@ from flask import (
 
 from services.user_service import UserService
 
-from flask_login import login_required, current_user
+from utils.auth import login_required
 
 user_bp = Blueprint(
     "user",

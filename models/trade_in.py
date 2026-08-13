@@ -6,112 +6,62 @@ class TradeIn(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    trade_in_number = db.Column(
-        db.String(30),
-        unique=True,
-        nullable=False
-    )
+    trade_in_number = db.Column(db.String(30), unique=True, nullable=False)
 
     # ==========================================
     # CUSTOMER INFORMATION
     # ==========================================
 
-    customer_name = db.Column(
-        db.String(150),
-        nullable=False
-    )
+    customer_id = db.Column(db.Integer, db.ForeignKey("customers.id"), nullable=True)
 
-    phone_number = db.Column(
-        db.String(30),
-        nullable=False
-    )
+    customer_name = db.Column(db.String(150), nullable=False)
 
-    alternative_phone = db.Column(
-        db.String(30)
-    )
+    phone_number = db.Column(db.String(30), nullable=False)
 
-    business_name = db.Column(
-        db.String(150)
-    )
+    alternative_phone = db.Column(db.String(30))
 
-    email = db.Column(
-        db.String(150)
-    )
+    business_name = db.Column(db.String(150))
 
-    national_id = db.Column(
-        db.String(100)
-    )
+    email = db.Column(db.String(150))
 
-    address = db.Column(
-        db.Text
-    )
+    national_id = db.Column(db.String(100))
+
+    address = db.Column(db.Text)
 
     # ==========================================
     # TRADE INFORMATION
     # ==========================================
 
-    trade_in_date = db.Column(
-        db.Date,
-        nullable=False
-    )
+    trade_in_date = db.Column(db.Date, nullable=False)
 
     status = db.Column(
-        db.Enum(
-            "Pending",
-            "Accepted",
-            "Rejected",
-            "Cancelled",
-            name="trade_in_status"
-        ),
+        db.Enum("Pending", "Accepted", "Rejected", "Cancelled", name="trade_in_status"),
         default="Pending",
-        nullable=False
+        nullable=False,
     )
 
-    total_trade_value = db.Column(
-        db.Numeric(15, 2),
-        default=0
-    )
+    total_trade_value = db.Column(db.Numeric(15, 2), default=0)
 
-    cash_paid = db.Column(
-        db.Numeric(15, 2),
-        default=0
-    )
+    cash_paid = db.Column(db.Numeric(15, 2), default=0)
 
-    topup_received = db.Column(
-        db.Numeric(15, 2),
-        default=0
-    )
+    topup_received = db.Column(db.Numeric(15, 2), default=0)
 
-    notes = db.Column(
-        db.Text
-    )
+    notes = db.Column(db.Text)
 
-    created_by = db.Column(
-        db.Integer,
-        db.ForeignKey("users.id"),
-        nullable=False
-    )
+    created_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
-    created_at = db.Column(
-        db.DateTime,
-        server_default=db.func.now()
-    )
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
 
     updated_at = db.Column(
-        db.DateTime,
-        server_default=db.func.now(),
-        onupdate=db.func.now()
+        db.DateTime, server_default=db.func.now(), onupdate=db.func.now()
     )
 
-    creator = db.relationship(
-        "User",
-        back_populates="trade_ins"
-    )
+    creator = db.relationship("User", back_populates="trade_ins")
+
+    customer = db.relationship("Customer", backref="trade_ins", lazy="joined")
 
     items = db.relationship(
-        "TradeInItem",
-        back_populates="trade_in",
-        cascade="all, delete-orphan"
+        "TradeInItem", back_populates="trade_in", cascade="all, delete-orphan"
     )
 
     def __repr__(self):

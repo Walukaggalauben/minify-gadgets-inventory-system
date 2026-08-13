@@ -1,248 +1,1154 @@
-{% extends "layout.html" %}
-
-{% block title %}New Trade-In{% endblock %}
-
-{% block content %}
+{% extends "layout.html" %} {% block title %}New Trade-In{% endblock %} {% block
+content %}
 
 <div class="container-fluid mt-4">
+  <!-- ====================================================== -->
+  <!-- PAGE HEADER -->
+  <!-- ====================================================== -->
 
-    <!-- ====================================================== -->
-    <!-- PAGE HEADER -->
-    <!-- ====================================================== -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-0">
+        <i class="fas fa-exchange-alt text-success"></i>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+        New Trade-In
+      </h3>
 
-        <div>
-
-            <h3 class="fw-bold mb-0">
-
-                <i class="fas fa-exchange-alt text-success"></i>
-
-                New Trade-In
-
-            </h3>
-
-            <small class="text-muted">
-
-                Receive customer devices into inventory
-
-            </small>
-
-        </div>
-
-        <a href="{{ url_for('trade_in.index') }}"
-           class="btn btn-secondary">
-
-            <i class="fas fa-arrow-left"></i>
-
-            Back
-
-        </a>
-
+      <small class="text-muted">
+        Receive customer devices into inventory
+      </small>
     </div>
 
-    <form method="POST" id="tradeInForm">
+    <a href="{{ url_for('trade_in.index') }}" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i>
 
-        <!-- ====================================================== -->
-        <!-- WIZARD -->
-        <!-- ====================================================== -->
+      Back
+    </a>
+  </div>
 
-        <ul class="nav nav-pills nav-justified mb-4" id="tradeWizard">
+  <form method="POST" id="tradeInForm">
+    <!-- ====================================================== -->
+    <!-- WIZARD -->
+    <!-- ====================================================== -->
 
-            <li class="nav-item">
-                <button class="nav-link active" type="button">
-                    1. Customer
-                </button>
-            </li>
+    <ul class="nav nav-pills nav-justified mb-4" id="tradeWizard">
+      <li class="nav-item">
+        <button class="nav-link active" type="button">1. Customer</button>
+      </li>
 
-            <li class="nav-item">
-                <button class="nav-link" type="button">
-                    2. Device
-                </button>
-            </li>
+      <li class="nav-item">
+        <button class="nav-link" type="button">2. Device</button>
+      </li>
 
-            <li class="nav-item">
-                <button class="nav-link" type="button">
-                    3. Inspection
-                </button>
-            </li>
+      <li class="nav-item">
+        <button class="nav-link" type="button">3. Inspection</button>
+      </li>
 
-            <li class="nav-item">
-                <button class="nav-link" type="button">
-                    4. Valuation
-                </button>
-            </li>
+      <li class="nav-item">
+        <button class="nav-link" type="button">4. Valuation</button>
+      </li>
 
-            <li class="nav-item">
-                <button class="nav-link" type="button">
-                    5. Review
-                </button>
-            </li>
+      <li class="nav-item">
+        <button class="nav-link" type="button">5. Review</button>
+      </li>
+    </ul>
 
-        </ul>
-
-        <!-- <!-- ===================================================== -->
-        <!-- STEP 1 : CUSTOMER INFORMATION -->
-        <!-- ===================================================== -->
-        <div class="wizard-step active-step" id="step1">
-
-    <div class="card shadow-sm border-0">
-
+    <!-- <!-- ===================================================== -->
+    <!-- STEP 1 : CUSTOMER INFORMATION -->
+    <!-- ===================================================== -->
+    <div class="wizard-step active-step" id="step1">
+      <div class="card shadow-sm border-0">
         <div class="card-header bg-success text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-user"></i>
+            Customer Information
+          </h5>
+        </div>
+
+        <div class="card-body">
+          {% include "components/customer_picker.html" %}
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label"> Customer Name * </label>
+
+              <input
+                type="text"
+                class="form-control"
+                name="customer_name"
+                placeholder="Enter customer name"
+                required
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label"> Phone Number * </label>
+
+              <input
+                type="text"
+                class="form-control"
+                name="phone_number"
+                placeholder="07XXXXXXXX"
+                required
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label"> Alternative Phone </label>
+
+              <input
+                type="text"
+                class="form-control"
+                name="alternative_phone"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label"> Business Name </label>
+
+              <input type="text" class="form-control" name="business_name" />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label"> National ID </label>
+
+              <input type="text" class="form-control" name="national_id" />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label"> Email </label>
+
+              <input type="email" class="form-control" name="email" />
+            </div>
+
+            <div class="col-12">
+              <label class="form-label"> Address </label>
+
+              <textarea class="form-control" rows="2" name="address"></textarea>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label"> Trade Date </label>
+
+              <input
+                type="date"
+                class="form-control"
+                name="trade_in_date"
+                value="{{ today }}"
+                required
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label"> Notes </label>
+
+              <textarea class="form-control" rows="2" name="notes"></textarea>
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="text-end">
+            <button type="button" class="btn btn-success nextStep">
+              Continue
+
+              <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- STEP 2 : DEVICE -->
+    <!-- ====================================================== -->
+
+    <div class="wizard-step d-none" id="step2">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-mobile-screen-button"></i>
+
+            Device Information
+          </h5>
+        </div>
+
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12 mb-4">
+              <label class="form-label"> Search Device * </label>
+
+              <input
+                type="text"
+                id="deviceSearch"
+                class="form-control form-control-lg"
+                placeholder="Type iPhone 15, S24, Redmi Note, Pixel..."
+                autocomplete="off"
+              />
+
+              <div
+                id="deviceSearchResults"
+                class="list-group mt-2 shadow"
+                style="display: none; max-height: 250px; overflow-y: auto"
+              ></div>
+
+              <input type="hidden" id="selectedProductId" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <label class="form-label"> Product Variant * </label>
+
+              <select
+                class="form-select"
+                id="variantSelect"
+                name="variant_id[]"
+                required
+              >
+                <option value="">Select Variant</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label"> IMEI * </label>
+
+              <input
+                type="text"
+                class="form-control imeiInput"
+                name="imei[]"
+                maxlength="15"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <label class="form-label"> Serial Number </label>
+
+              <input type="text" class="form-control" name="serial_number[]" />
+            </div>
+          </div>
+
+          <hr />
+
+          <div
+            id="deviceSummaryCard"
+            class="card border-success shadow-lg mt-4"
+            style="display: none"
+          >
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0">
+                <i class="fas fa-mobile-screen-button me-2"></i>
+
+                Selected Device
+              </h5>
+            </div>
+
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-lg-8">
+                  <h4 id="summaryModel" class="fw-bold mb-1">-</h4>
+
+                  <p class="text-muted mb-3" id="summaryBrand">-</p>
+
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <small class="text-muted"> Storage </small>
+
+                      <h6 id="summaryStorage">-</h6>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                      <small class="text-muted"> RAM </small>
+
+                      <h6 id="summaryRam">-</h6>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                      <small class="text-muted"> Colour </small>
+
+                      <h6 id="summaryColour">-</h6>
+                    </div>
+
+                    <div class="col-md-4">
+                      <small class="text-muted"> Condition </small>
+
+                      <h6 id="summaryCondition">-</h6>
+                    </div>
+
+                    <div class="col-md-4">
+                      <small class="text-muted"> SKU </small>
+
+                      <h6 id="summarySku">-</h6>
+                    </div>
+
+                    <div class="col-md-4">
+                      <small class="text-muted"> Stock </small>
+
+                      <h6 id="summaryStock" class="text-primary">-</h6>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-4">
+                  <div class="card bg-light border-0">
+                    <div class="card-body text-center">
+                      <small class="text-muted">
+                        Recommended Selling Price
+                      </small>
+
+                      <h2
+                        class="text-success fw-bold mt-2"
+                        id="summarySellingPrice"
+                      >
+                        UGX 0
+                      </h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary prevStep">
+              <i class="fas fa-arrow-left"></i>
+
+              Previous
+            </button>
+
+            <button type="button" class="btn btn-success nextStep">
+              Continue
+
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- ====================================================== -->
+<!-- STEP 3 : DEVICE INSPECTION -->
+<!-- ====================================================== -->
+
+<div class="wizard-step d-none" id="step3">
+
+    <!-- ============================================== -->
+    <!-- STEP 3 HEADER -->
+    <!-- ============================================== -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-warning">
 
             <h5 class="mb-0">
-                <i class="fas fa-user"></i>
-                Customer Information
+
+                <i class="fas fa-magnifying-glass me-2"></i>
+
+                Device Inspection
+
             </h5>
 
         </div>
 
         <div class="card-body">
 
-            <div class="row g-3">
+            <div class="alert alert-info mb-4">
 
-                <div class="col-md-6">
+                <i class="fas fa-info-circle me-2"></i>
 
-                    <label class="form-label">
-                        Customer Name *
-                    </label>
+                Carefully inspect the device before confirming its trade value.
+                Accessories are optional.
 
-                    <input
-                        type="text"
-                        class="form-control"
-                        name="customer_name"
-                        placeholder="Enter customer name"
-                        required>
+            </div>
 
-                </div>
 
-                <div class="col-md-6">
+            <!-- ========================================== -->
+            <!-- DISPLAY & PHYSICAL CONDITION -->
+            <!-- ========================================== -->
 
-                    <label class="form-label">
-                        Phone Number *
-                    </label>
+            <div class="card shadow border-0 mb-4">
 
-                    <input
-                        type="text"
-                        class="form-control"
-                        name="phone_number"
-                        placeholder="07XXXXXXXX"
-                        required>
+                <div class="card-header bg-primary text-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-mobile-screen-button me-2"></i>
+
+                        Display & Physical Condition
+
+                    </h5>
 
                 </div>
 
-                <div class="col-md-6">
+                <div class="card-body">
 
-                    <label class="form-label">
+                    <div class="row g-4">
 
-                        Alternative Phone
+                        <!-- Battery -->
 
-                    </label>
+                        <div class="col-lg-6">
 
-                    <input
-                        type="text"
-                        class="form-control"
-                        name="alternative_phone">
+                            <label class="form-label fw-bold">
 
-                </div>
+                                🔋 Battery Health
 
-                <div class="col-md-6">
+                            </label>
 
-                    <label class="form-label">
+                            <input
+                                type="number"
+                                class="form-control battery-health"
+                                name="battery_health[]"
+                                min="0"
+                                max="100"
+                                placeholder="Enter Battery %">
 
-                        Business Name
+                            <div class="progress mt-2"
+                                 style="height:10px;">
 
-                    </label>
+                                <div
+                                    class="progress-bar battery-progress bg-success"
+                                    style="width:0%;">
 
-                    <input
-                        type="text"
-                        class="form-control"
-                        name="business_name">
+                                    0%
 
-                </div>
+                                </div>
 
-                <div class="col-md-6">
+                            </div>
 
-                    <label class="form-label">
+                        </div>
 
-                        National ID
 
-                    </label>
+                        <!-- Screen -->
 
-                    <input
-                        type="text"
-                        class="form-control"
-                        name="national_id">
+                        <div class="col-lg-6">
 
-                </div>
+                            <label class="form-label fw-bold">
 
-                <div class="col-md-6">
+                                📱 Screen Condition
 
-                    <label class="form-label">
+                            </label>
 
-                        Email
+                            <select
+                                class="form-select inspection-status"
+                                name="screen_condition[]">
 
-                    </label>
+                                <option value="Excellent">
+                                    🟢 Excellent
+                                </option>
 
-                    <input
-                        type="email"
-                        class="form-control"
-                        name="email">
+                                <option value="Good">
+                                    🟡 Good
+                                </option>
 
-                </div>
+                                <option value="Scratched">
+                                    🟠 Scratched
+                                </option>
 
-                <div class="col-12">
+                                <option value="Cracked">
+                                    🔴 Cracked
+                                </option>
 
-                    <label class="form-label">
+                            </select>
 
-                        Address
+                        </div>
 
-                    </label>
 
-                    <textarea
-                        class="form-control"
-                        rows="2"
-                        name="address"></textarea>
+                        <!-- Back -->
 
-                </div>
+                        <div class="col-lg-6">
 
-                <div class="col-md-6">
+                            <label class="form-label fw-bold">
 
-                    <label class="form-label">
+                                🔷 Back Glass
 
-                        Trade Date
+                            </label>
 
-                    </label>
+                            <select
+                                class="form-select inspection-status"
+                                name="back_condition[]">
 
-                    <input
-                        type="date"
-                        class="form-control"
-                        name="trade_in_date"
-                        value="{{ today }}"
-                        required>
+                                <option value="Excellent">
+                                    🟢 Excellent
+                                </option>
 
-                </div>
+                                <option value="Good">
+                                    🟡 Good
+                                </option>
 
-                <div class="col-md-6">
+                                <option value="Scratched">
+                                    🟠 Scratched
+                                </option>
 
-                    <label class="form-label">
+                                <option value="Cracked">
+                                    🔴 Cracked
+                                </option>
 
-                        Notes
+                            </select>
 
-                    </label>
+                        </div>
 
-                    <textarea
-                        class="form-control"
-                        rows="2"
-                        name="notes"></textarea>
+
+                        <!-- Frame -->
+
+                        <div class="col-lg-6">
+
+                            <label class="form-label fw-bold">
+
+                                🛡️ Frame Condition
+
+                            </label>
+
+                            <select
+                                class="form-select inspection-status"
+                                name="frame_condition[]">
+
+                                <option value="Excellent">
+                                    🟢 Excellent
+                                </option>
+
+                                <option value="Good">
+                                    🟡 Good
+                                </option>
+
+                                <option value="Scratched">
+                                    🟠 Scratched
+                                </option>
+
+                                <option value="Bent">
+                                    🔴 Bent
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
             </div>
 
-            <hr>
 
-            <div class="text-end">
+            <!-- ========================================== -->
+            <!-- HARDWARE FUNCTIONS -->
+            <!-- ========================================== -->
+
+            <div class="card shadow border-0 mb-4">
+
+                <div class="card-header bg-info text-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-microchip me-2"></i>
+
+                        Hardware Functions
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row g-4">
+
+                        <!-- Camera -->
+
+                        <div class="col-lg-6">
+
+                            <label class="form-label fw-bold">
+                                📷 Camera Condition
+                            </label>
+
+                            <select
+                                class="form-select inspection-status"
+                                name="camera_condition[]">
+
+                                <option value="Excellent">
+                                    🟢 Excellent
+                                </option>
+
+                                <option value="Good">
+                                    🟡 Good
+                                </option>
+
+                                <option value="Faulty">
+                                    🔴 Faulty
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Charging -->
+
+                        <div class="col-lg-6">
+
+                            <label class="form-label fw-bold">
+                                🔌 Charging Port
+                            </label>
+
+                            <select
+                                class="form-select inspection-status"
+                                name="charging_port[]">
+
+                                <option value="Working">
+                                    🟢 Working
+                                </option>
+
+                                <option value="Loose">
+                                    🟡 Loose
+                                </option>
+
+                                <option value="Faulty">
+                                    🔴 Faulty
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Speaker -->
+
+                        <div class="col-lg-6">
+
+                            <label class="form-label fw-bold">
+                                🔊 Speaker
+                            </label>
+
+                            <select
+                                class="form-select inspection-status"
+                                name="speaker_status[]">
+
+                                <option value="Working">
+                                    🟢 Working
+                                </option>
+
+                                <option value="Low">
+                                    🟡 Low Volume
+                                </option>
+
+                                <option value="Faulty">
+                                    🔴 Faulty
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Microphone -->
+
+                        <div class="col-lg-6">
+
+                            <label class="form-label fw-bold">
+                                🎤 Microphone
+                            </label>
+
+                            <select
+                                class="form-select inspection-status"
+                                name="microphone_status[]">
+
+                                <option value="Working">
+                                    🟢 Working
+                                </option>
+
+                                <option value="Low">
+                                    🟡 Low Volume
+                                </option>
+
+                                <option value="Faulty">
+                                    🔴 Faulty
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================================== -->
+            <!-- CONNECTIVITY & SECURITY -->
+            <!-- ========================================== -->
+
+            <div class="card shadow border-0 mb-4">
+
+                <div class="card-header bg-warning">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-wifi me-2"></i>
+
+                        Connectivity & Security
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row g-4">
+
+                        <!-- WiFi -->
+
+                        <div class="col-lg-6">
+
+                            <label class="form-label fw-bold">
+                                📶 WiFi
+                            </label>
+
+                            <select
+                                class="form-select inspection-status"
+                                name="wifi_status[]">
+
+                                <option value="Working">
+                                    🟢 Working
+                                </option>
+
+                                <option value="Weak">
+                                    🟡 Weak Signal
+                                </option>
+
+                                <option value="Faulty">
+                                    🔴 Faulty
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Bluetooth -->
+
+                        <div class="col-lg-6">
+
+                            <label class="form-label fw-bold">
+                                🔵 Bluetooth
+                            </label>
+
+                            <select
+                                class="form-select inspection-status"
+                                name="bluetooth_status[]">
+
+                                <option value="Working">
+                                    🟢 Working
+                                </option>
+
+                                <option value="Intermittent">
+                                    🟡 Intermittent
+                                </option>
+
+                                <option value="Faulty">
+                                    🔴 Faulty
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- SIM -->
+
+                        <div class="col-lg-6">
+
+                            <label class="form-label fw-bold">
+                                📲 SIM Status
+                            </label>
+
+                            <select
+                                class="form-select inspection-status"
+                                name="sim_status[]">
+
+                                <option value="Working">
+                                    🟢 Working
+                                </option>
+
+                                <option value="Single SIM">
+                                    🟡 Single SIM Only
+                                </option>
+
+                                <option value="Faulty">
+                                    🔴 Faulty
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Network Lock -->
+
+                        <div class="col-lg-6">
+
+                            <label class="form-label fw-bold">
+                                🌍 Network Lock
+                            </label>
+
+                            <select
+                                class="form-select inspection-status"
+                                name="network_lock[]">
+
+                                <option value="Unlocked">
+                                    🟢 Unlocked
+                                </option>
+
+                                <option value="Locked">
+                                    🔴 Locked
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Face ID -->
+
+                        <div class="col-lg-6">
+
+                            <label class="form-label fw-bold">
+                                😀 Face ID
+                            </label>
+
+                            <select
+                                class="form-select inspection-status"
+                                name="face_id_status[]">
+
+                                <option value="Working">
+                                    🟢 Working
+                                </option>
+
+                                <option value="Unavailable">
+                                    🟡 Not Available
+                                </option>
+
+                                <option value="Faulty">
+                                    🔴 Faulty
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Fingerprint -->
+
+                        <div class="col-lg-6">
+
+                            <label class="form-label fw-bold">
+                                👆 Fingerprint
+                            </label>
+
+                            <select
+                                class="form-select inspection-status"
+                                name="fingerprint_status[]">
+
+                                <option value="Working">
+                                    🟢 Working
+                                </option>
+
+                                <option value="Unavailable">
+                                    🟡 Not Available
+                                </option>
+
+                                <option value="Faulty">
+                                    🔴 Faulty
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- iCloud -->
+
+                        <div class="col-lg-6">
+
+                            <label class="form-label fw-bold">
+                                🍎 iCloud Status
+                            </label>
+
+                            <select
+                                class="form-select inspection-status"
+                                name="icloud_status[]">
+
+                                <option value="Clean">
+                                    🟢 Clean
+                                </option>
+
+                                <option value="Signed Out">
+                                    🟡 Signed Out
+                                </option>
+
+                                <option value="Locked">
+                                    🔴 Locked
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- FRP -->
+
+                        <div class="col-lg-6">
+
+                            <label class="form-label fw-bold">
+                                🤖 FRP Status
+                            </label>
+
+                            <select
+                                class="form-select inspection-status"
+                                name="frp_status[]">
+
+                                <option value="Removed">
+                                    🟢 Removed
+                                </option>
+
+                                <option value="Present">
+                                    🔴 Present
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ===================================================== -->
+<!-- ACCESSORIES & TECHNICIAN NOTES -->
+<!-- ===================================================== -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-header bg-secondary text-white">
+
+        <h5 class="mb-0">
+            <i class="fas fa-box-open me-2"></i>
+            Accessories Received
+            <small class="ms-2 opacity-75">(Optional)</small>
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <p class="text-muted small mb-3">
+            Select only the accessories received with this device.
+        </p>
+
+        <div class="row g-3">
+
+            <!-- Box -->
+
+            <div class="col-md-3">
+                <div class="form-check">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="box_received_0"
+                        id="box_received_0">
+
+                    <label
+                        class="form-check-label fw-semibold"
+                        for="box_received_0">
+
+                        📦 Original Box
+
+                    </label>
+                </div>
+            </div>
+
+            <!-- Charger -->
+
+            <div class="col-md-3">
+                <div class="form-check">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="charger_received_0"
+                        id="charger_received_0">
+
+                    <label
+                        class="form-check-label fw-semibold"
+                        for="charger_received_0">
+
+                        🔌 Charger
+
+                    </label>
+                </div>
+            </div>
+
+            <!-- Cable -->
+
+            <div class="col-md-3">
+                <div class="form-check">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="cable_received_0"
+                        id="cable_received_0">
+
+                    <label
+                        class="form-check-label fw-semibold"
+                        for="cable_received_0">
+
+                        🔋 USB Cable
+
+                    </label>
+                </div>
+            </div>
+
+            <!-- Adapter -->
+
+            <div class="col-md-3">
+                <div class="form-check">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="adapter_received_0"
+                        id="adapter_received_0">
+
+                    <label
+                        class="form-check-label fw-semibold"
+                        for="adapter_received_0">
+
+                        🔌 Adapter
+
+                    </label>
+                </div>
+            </div>
+
+            <!-- Earphones -->
+
+            <div class="col-md-3">
+                <div class="form-check">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="earphones_received_0"
+                        id="earphones_received_0">
+
+                    <label
+                        class="form-check-label fw-semibold"
+                        for="earphones_received_0">
+
+                        🎧 Earphones
+
+                    </label>
+                </div>
+            </div>
+
+            <!-- Case -->
+
+            <div class="col-md-3">
+                <div class="form-check">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="case_received_0"
+                        id="case_received_0">
+
+                    <label
+                        class="form-check-label fw-semibold"
+                        for="case_received_0">
+
+                        📱 Protective Case
+
+                    </label>
+                </div>
+            </div>
+
+            <!-- Screen Protector -->
+
+            <div class="col-md-3">
+                <div class="form-check">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="screen_protector_0"
+                        id="screen_protector_0">
+
+                    <label
+                        class="form-check-label fw-semibold"
+                        for="screen_protector_0">
+
+                        🛡 Screen Protector
+
+                    </label>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- TECHNICIAN REMARKS -->
+<!-- ===================================================== -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-header bg-dark text-white">
+
+        <h5 class="mb-0">
+            <i class="fas fa-clipboard me-2"></i>
+            Technician Remarks
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <label class="form-label fw-semibold">
+            Inspection Notes
+        </label>
+
+        <textarea
+            class="form-control"
+            name="remarks[]"
+            rows="5"
+            placeholder="Record any faults, scratches, repairs, missing parts or other observations..."></textarea>
+
+    </div>
+
+</div>
+
+
+            <!-- ========================================== -->
+            <!-- NAVIGATION -->
+            <!-- ========================================== -->
+
+            <div class="d-flex justify-content-between mt-4">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary prevStep">
+
+                    <i class="fas fa-arrow-left me-2"></i>
+
+                    Previous
+
+                </button>
+
 
                 <button
                     type="button"
@@ -257,1245 +1163,394 @@
             </div>
 
         </div>
-
     </div>
 
 </div>
 
-<!-- ====================================================== -->
-<!-- STEP 2 : DEVICE -->
-<!-- ====================================================== -->
+    <!-- ===================================================== -->
+    <!-- STEP 4 : TRADE VALUATION -->
+    <!-- ===================================================== -->
 
-<div class="wizard-step d-none" id="step2">
+    <div class="wizard-step d-none" id="step4">
+      <h4 class="fw-bold mb-4">Trade Valuation</h4>
 
-    <div class="card shadow-sm border-0">
-
-        <div class="card-header bg-primary text-white">
-
-            <h5 class="mb-0">
-
-                <i class="fas fa-mobile-screen-button"></i>
-
-                Device Information
-
-            </h5>
-
-        </div>
-
-        <div class="card-body">
-
-            <div class="row">
-
-                <div class="col-md-12 mb-4">
-
-                    <label class="form-label">
-
-                        Search Device *
-
-                    </label>
-
-                    <input
-                        type="text"
-                        id="deviceSearch"
-                        class="form-control form-control-lg"
-                        placeholder="Type iPhone 15, S24, Redmi Note, Pixel..."
-
-                        autocomplete="off">
-
-                    <div
-                        id="deviceSearchResults"
-                        class="list-group mt-2 shadow"
-                        style="display:none;
-                               max-height:250px;
-                               overflow-y:auto;">
-
-                    </div>
-
-                    <input
-                        type="hidden"
-                        id="selectedProductId">
-
-                </div>
-
-            </div>
-
-            <div class="row">
-
-                <div class="col-md-6">
-
-                    <label class="form-label">
-
-                        Product Variant *
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        id="variantSelect"
-                        name="variant_id[]"
-                        required>
-
-                        <option value="">
-
-                            Select Variant
-
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-6">
-
-                    <label class="form-label">
-
-                        IMEI *
-
-                    </label>
-
-                    <input
-                        type="text"
-                        class="form-control imeiInput"
-                        name="imei[]"
-                        maxlength="15"
-                        required>
-
-                </div>
-
-            </div>
-
-            <div class="row mt-3">
-
-                <div class="col-md-6">
-
-                    <label class="form-label">
-
-                        Serial Number
-
-                    </label>
-
-                    <input
-                        type="text"
-                        class="form-control"
-                        name="serial_number[]">
-
-                </div>
-
-            </div>
-
-            <hr>
-
-            <div
-    id="deviceSummaryCard"
-    class="card border-success shadow-sm mt-4"
-    style="display:none;">
-
-    <div class="card-header bg-success text-white">
-
-        <h6 class="mb-0">
-            <i class="fas fa-mobile-alt me-2"></i>
-            Selected Device
-        </h6>
-
-    </div>
-
-    <div class="card-body">
-
-        <div class="row g-3">
-
-            <div class="col-md-3">
-                <small class="text-muted">Brand</small>
-                <h6 id="summaryBrand">-</h6>
-            </div>
-
-            <div class="col-md-3">
-                <small class="text-muted">Model</small>
-                <h6 id="summaryModel">-</h6>
-            </div>
-
-            <div class="col-md-2">
-                <small class="text-muted">Storage</small>
-                <h6 id="summaryStorage">-</h6>
-            </div>
-
-            <div class="col-md-2">
-                <small class="text-muted">RAM</small>
-                <h6 id="summaryRam">-</h6>
-            </div>
-
-            <div class="col-md-2">
-                <small class="text-muted">Colour</small>
-                <h6 id="summaryColour">-</h6>
-            </div>
-
-            <div class="col-md-3">
-                <small class="text-muted">SKU</small>
-                <h6 id="summarySku">-</h6>
-            </div>
-
-            <div class="col-md-3">
-                <small class="text-muted">Condition</small>
-                <h6 id="summaryCondition">-</h6>
-            </div>
-
-            <div class="col-md-3">
-                <small class="text-muted">Current Stock</small>
-                <h6 id="summaryStock">-</h6>
-            </div>
-
-            <div class="col-md-3">
-                <small class="text-muted">Selling Price</small>
-                <h6 class="text-success" id="summarySellingPrice">
-                    UGX 0
-                </h6>
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-            <hr>
-
-            <div class="d-flex justify-content-between">
-
-                <button
-                    type="button"
-                    class="btn btn-secondary prevStep">
-
-                    <i class="fas fa-arrow-left"></i>
-
-                    Previous
-
-                </button>
-
-                <button
-                    type="button"
-                    class="btn btn-success nextStep">
-
-                    Continue
-
-                    <i class="fas fa-arrow-right"></i>
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- ====================================================== -->
-<!-- STEP 3 : DEVICE INSPECTION -->
-<!-- ====================================================== -->
-
-<div class="wizard-step d-none" id="step3">
-
-    <div class="card shadow-sm border-0">
-
-        <div class="card-header bg-warning">
-
-            <h5 class="mb-0">
-
-                <i class="fas fa-magnifying-glass"></i>
-
-                Device Inspection
-
-            </h5>
-
-        </div>
-
-        <div class="card-body">
-
-            <div class="row">
-
-                <div class="col-md-3 mb-3">
-
-                    <label class="form-label">
-
-                        Battery Health (%)
-
-                    </label>
-
-                    <input
-                        type="number"
-                        class="form-control"
-                        name="battery_health[]"
-                        min="0"
-                        max="100"
-                        placeholder="100">
-
-                </div>
-
-                <div class="col-md-3 mb-3">
-
-                    <label class="form-label">
-
-                        Screen
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="screen_condition[]">
-
-                        <option value="">Select</option>
-                        <option>Excellent</option>
-                        <option>Good</option>
-                        <option>Fair</option>
-                        <option>Cracked</option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-3 mb-3">
-
-                    <label class="form-label">
-
-                        Back Glass
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="back_condition[]">
-
-                        <option value="">Select</option>
-                        <option>Excellent</option>
-                        <option>Good</option>
-                        <option>Scratched</option>
-                        <option>Cracked</option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-3 mb-3">
-
-                    <label class="form-label">
-
-                        Frame
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="frame_condition[]">
-
-                        <option value="">Select</option>
-                        <option>Excellent</option>
-                        <option>Good</option>
-                        <option>Dented</option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-            <div class="row">
-
-                <div class="col-md-3 mb-3">
-
-                    <label class="form-label">
-
-                        Camera
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="camera_condition[]">
-
-                        <option>Working</option>
-                        <option>Faulty</option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-3 mb-3">
-
-                    <label class="form-label">
-
-                        Face ID
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="face_id_status[]">
-
-                        <option>Working</option>
-                        <option>Not Working</option>
-                        <option>N/A</option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-3 mb-3">
-
-                    <label class="form-label">
-
-                        Fingerprint
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="fingerprint_status[]">
-
-                        <option>Working</option>
-                        <option>Not Working</option>
-                        <option>N/A</option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-3 mb-3">
-
-                    <label class="form-label">
-
-                        Charging Port
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="charging_port[]">
-
-                        <option>Working</option>
-                        <option>Faulty</option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-            <div class="row">
-
-                <div class="col-md-3 mb-3">
-
-                    <label class="form-label">
-
-                        Speaker
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="speaker_status[]">
-
-                        <option>Working</option>
-                        <option>Faulty</option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-3 mb-3">
-
-                    <label class="form-label">
-
-                        Microphone
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="microphone_status[]">
-
-                        <option>Working</option>
-                        <option>Faulty</option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-3 mb-3">
-
-                    <label class="form-label">
-
-                        WiFi
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="wifi_status[]">
-
-                        <option>Working</option>
-                        <option>Faulty</option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-3 mb-3">
-
-                    <label class="form-label">
-
-                        Bluetooth
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        name="bluetooth_status[]">
-
-                        <option>Working</option>
-                        <option>Faulty</option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-            <div class="row">
-
-                <div class="col-md-6">
-
-                    <label class="form-label">
-
-                        Accessories Received
-
-                    </label>
-
-                    <div class="form-check">
-
-                        <input class="form-check-input" type="checkbox" name="box_received_0">
-
-                        <label class="form-check-label">Box</label>
-
-                    </div>
-
-                    <div class="form-check">
-
-                        <input class="form-check-input" type="checkbox" name="charger_received_0">
-
-                        <label class="form-check-label">Charger</label>
-
-                    </div>
-
-                    <div class="form-check">
-
-                        <input class="form-check-input" type="checkbox" name="cable_received_0">
-
-                        <label class="form-check-label">Cable</label>
-
-                    </div>
-
-                    <div class="form-check">
-
-                        <input class="form-check-input" type="checkbox" name="adapter_received_0">
-
-                        <label class="form-check-label">Adapter</label>
-
-                    </div>
-
-                </div>
-
-                <div class="col-md-6">
-
-                    <label class="form-label">
-
-                        Inspection Remarks
-
-                    </label>
-
-                    <textarea
-                        class="form-control"
-                        rows="6"
-                        name="remarks[]"></textarea>
-
-                </div>
-
-            </div>
-
-            <hr>
-
-            <div class="d-flex justify-content-between">
-
-                <button
-                    type="button"
-                    class="btn btn-secondary prevStep">
-
-                    <i class="fas fa-arrow-left"></i>
-
-                    Previous
-
-                </button>
-
-                <button
-                    type="button"
-                    class="btn btn-success nextStep">
-
-                    Continue
-
-                    <i class="fas fa-arrow-right"></i>
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- ===================================================== -->
-<!-- STEP 4 : TRADE VALUATION -->
-<!-- ===================================================== -->
-
-<div class="wizard-step d-none" id="step4">
-
-    <h4 class="fw-bold mb-4">
-        Trade Valuation
-    </h4>
-
-    <div class="row">
-
+      <div class="row">
         <!-- LEFT SIDE -->
 
         <div class="col-lg-8">
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">ERP Valuation</div>
 
-            <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label"> Suggested Trade Value </label>
 
-                <div class="card-header bg-success text-white">
+                <input
+                  type="number"
+                  class="form-control"
+                  id="suggestedTradeValue"
+                  readonly
+                />
 
-                    ERP Valuation
+                <small class="text-muted">
+                  Generated automatically using Trade-In Rules.
+                </small>
+              </div>
 
-                </div>
+              <div class="mb-3">
+                <label class="form-label"> Agreed Trade Value </label>
 
-                <div class="card-body">
+                <input
+                  type="number"
+                  class="form-control agreedTradeValue"
+                  name="final_trade_value[]"
+                  required
+                />
 
-                    <div class="mb-3">
+                <small class="text-muted">
+                  Final negotiated value with the customer.
+                </small>
+              </div>
 
-                        <label class="form-label">
+              <div class="mb-3">
+                <label class="form-label"> Expected Selling Price </label>
 
-                            Suggested Trade Value
+                <input
+                  type="number"
+                  class="form-control sellingPrice"
+                  name="default_selling_price[]"
+                  required
+                />
+              </div>
+            </div>
+          </div>
 
-                        </label>
-
-                        <input
-                            type="number"
-                            class="form-control"
-                            id="suggestedTradeValue"
-                            readonly>
-
-                        <small class="text-muted">
-
-                            Generated automatically using Trade-In Rules.
-
-                        </small>
-
-                    </div>
-
-                    <div class="mb-3">
-
-                        <label class="form-label">
-
-                            Agreed Trade Value
-
-                        </label>
-
-                        <input
-                            type="number"
-                            class="form-control agreedTradeValue"
-                            name="final_trade_value[]"
-                            required>
-
-                        <small class="text-muted">
-
-                            Final negotiated value with the customer.
-
-                        </small>
-
-                    </div>
-
-                    <div class="mb-3">
-
-                        <label class="form-label">
-
-                            Expected Selling Price
-
-                        </label>
-
-                        <input
-                            type="number"
-                            class="form-control sellingPrice"
-                            name="default_selling_price[]"
-                            required>
-
-                    </div>
-
-                </div>
-
+          <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+              Transaction Type
             </div>
 
-            <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="transaction_type"
+                  id="buyPhone"
+                  value="buy"
+                  checked
+                />
 
-                <div class="card-header bg-primary text-white">
+                <label class="form-check-label"> Buy Customer Phone </label>
+              </div>
 
-                    Transaction Type
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="transaction_type"
+                  id="upgradePhone"
+                  value="upgrade"
+                />
 
-                </div>
+                <label class="form-check-label"> Upgrade </label>
+              </div>
 
-                <div class="card-body">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="transaction_type"
+                  id="downgradePhone"
+                  value="downgrade"
+                />
 
-                    <div class="form-check">
+                <label class="form-check-label"> Downgrade </label>
+              </div>
 
-                        <input
-                            class="form-check-input"
-                            type="radio"
-                            name="transaction_type"
-                            id="buyPhone"
-                            value="buy"
-                            checked>
+              <hr />
 
-                        <label class="form-check-label">
+              <div class="mb-3">
+                <label> Cash Paid To Customer </label>
 
-                            Buy Customer Phone
+                <input
+                  type="number"
+                  class="form-control"
+                  id="cashPaidCustomer"
+                  name="cash_paid"
+                />
+              </div>
 
-                        </label>
+              <div class="mb-3">
+                <label> Customer Top-up </label>
 
-                    </div>
-
-                    <div class="form-check">
-
-                        <input
-                            class="form-check-input"
-                            type="radio"
-                            name="transaction_type"
-                            id="upgradePhone"
-                            value="upgrade">
-
-                        <label class="form-check-label">
-
-                            Upgrade
-
-                        </label>
-
-                    </div>
-
-                    <div class="form-check">
-
-                        <input
-                            class="form-check-input"
-                            type="radio"
-                            name="transaction_type"
-                            id="downgradePhone"
-                            value="downgrade">
-
-                        <label class="form-check-label">
-
-                            Downgrade
-
-                        </label>
-
-                    </div>
-
-                    <hr>
-
-                    <div class="mb-3">
-
-                        <label>
-
-                            Cash Paid To Customer
-
-                        </label>
-
-                        <input
-                            type="number"
-                            class="form-control"
-                            id="cashPaidCustomer"
-                            name="cash_paid">
-
-                    </div>
-
-                    <div class="mb-3">
-
-                        <label>
-
-                            Customer Top-up
-
-                        </label>
-
-                        <input
-                            type="number"
-                            class="form-control"
-                            id="customerTopup"
-                            name="topup_received">
-
-                    </div>
-
-                </div>
-
+                <input
+                  type="number"
+                  class="form-control"
+                  id="customerTopup"
+                  name="topup_received"
+                />
+              </div>
             </div>
-
+          </div>
         </div>
 
         <!-- RIGHT SIDE -->
 
         <div class="col-lg-4">
+          <div class="card shadow">
+            <div class="card-header bg-dark text-white">Financial Summary</div>
 
-            <div class="card shadow">
+            <div class="card-body">
+              <table class="table">
+                <tr>
+                  <th>Suggested</th>
 
-                <div class="card-header bg-dark text-white">
+                  <td id="summarySuggested">UGX 0</td>
+                </tr>
 
-                    Financial Summary
+                <tr>
+                  <th>Agreed</th>
 
-                </div>
+                  <td id="summaryAgreed">UGX 0</td>
+                </tr>
 
-                <div class="card-body">
+                <tr>
+                  <th>Selling</th>
 
-                    <table class="table">
+                  <td id="summarySelling">UGX 0</td>
+                </tr>
 
-                        <tr>
+                <tr>
+                  <th>Profit</th>
 
-                            <th>
-
-                                Suggested
-
-                            </th>
-
-                            <td id="summarySuggested">
-
-                                UGX 0
-
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <th>
-
-                                Agreed
-
-                            </th>
-
-                            <td id="summaryAgreed">
-
-                                UGX 0
-
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <th>
-
-                                Selling
-
-                            </th>
-
-                            <td id="summarySelling">
-
-                                UGX 0
-
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <th>
-
-                                Profit
-
-                            </th>
-
-                            <td
-                                id="expectedProfit"
-                                class="fw-bold text-success">
-
-                                UGX 0
-
-                            </td>
-
-                        </tr>
-
-                    </table>
-
-                </div>
-
+                  <td id="expectedProfit" class="fw-bold text-success">
+                    UGX 0
+                  </td>
+                </tr>
+              </table>
             </div>
-
+          </div>
         </div>
+      </div>
 
-    </div>
-
-    <div class="d-flex justify-content-between mt-4">
-
-        <button
-            type="button"
-            class="btn btn-secondary prevStep">
-
-            Previous
-
+      <div class="d-flex justify-content-between mt-4">
+        <button type="button" class="btn btn-secondary prevStep">
+          Previous
         </button>
 
-        <button
-            type="button"
-            class="btn btn-success nextStep">
-
-            Continue
-
-        </button>
-
+        <button type="button" class="btn btn-success nextStep">Continue</button>
+      </div>
     </div>
 
-</div>
+    <!-- ====================================================== -->
+    <!-- STEP 5 : REVIEW -->
+    <!-- ====================================================== -->
 
-<!-- ====================================================== -->
-<!-- STEP 5 : REVIEW -->
-<!-- ====================================================== -->
-
-<div class="wizard-step d-none" id="step5">
-
-    <div class="card shadow-lg border-0">
-
+    <div class="wizard-step d-none" id="step5">
+      <div class="card shadow-lg border-0">
         <div class="card-header bg-dark text-white">
+          <h4 class="mb-0">
+            <i class="fas fa-clipboard-check"></i>
 
-            <h4 class="mb-0">
-
-                <i class="fas fa-clipboard-check"></i>
-
-                Review Trade-In
-
-            </h4>
-
+            Review Trade-In
+          </h4>
         </div>
 
         <div class="card-body">
+          <!-- CUSTOMER -->
 
-            <!-- CUSTOMER -->
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <strong>
+                <i class="fas fa-user"></i>
 
-            <div class="card mb-4">
-
-                <div class="card-header bg-light">
-
-                    <strong>
-
-                        <i class="fas fa-user"></i>
-
-                        Customer Information
-
-                    </strong>
-
-                </div>
-
-                <div class="card-body">
-
-                    <div class="row">
-
-                        <div class="col-md-6">
-
-                            <p>
-
-                                <strong>Name</strong><br>
-
-                                <span id="reviewCustomer">-</span>
-
-                            </p>
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <p>
-
-                                <strong>Phone</strong><br>
-
-                                <span id="reviewPhone">-</span>
-
-                            </p>
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <p>
-
-                                <strong>Business</strong><br>
-
-                                <span id="reviewBusiness">-</span>
-
-                            </p>
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <p>
-
-                                <strong>Date</strong><br>
-
-                                <span id="reviewDate">-</span>
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+                Customer Information
+              </strong>
             </div>
 
-            <!-- DEVICE -->
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <p>
+                    <strong>Name</strong><br />
 
-            <div class="card mb-4">
-
-                <div class="card-header bg-light">
-
-                    <strong>
-
-                        <i class="fas fa-mobile-screen-button"></i>
-
-                        Device Information
-
-                    </strong>
-
+                    <span id="reviewCustomer">-</span>
+                  </p>
                 </div>
 
-                <div class="card-body">
+                <div class="col-md-6">
+                  <p>
+                    <strong>Phone</strong><br />
 
-                    <div class="row">
-
-                        <div class="col-md-6">
-
-                            <p>
-
-                                <strong>Device</strong><br>
-
-                                <span id="reviewDevice">-</span>
-
-                            </p>
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <p>
-
-                                <strong>IMEI</strong><br>
-
-                                <span id="reviewIMEI">-</span>
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
+                    <span id="reviewPhone">-</span>
+                  </p>
                 </div>
 
+                <div class="col-md-6">
+                  <p>
+                    <strong>Business</strong><br />
+
+                    <span id="reviewBusiness">-</span>
+                  </p>
+                </div>
+
+                <div class="col-md-6">
+                  <p>
+                    <strong>Date</strong><br />
+
+                    <span id="reviewDate">-</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DEVICE -->
+
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <strong>
+                <i class="fas fa-mobile-screen-button"></i>
+
+                Device Information
+              </strong>
             </div>
 
-            <!-- INSPECTION -->
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <p>
+                    <strong>Device</strong><br />
 
-            <div class="card mb-4">
-
-                <div class="card-header bg-light">
-
-                    <strong>
-
-                        <i class="fas fa-magnifying-glass"></i>
-
-                        Inspection Summary
-
-                    </strong>
-
+                    <span id="reviewDevice">-</span>
+                  </p>
                 </div>
 
-                <div class="card-body">
+                <div class="col-md-6">
+                  <p>
+                    <strong>IMEI</strong><br />
 
-                    <div class="row">
-
-                        <div class="col-md-3">
-
-                            <strong>Battery</strong>
-
-                            <p id="reviewBattery">-</p>
-
-                        </div>
-
-                        <div class="col-md-3">
-
-                            <strong>Screen</strong>
-
-                            <p id="reviewScreen">-</p>
-
-                        </div>
-
-                        <div class="col-md-3">
-
-                            <strong>Frame</strong>
-
-                            <p id="reviewFrame">-</p>
-
-                        </div>
-
-                        <div class="col-md-3">
-
-                            <strong>Camera</strong>
-
-                            <p id="reviewCamera">-</p>
-
-                        </div>
-
-                    </div>
-
+                    <span id="reviewIMEI">-</span>
+                  </p>
                 </div>
+              </div>
+            </div>
+          </div>
 
+          <!-- INSPECTION -->
+
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <strong>
+                <i class="fas fa-magnifying-glass"></i>
+
+                Inspection Summary
+              </strong>
             </div>
 
-            <!-- FINANCIAL -->
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-3">
+                  <strong>Battery</strong>
 
-            <div class="card border-success">
-
-                <div class="card-header bg-success text-white">
-
-                    <strong>
-
-                        <i class="fas fa-money-bill-wave"></i>
-
-                        Financial Summary
-
-                    </strong>
-
+                  <p id="reviewBattery">-</p>
                 </div>
 
-                <div class="card-body">
+                <div class="col-md-3">
+                  <strong>Screen</strong>
 
-                    <div class="row">
-
-                        <div class="col-md-3">
-
-                            <strong>Suggested Selling</strong>
-
-                            <h6 id="reviewSelling">
-
-                                UGX 0
-
-                            </h6>
-
-                        </div>
-
-                        <div class="col-md-3">
-
-                            <strong>Trade Value</strong>
-
-                            <h6 id="reviewTradeValue">
-
-                                UGX 0
-
-                            </h6>
-
-                        </div>
-
-                        <div class="col-md-3">
-
-                            <strong>Cash Paid</strong>
-
-                            <h6 id="reviewCash">
-
-                                UGX 0
-
-                            </h6>
-
-                        </div>
-
-                        <div class="col-md-3">
-
-                            <strong>Top-up</strong>
-
-                            <h6 id="reviewTopup">
-
-                                UGX 0
-
-                            </h6>
-
-                        </div>
-
-                    </div>
-
-                    <hr>
-
-                    <div class="text-center">
-
-                        <h4>
-
-                            Expected Profit
-
-                        </h4>
-
-                        <h2
-                            class="text-success"
-                            id="reviewProfit">
-
-                            UGX 0
-
-                        </h2>
-
-                    </div>
-
+                  <p id="reviewScreen">-</p>
                 </div>
 
+                <div class="col-md-3">
+                  <strong>Frame</strong>
+
+                  <p id="reviewFrame">-</p>
+                </div>
+
+                <div class="col-md-3">
+                  <strong>Camera</strong>
+
+                  <p id="reviewCamera">-</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FINANCIAL -->
+
+          <div class="card border-success">
+            <div class="card-header bg-success text-white">
+              <strong>
+                <i class="fas fa-money-bill-wave"></i>
+
+                Financial Summary
+              </strong>
             </div>
 
-            <hr>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-3">
+                  <strong>Suggested Selling</strong>
 
-            <div class="d-flex justify-content-between">
+                  <h6 id="reviewSelling">UGX 0</h6>
+                </div>
 
-                <button
-                    type="button"
-                    class="btn btn-secondary prevStep">
+                <div class="col-md-3">
+                  <strong>Trade Value</strong>
 
-                    <i class="fas fa-arrow-left"></i>
+                  <h6 id="reviewTradeValue">UGX 0</h6>
+                </div>
 
-                    Previous
+                <div class="col-md-3">
+                  <strong>Cash Paid</strong>
 
-                </button>
+                  <h6 id="reviewCash">UGX 0</h6>
+                </div>
 
-                <button
-                    type="submit"
-                    class="btn btn-success btn-lg">
+                <div class="col-md-3">
+                  <strong>Top-up</strong>
 
-                    <i class="fas fa-check-circle"></i>
+                  <h6 id="reviewTopup">UGX 0</h6>
+                </div>
+              </div>
 
-                    Complete Trade-In
+              <hr />
 
-                </button>
+              <div class="text-center">
+                <h4>Expected Profit</h4>
 
+                <h2 class="text-success" id="reviewProfit">UGX 0</h2>
+              </div>
             </div>
+          </div>
 
+          <hr />
+
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary prevStep">
+              <i class="fas fa-arrow-left"></i>
+
+              Previous
+            </button>
+
+            <button type="submit" class="btn btn-success btn-lg">
+              <i class="fas fa-check-circle"></i>
+
+              Complete Trade-In
+            </button>
+          </div>
         </div>
-
+      </div>
     </div>
+  </form>
 
+  {% endblock %} {% block scripts %}
+
+  <script src="{{ url_for('static', filename='js/customer_picker.js') }}"></script>
+
+  <script src="{{ url_for('static', filename='js/trade_ins.js') }}"></script>
+
+  {% endblock %}
 </div>
-
-</form>
-
-{% endblock %}
-
-{% block scripts %}
-
-<script src="{{ url_for('static', filename='js/trade_ins.js') }}"></script>
-
-{% endblock %}
-

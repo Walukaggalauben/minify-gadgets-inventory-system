@@ -69,8 +69,11 @@
             <span>Dashboard</span>
           </a>
           <!-- Inventory -->
-
           <div class="menu-title">INVENTORY</div>
+
+          <a href="{{ url_for('inventory.index') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('inventory') %}active{% endif %}">
+            <i class="fas fa-warehouse"></i><span>Inventory</span>
+          </a>
 
           <a
             href="{{ url_for('category.index') }}"
@@ -145,11 +148,20 @@
           <div class="menu-title">SALES</div>
 
           <a
+            href="{{ url_for('customer.index') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('customer') %}active{% endif %}">
+            <i class="fas fa-users"></i><span>Customers</span>
+          </a>
+
+          <a
             href="{{ url_for('sale.index') }}"
             class="nav-link {% if request.endpoint and request.endpoint.startswith('sale') %}active{% endif %}"
           >
             <i class="fas fa-cash-register"></i>
             <span>Sales</span>
+          </a>
+
+          <a href="{{ url_for('expenses.index') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('expenses') %}active{% endif %}">
+            <i class="fas fa-money-bill-wave"></i><span>Expenses</span>
           </a>
 
           <!-- Reports -->
@@ -169,7 +181,7 @@
             class="nav-link {% if request.endpoint and request.endpoint.startswith('backup') %}active{% endif %}"
           >
             <i class="fas fa-database"></i>
-            <span>Backup & Restore</span>
+            <span>Backup</span>
           </a>
 
           <!-- System -->
@@ -184,7 +196,15 @@
             <span>Company Settings</span>
           </a>
 
-          <a href="{{ url_for('auth.logout') }}" class="nav-link logout-link">
+          <a href="{{ url_for('user.index') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('user') %}active{% endif %}">
+            <i class="fas fa-user-gear"></i><span>Users</span>
+          </a>
+
+          <a href="{{ url_for('system_settings.index') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('system_settings') %}active{% endif %}">
+            <i class="fas fa-sliders"></i><span>System Settings</span>
+          </a>
+
+          <a href="{{ url_for('auth.logout') }} class="nav-link logout-link">
             <i class="fas fa-right-from-bracket"></i>
             <span>Logout</span>
           </a>

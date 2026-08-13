@@ -671,3 +671,137 @@ if (customerSearch) {
     });
   });
 }
+
+// ==========================================================
+// REGISTER NEW CUSTOMER
+// ==========================================================
+
+// ==========================================================
+// REGISTER NEW CUSTOMER FROM SALES POS
+// ==========================================================
+
+const newCustomerBtn =
+  document.getElementById("newCustomerBtn");
+
+if (newCustomerBtn) {
+  newCustomerBtn.addEventListener("click", function () {
+
+    window.location.href =
+      "/customers/create?return_to=sale";
+
+  });
+}
+
+
+/* ==========================================================
+   MINIFY V2 FAST BARCODE POS
+   Hardware scanners act as keyboard input and terminate with Enter.
+========================================================== */
+(() => {
+  const scanner = document.getElementById("barcodeScanner");
+  const status = document.getElementById("barcodeStatus");
+  const payment = document.querySelector('select[name="payment_method"]');
+  const creditFields = document.getElementById("creditFields");
+  const amountPaid = document.getElementById("amountPaid");
+  const grandTotal = document.getElementById("grandTotal");
+  const cameraBtn = document.getElementById("cameraScanBtn");
+
+  async function barcodeLookup(code) {
+    if (!code) return;
+    if (status) status.textContent = "Looking up barcode...";
+    try {
+      const response = await fetch(`/sales/api/barcode/${encodeURIComponent(code)}`);
+      if (!response.ok) throw new Error("Barcode not found");
+      const v = await response.json();
+
+      if (Number(v.stock) <= 0) {
+        if (status) status.textContent = "Product is out of stock.";
+        alert("This product is out of stock.");
+        return;
+      }
+
+      const brand = document.getElementById("brand");
+      const product = document.getElementById("product");
+      const variant = document.getElementById("variant");
+
+      if (brand && v.brand_id) {
+        brand.value = String(v.brand_id);
+        brand.dispatchEvent(new Event("change"));
+      }
+
+      // Populate product directly so the existing POS can continue normally.
+      if (product) {
+        product.innerHTML = `<option value="${v.product_id}">${v.product}</option>`;
+        product.value = String(v.product_id);
+        product.dispatchEvent(new Event("change"));
+      }
+
+      // Populate the exact variant without waiting for another network call.
+      if (variant) {
+        const option = document.createElement("option");
+        option.value = String(v.id);
+        option.textContent = `${v.sku} (${[v.storage, v.ram, v.colour].filter(Boolean).join(" / ")})`;
+        option.dataset.price = v.price;
+        option.dataset.stock = v.stock;
+        option.dataset.brand = v.brand;
+        option.dataset.product = v.product;
+        option.dataset.storage = v.storage || "";
+        option.dataset.ram = v.ram || "";
+        option.dataset.colour = v.colour || "";
+
+        variant.innerHTML = "";
+        variant.appendChild(option);
+        variant.value = String(v.id);
+        variant.dispatchEvent(new Event("change"));
+      }
+
+      if (status) status.textContent = `Scanned: ${v.sku} — select the IMEI if required, then Add To Cart.`;
+      scanner.value = "";
+    } catch (err) {
+      if (status) status.textContent = "Barcode not found.";
+      alert(`No active product variant matches barcode "${code}".`);
+      scanner.focus();
+    }
+  }
+
+  scanner?.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      barcodeLookup(scanner.value.trim());
+    }
+  });
+
+  payment?.addEventListener("change", () => {
+    const credit = payment.value === "Credit" || payment.value === "Installment";
+    creditFields?.classList.toggle("d-none", !credit);
+    if (!credit && amountPaid) amountPaid.value = "";
+  });
+
+  cameraBtn?.addEventListener("click", async () => {
+    if (!("BarcodeDetector" in window)) {
+      alert("Camera barcode scanning is not supported by this browser. Use a USB/Bluetooth scanner instead.");
+      return;
+    }
+    try {
+      const detector = new BarcodeDetector({formats: ["code_128","ean_13","ean_8","upc_a","upc_e"]});
+      const stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}});
+      const video = document.createElement("video");
+      video.autoplay = true; video.playsInline = true; video.style.cssText =
+        "position:fixed;inset:12%;width:76%;max-height:76%;z-index:9999;background:#000;border-radius:12px";
+      document.body.appendChild(video);
+      video.srcObject = stream;
+      const close = () => { stream.getTracks().forEach(t => t.stop()); video.remove(); };
+      const timer = setInterval(async () => {
+        try {
+          const codes = await detector.detect(video);
+          if (codes.length) {
+            clearInterval(timer); close(); barcodeLookup(codes[0].rawValue);
+          }
+        } catch (_) {}
+      }, 250);
+      setTimeout(() => { clearInterval(timer); close(); }, 30000);
+    } catch (err) {
+      alert("Camera access could not be started. Check browser camera permission.");
+    }
+  });
+})();

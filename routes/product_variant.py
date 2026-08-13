@@ -10,6 +10,7 @@ from flask import (
 
 from services.product_variant_service import ProductVariantService
 from models.product import Product
+from models.system_setting import SystemSetting
 
 variant_bp = Blueprint("variant", __name__)
 
@@ -58,19 +59,17 @@ def create():
     products = Product.query.filter_by(is_active=True).order_by(Product.name).all()
 
     if request.method == "POST":
-
-        ProductVariantService.create(request.form)
-
-        flash(
-            "Product Variant created successfully.",
-            "success"
-        )
-
-        return redirect(url_for("variant.index"))
+        try:
+            ProductVariantService.create(request.form)
+            flash("Product Variant created successfully.", "success")
+            return redirect(url_for("variant.index"))
+        except Exception as exc:
+            flash(str(exc), "danger")
 
     return render_template(
         "product_variants/create.html",
-        products=products
+        products=products,
+        settings=SystemSetting.get_settings(),
     )
 
 
@@ -85,23 +84,18 @@ def edit(id):
     products = Product.query.filter_by(is_active=True).order_by(Product.name).all()
 
     if request.method == "POST":
-
-        ProductVariantService.update(
-            variant,
-            request.form
-        )
-
-        flash(
-            "Product Variant updated successfully.",
-            "success"
-        )
-
-        return redirect(url_for("variant.index"))
+        try:
+            ProductVariantService.update(variant, request.form)
+            flash("Product Variant updated successfully.", "success")
+            return redirect(url_for("variant.index"))
+        except Exception as exc:
+            flash(str(exc), "danger")
 
     return render_template(
         "product_variants/edit.html",
         variant=variant,
-        products=products
+        products=products,
+        settings=SystemSetting.get_settings(),
     )
 
 

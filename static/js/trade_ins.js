@@ -1,28 +1,58 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    // =====================================================
-    // WIZARD NAVIGATION
-    // =====================================================
+    // ============================================================
+    // TRADE-IN WIZARD
+    // PART 1 — CORE WIZARD + TRADE MODE + PROFIT
+    // ============================================================
 
     const steps = document.querySelectorAll(".wizard-step");
     const navLinks = document.querySelectorAll("#tradeWizard .nav-link");
 
     let currentStep = 0;
 
+
+    // ============================================================
+    // WIZARD NAVIGATION
+    // ============================================================
+
     function showStep(index) {
+
+        if (!steps.length) {
+            return;
+        }
+
+        if (index < 0) {
+            index = 0;
+        }
+
+        if (index >= steps.length) {
+            index = steps.length - 1;
+        }
 
         steps.forEach((step, i) => {
 
-            step.classList.toggle("active-step", i === index);
-            step.classList.toggle("d-none", i !== index);
+            step.classList.toggle(
+                "active-step",
+                i === index
+            );
+
+            step.classList.toggle(
+                "d-none",
+                i !== index
+            );
 
         });
+
 
         navLinks.forEach((nav, i) => {
 
-            nav.classList.toggle("active", i === index);
+            nav.classList.toggle(
+                "active",
+                i === index
+            );
 
         });
+
 
         currentStep = index;
 
@@ -30,9 +60,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-    document.querySelectorAll(".nextStep").forEach(btn => {
 
-        btn.addEventListener("click", () => {
+    // ============================================================
+    // NEXT BUTTONS
+    // ============================================================
+
+    document.querySelectorAll(".nextStep").forEach(button => {
+
+        button.addEventListener("click", () => {
 
             if (currentStep < steps.length - 1) {
 
@@ -44,9 +79,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-    document.querySelectorAll(".prevStep").forEach(btn => {
 
-        btn.addEventListener("click", () => {
+    // ============================================================
+    // PREVIOUS BUTTONS
+    // ============================================================
+
+    document.querySelectorAll(".prevStep").forEach(button => {
+
+        button.addEventListener("click", () => {
 
             if (currentStep > 0) {
 
@@ -58,133 +98,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-    //showStep(0);
 
-    // =====================================================
-    // ELEMENTS
-    // =====================================================
+    // ============================================================
+    // MAIN ELEMENTS
+    // ============================================================
 
-    const suggestedTradeValue =
-    document.getElementById("suggestedTradeValue");
-
-const agreedTradeValue =
-    document.querySelector(".agreedTradeValue");
-
-const sellingPrice =
-    document.querySelector(".sellingPrice");
-
-const expectedProfit =
-    document.getElementById("expectedProfit");
-
-const battery =
-    document.querySelector(
-        'input[name="battery_health[]"]'
-    );
-
-const buyRadio =
-    document.getElementById("buyPhone");
-
-const upgradeRadio =
-    document.getElementById("upgradePhone");
-
-const downgradeRadio =
-    document.getElementById("downgradePhone");
-
-const cashPaidCustomer =
-    document.getElementById("cashPaidCustomer");
-
-const customerTopup =
-    document.getElementById("customerTopup");
-
-    // =====================================================
-    // BUY / SWAP SWITCHING
-    // =====================================================
-
-    function updateTransactionMode() {
-
-    const buyRadio =
-        document.getElementById("buyPhone");
-
-    const upgradeRadio =
-        document.getElementById("upgradePhone");
-
-    const downgradeRadio =
-        document.getElementById("downgradePhone");
-
-    const cashPaid =
-        document.getElementById("cashPaidCustomer");
-
-    const customerTopup =
-        document.getElementById("customerTopup");
-
-    if (
-        !buyRadio ||
-        !upgradeRadio ||
-        !downgradeRadio
-    ) {
-        return;
-    }
-
-    if (buyRadio.checked) {
-
-        cashPaid.parentElement.style.display =
-            "block";
-
-        customerTopup.parentElement.style.display =
-            "none";
-
-    }
-
-    else if (upgradeRadio.checked) {
-
-        cashPaid.parentElement.style.display =
-            "none";
-
-        customerTopup.parentElement.style.display =
-            "block";
-
-    }
-
-    else if (downgradeRadio.checked) {
-
-        cashPaid.parentElement.style.display =
-            "block";
-
-        customerTopup.parentElement.style.display =
-            "none";
-
-    }
-
-    calculateSettlement();
-
-}
-
-document
-    .querySelectorAll(
-        'input[name="transaction_type"]'
-    )
-    .forEach(radio => {
-
-        radio.addEventListener(
-            "change",
-            updateTransactionMode
-        );
-
-    });
-
-updateTransactionMode();
-
-    // =====================================================
-    // PROFIT
-    // =====================================================
-
-    function calculateProfit() {
-
-    const suggestedTradeValue =
-        document.getElementById("suggestedTradeValue");
-
-    const agreedTradeValue =
-        document.querySelector(".agreedTradeValue");
+    const tradeValue =
+        document.querySelector(".finalTradeValue");
 
     const sellingPrice =
         document.querySelector(".sellingPrice");
@@ -192,729 +112,979 @@ updateTransactionMode();
     const expectedProfit =
         document.getElementById("expectedProfit");
 
-    if (!agreedTradeValue || !sellingPrice)
-        return;
+    const buyRadio =
+        document.getElementById("buyPhone");
 
-    const suggested =
-        parseFloat(suggestedTradeValue?.value) || 0;
+    const swapRadio =
+        document.getElementById("swapPhone");
 
-    const agreed =
-        parseFloat(agreedTradeValue.value) || 0;
+    const buySection =
+        document.getElementById("buySection");
 
-    const selling =
-        parseFloat(sellingPrice.value) || 0;
+    const swapSection =
+        document.getElementById("swapSection");
 
-    const profit =
-        selling - agreed;
-
-    if (expectedProfit) {
-
-        expectedProfit.textContent =
-            "UGX " +
-            profit.toLocaleString();
-
-    }
-
-    document.getElementById("summarySuggested").textContent =
-        "UGX " + suggested.toLocaleString();
-
-    document.getElementById("summaryAgreed").textContent =
-        "UGX " + agreed.toLocaleString();
-
-    document.getElementById("summarySelling").textContent =
-        "UGX " + selling.toLocaleString();
-
-}
-
-    suggestedTradeValue?.addEventListener(
-    "input",
-    () => {
-
-        calculateProfit();
-
-        updateReview();
-
-    }
-);
-
-agreedTradeValue?.addEventListener(
-    "input",
-    () => {
-
-        calculateProfit();
-
-        calculateSettlement();
-
-        updateReview();
-
-    }
-);
-
-sellingPrice?.addEventListener(
-    "input",
-    () => {
-
-        calculateProfit();
-
-        calculateSettlement();
-
-        updateReview();
-
-    }
-);
-
-    // =====================================================
-// SMART TRADE VALUATION
-// =====================================================
-
-async function calculateSuggestedValue() {
-
-    const suggestedTradeValue =
-        document.getElementById("suggestedTradeValue");
-
-    const agreedTradeValue =
-        document.querySelector(".agreedTradeValue");
-
-    if (!sellingPrice)
-        return;
-
-    try {
-
-        const response = await fetch(
-            "/trade-ins/api/valuation",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-
-                    selling_price:
-                        parseFloat(sellingPrice.value) || 0,
-
-                    battery_health:
-                        battery?.value || null,
-
-                    screen_condition:
-                        document.querySelector('[name="screen_condition[]"]')?.value,
-
-                    back_condition:
-                        document.querySelector('[name="back_condition[]"]')?.value,
-
-                    frame_condition:
-                        document.querySelector('[name="frame_condition[]"]')?.value,
-
-                    camera_condition:
-                        document.querySelector('[name="camera_condition[]"]')?.value,
-
-                    face_id_status:
-                        document.querySelector('[name="face_id_status[]"]')?.value,
-
-                    fingerprint_status:
-                        document.querySelector('[name="fingerprint_status[]"]')?.value,
-
-                    network_lock:
-                        document.querySelector('[name="network_lock[]"]')?.value,
-
-                    icloud_status:
-                        document.querySelector('[name="icloud_status[]"]')?.value,
-
-                    frp_status:
-                        document.querySelector('[name="frp_status[]"]')?.value,
-
-                    charger_received:
-                        document.querySelector('[name="charger_received[]"]')?.checked,
-
-                    box_received:
-                        document.querySelector('[name="box_received[]"]')?.checked
-
-                })
-
-            }
-        );
-
-        const result =
-            await response.json();
-
-        // ERP Recommendation
-
-        suggestedTradeValue.value =
-            result.suggested_trade_value;
-
-        // Only set Agreed Value automatically
-        // the first time.
-
-        if (
-            agreedTradeValue &&
-            !agreedTradeValue.value
-        ) {
-
-            agreedTradeValue.value =
-                result.suggested_trade_value;
-
-        }
-
-        calculateProfit();
-
-calculateSettlement();
-
-updateReview();
-    }
-
-    catch (err) {
-
-        console.error(err);
-
-    }
-
-}
-
-    // =====================================================
-    // TOP-UP CALCULATION
-    // =====================================================
-
-    function calculateSettlement() {
-
-    const agreedTradeValue =
-        document.querySelector(".agreedTradeValue");
-
-    const cashPaid =
-        document.getElementById("cashPaidCustomer");
+    const swapSellingPrice =
+        document.getElementById("swapSellingPrice");
 
     const customerTopup =
         document.getElementById("customerTopup");
 
-    const buyRadio =
-        document.getElementById("buyPhone");
 
-    const upgradeRadio =
-        document.getElementById("upgradePhone");
+    // ============================================================
+    // HELPERS
+    // ============================================================
 
-    const downgradeRadio =
-        document.getElementById("downgradePhone");
+    function getFirstField(name) {
 
-    const agreed =
-        parseFloat(
-            agreedTradeValue?.value
-        ) || 0;
-
-    const selling =
-        parseFloat(
-            sellingPrice?.value
-        ) || 0;
-
-    // BUY
-    if (buyRadio?.checked) {
-
-        cashPaid.value = agreed;
-
-        customerTopup.value = 0;
+        return document.querySelector(
+            `[name="${name}"]`
+        );
 
     }
 
-    // UPGRADE
-    else if (upgradeRadio?.checked) {
 
-        const topup =
-            Math.max(
-                selling - agreed,
-                0
-            );
+    function getFirstValue(name) {
 
-        customerTopup.value = topup;
-
-        cashPaid.value = 0;
+        return getFirstField(name)?.value || "";
 
     }
 
-    // DOWNGRADE
-    else if (downgradeRadio?.checked) {
 
-        const refund =
-            Math.max(
-                agreed - selling,
-                0
+    function getFirstChecked(name) {
+
+        return Boolean(
+            getFirstField(name)?.checked
+        );
+
+    }
+
+
+    function money(value) {
+
+        const number =
+            Number(value) || 0;
+
+        return (
+            "UGX " +
+            number.toLocaleString()
+        );
+
+    }
+
+
+    // ============================================================
+    // BUY / SWAP MODE
+    // ============================================================
+
+    function updateTradeMode() {
+
+        if (!buyRadio || !swapRadio) {
+            return;
+        }
+
+
+        if (buyRadio.checked) {
+
+            if (buySection) {
+                buySection.style.display = "block";
+            }
+
+            if (swapSection) {
+                swapSection.style.display = "none";
+            }
+
+        }
+
+
+        if (swapRadio.checked) {
+
+            if (buySection) {
+                buySection.style.display = "none";
+            }
+
+            if (swapSection) {
+                swapSection.style.display = "block";
+            }
+
+        }
+
+
+        calculateProfit();
+
+    }
+
+
+    buyRadio?.addEventListener(
+        "change",
+        updateTradeMode
+    );
+
+
+    swapRadio?.addEventListener(
+        "change",
+        updateTradeMode
+    );
+
+
+    // ============================================================
+    // PROFIT CALCULATION
+    // ============================================================
+
+    function calculateProfit() {
+
+        if (!tradeValue || !expectedProfit) {
+            return;
+        }
+
+
+        let selling = 0;
+
+
+        if (buyRadio?.checked) {
+
+            selling =
+                parseFloat(
+                    sellingPrice?.value
+                ) || 0;
+
+        }
+
+
+        if (swapRadio?.checked) {
+
+            selling =
+                parseFloat(
+                    swapSellingPrice?.value
+                ) || 0;
+
+        }
+
+
+        const buying =
+            parseFloat(
+                tradeValue.value
+            ) || 0;
+
+
+        const profit =
+            selling - buying;
+
+
+        expectedProfit.value =
+            money(profit);
+
+
+        calculateTopup();
+
+    }
+
+
+    tradeValue?.addEventListener(
+        "input",
+        calculateProfit
+    );
+
+
+    sellingPrice?.addEventListener(
+        "input",
+        calculateProfit
+    );
+
+
+    swapSellingPrice?.addEventListener(
+        "input",
+        calculateProfit
+    );
+
+
+    // ============================================================
+    // TOP-UP CALCULATION
+    // ============================================================
+
+    function calculateTopup() {
+
+        if (!swapRadio?.checked) {
+            return;
+        }
+
+
+        const selling =
+            parseFloat(
+                swapSellingPrice?.value
+            ) || 0;
+
+
+        const trade =
+            parseFloat(
+                tradeValue?.value
+            ) || 0;
+
+
+        const difference =
+            selling - trade;
+
+
+        if (customerTopup) {
+
+            customerTopup.value =
+                difference > 0
+                    ? difference
+                    : 0;
+
+        }
+
+    }
+
+
+    // ============================================================
+    // INITIAL TRADE MODE
+    // ============================================================
+
+    updateTradeMode();
+    // ============================================================
+// TRADE-IN WIZARD
+// PART 2 — CUSTOMER + DEVICE SEARCH
+// ============================================================
+
+
+// ============================================================
+// CUSTOMER SEARCH
+// ============================================================
+
+const customerSearch =
+    document.getElementById("customerSearch");
+
+const customerResults =
+    document.getElementById("customerResults");
+
+const selectedCustomerCard =
+    document.getElementById("selectedCustomerCard");
+
+const selectedCustomerName =
+    document.getElementById("selectedCustomerName");
+
+const selectedCustomerPhone =
+    document.getElementById("selectedCustomerPhone");
+
+
+// Store selected customer
+
+let selectedCustomer = null;
+
+
+// ------------------------------------------------------------
+// SEARCH CUSTOMERS
+// ------------------------------------------------------------
+
+customerSearch?.addEventListener(
+    "input",
+    async function () {
+
+        const keyword =
+            this.value.trim();
+
+        if (keyword.length < 2) {
+
+            if (customerResults) {
+
+                customerResults.style.display =
+                    "none";
+
+                customerResults.innerHTML =
+                    "";
+
+            }
+
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/customers/api/search?q=${encodeURIComponent(keyword)}`
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Customer search failed"
+                );
+
+            }
+
+
+            const customers =
+                await response.json();
+
+
+            if (!customerResults) {
+                return;
+            }
+
+
+            customerResults.innerHTML =
+                "";
+
+
+            if (!customers.length) {
+
+                customerResults.innerHTML = `
+                    <div class="list-group-item text-muted">
+                        <i class="fas fa-user-slash me-2"></i>
+                        No customer found
+                    </div>
+                `;
+
+                customerResults.style.display =
+                    "block";
+
+                return;
+            }
+
+
+            customers.forEach(customer => {
+
+                const item =
+                    document.createElement("button");
+
+                item.type =
+                    "button";
+
+                item.className =
+                    "list-group-item list-group-item-action";
+
+
+                item.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <strong>
+                                ${customer.name || ""}
+                            </strong>
+
+                            <br>
+
+                            <small class="text-muted">
+
+                                <i class="fas fa-phone me-1"></i>
+
+                                ${customer.phone || "No phone"}
+
+                            </small>
+
+                        </div>
+
+                        <span class="badge bg-success">
+
+                            ${customer.code || ""}
+
+                        </span>
+
+                    </div>
+                `;
+
+
+                item.addEventListener(
+                    "click",
+                    function () {
+
+                        selectCustomer(
+                            customer
+                        );
+
+                    }
+                );
+
+
+                customerResults.appendChild(
+                    item
+                );
+
+            });
+
+
+            customerResults.style.display =
+                "block";
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Customer search error:",
+                error
             );
 
-        cashPaid.value = refund;
+        }
 
-        customerTopup.value = 0;
+    }
+);
+
+
+// ------------------------------------------------------------
+// SELECT CUSTOMER
+// ------------------------------------------------------------
+
+function selectCustomer(customer) {
+
+    selectedCustomer =
+        customer;
+
+
+    if (customerSearch) {
+
+        customerSearch.value =
+            customer.name || "";
+
+    }
+
+
+    if (customerResults) {
+
+        customerResults.style.display =
+            "none";
+
+        customerResults.innerHTML =
+            "";
+
+    }
+
+
+    if (selectedCustomerCard) {
+
+        selectedCustomerCard.style.display =
+            "block";
+
+    }
+
+
+    if (selectedCustomerName) {
+
+        selectedCustomerName.textContent =
+            customer.name || "";
+
+    }
+
+
+    if (selectedCustomerPhone) {
+
+        selectedCustomerPhone.textContent =
+            customer.phone || "";
+
+    }
+
+
+    // --------------------------------------------------------
+    // AUTO-FILL CUSTOMER DETAILS
+    // --------------------------------------------------------
+
+    setFieldValue(
+        "customer_name",
+        customer.name
+    );
+
+    setFieldValue(
+        "phone_number",
+        customer.phone
+    );
+
+    setFieldValue(
+        "alternative_phone",
+        customer.alternative_phone
+    );
+
+    setFieldValue(
+        "email",
+        customer.email
+    );
+
+    setFieldValue(
+        "national_id",
+        customer.national_id
+    );
+
+    setFieldValue(
+        "address",
+        customer.address
+    );
+
+    setFieldValue(
+        "business_name",
+        customer.business_name
+    );
+
+}
+
+
+// ============================================================
+// SET FORM FIELD
+// ============================================================
+
+function setFieldValue(
+    name,
+    value
+) {
+
+    const field =
+        document.querySelector(
+            `[name="${name}"]`
+        );
+
+
+    if (field) {
+
+        field.value =
+            value || "";
 
     }
 
 }
 
-    // =====================================================
-    // BATTERY WARNING
-    // =====================================================
 
-    battery?.addEventListener(
-        "change",
-        function () {
+// ============================================================
+// CLEAR CUSTOMER
+// ============================================================
 
-            const value =
-                parseInt(this.value) || 0;
+function clearSelectedCustomer() {
 
-            if (
-                value > 0 &&
-                value < 80
-            ) {
+    selectedCustomer =
+        null;
 
-                alert(
-                    "Battery health is below 80%. Consider lowering the trade value."
-                );
 
-            }
+    if (selectedCustomerCard) {
 
-        }
-    );
-
-    // =====================================================
-    // IMEI VALIDATION
-    // =====================================================
-
-    document.querySelectorAll(".imeiInput").forEach(input => {
-
-        input.addEventListener("blur", function () {
-
-            const imei =
-                this.value.trim();
-
-            if (
-                imei &&
-                !/^\d{15}$/.test(imei)
-            ) {
-
-                alert(
-                    "IMEI must contain exactly 15 digits."
-                );
-
-                this.focus();
-
-            }
-
-        });
-
-    });
-
-    // =====================================================
-    // GOOGLE STYLE PRODUCT SEARCH
-    // =====================================================
-
-    const deviceSearch =
-        document.getElementById("deviceSearch");
-
-    const searchResults =
-        document.getElementById("deviceSearchResults");
-
-    const selectedProduct =
-        document.getElementById("selectedProductId");
-
-    const variantSelect =
-        document.getElementById("variantSelect");
-
-    if (deviceSearch) {
-
-        deviceSearch.addEventListener("keyup", async function () {
-
-            const keyword = this.value.trim();
-
-            if (keyword.length < 2) {
-
-                searchResults.style.display = "none";
-                searchResults.innerHTML = "";
-
-                return;
-
-            }
-
-            try {
-
-                const response = await fetch(
-                    `/trade-ins/api/search-products?q=${encodeURIComponent(keyword)}`
-                );
-
-                const products = await response.json();
-
-                searchResults.innerHTML = "";
-
-                if (!products.length) {
-
-                    searchResults.innerHTML =
-                        `<div class="list-group-item">
-                            No products found
-                        </div>`;
-
-                    searchResults.style.display = "block";
-
-                    return;
-
-                }
-
-                products.forEach(product => {
-
-                    const item =
-                        document.createElement("a");
-
-                    item.href = "#";
-
-                    item.className =
-                        "list-group-item list-group-item-action";
-
-                    item.innerHTML =
-                        `<strong>${product.name}</strong>`;
-
-                    item.onclick = function (e) {
-
-                        e.preventDefault();
-
-                        deviceSearch.value =
-                            product.name;
-
-                        selectedProduct.value =
-                            product.id;
-
-                        searchResults.style.display =
-                            "none";
-
-                        loadVariants(product.id);
-
-                    };
-
-                    searchResults.appendChild(item);
-
-                });
-
-                searchResults.style.display = "block";
-
-            }
-
-            catch (err) {
-
-                console.error(err);
-
-            }
-
-        });
+        selectedCustomerCard.style.display =
+            "none";
 
     }
 
-    // =====================================================
-    // LOAD VARIANTS
-    // =====================================================
 
-    async function loadVariants(productId) {
+    if (customerSearch) {
 
-        if (!variantSelect)
+        customerSearch.value =
+            "";
+
+    }
+
+}
+
+
+// ============================================================
+// DEVICE SEARCH
+// ============================================================
+
+const deviceSearch =
+    document.getElementById(
+        "deviceSearch"
+    );
+
+const deviceSearchResults =
+    document.getElementById(
+        "deviceSearchResults"
+    );
+
+const selectedProductId =
+    document.getElementById(
+        "selectedProductId"
+    );
+
+const variantSelect =
+    document.getElementById(
+        "variantSelect"
+    );
+
+
+// ------------------------------------------------------------
+// SEARCH PRODUCTS
+// ------------------------------------------------------------
+
+deviceSearch?.addEventListener(
+    "input",
+    async function () {
+
+        const keyword =
+            this.value.trim();
+
+
+        if (keyword.length < 2) {
+
+            if (deviceSearchResults) {
+
+                deviceSearchResults.style.display =
+                    "none";
+
+                deviceSearchResults.innerHTML =
+                    "";
+
+            }
+
             return;
+        }
 
-        variantSelect.innerHTML =
-            `<option>Loading...</option>`;
 
         try {
 
-            const response = await fetch(
-                `/trade-ins/api/product/${productId}/variants`
-            );
-
-            const variants =
-                await response.json();
-
-            variantSelect.innerHTML =
-                `<option value="">Select Variant</option>`;
-
-            variants.forEach(v => {
-
-                variantSelect.innerHTML += `
-                    <option
-    value="${v.id}"
-    data-brand="${v.brand}"
-    data-model="${v.model}"
-    data-storage="${v.storage}"
-    data-ram="${v.ram}"
-    data-colour="${v.colour}"
-    data-sku="${v.sku}"
-    data-stock="${v.stock}"
-    data-condition="${v.condition}"
-    data-price="${v.selling_price}">
-    ${v.storage} / ${v.ram} / ${v.colour}
-</option>`;
-
-            });
-
-        }
-
-        catch (err) {
-
-            console.error(err);
-
-        }
-
-    }
-
-    // =====================================================
-    // DEVICE SUMMARY CARD
-    // =====================================================
-
-    variantSelect?.addEventListener("change", function () {
-
-    const option = this.selectedOptions[0];
-
-    if (!option || !option.value)
-        return;
-
-    document.getElementById("deviceSummaryCard").style.display = "block";
-
-    document.getElementById("summaryBrand").textContent =
-        option.dataset.brand;
-
-    document.getElementById("summaryModel").textContent =
-        option.dataset.model;
-
-    document.getElementById("summaryStorage").textContent =
-        option.dataset.storage;
-
-    document.getElementById("summaryRam").textContent =
-        option.dataset.ram;
-
-    document.getElementById("summaryColour").textContent =
-        option.dataset.colour;
-
-    document.getElementById("summarySku").textContent =
-        option.dataset.sku;
-
-    document.getElementById("summaryCondition").textContent =
-        option.dataset.condition;
-
-    document.getElementById("summaryStock").textContent =
-        option.dataset.stock + " Units";
-
-    document.getElementById("summarySellingPrice").textContent =
-        "UGX " +
-        Number(option.dataset.price).toLocaleString();
-
-    if (sellingPrice) {
-
-        sellingPrice.value = option.dataset.price;
-
-    }
-
-    calculateProfit();
-
-calculateSettlement();
-
-calculateSuggestedValue();
-
-updateReview();
-
-});
-
-    // =====================================================
-    // REVIEW PAGE
-    // =====================================================
-
-    function setReview(id, value) {
-
-        const el =
-            document.getElementById(id);
-
-        if (el)
-            el.textContent =
-                value || "-";
-
-    }
-
-    function updateReview() {
-
-        setReview(
-            "reviewCustomer",
-            document.querySelector(
-                '[name="customer_name"]'
-            )?.value
-        );
-
-        setReview(
-            "reviewPhone",
-            document.querySelector(
-                '[name="phone_number"]'
-            )?.value
-        );
-
-        setReview(
-            "reviewBusiness",
-            document.querySelector(
-                '[name="business_name"]'
-            )?.value
-        );
-
-        setReview(
-            "reviewDate",
-            document.querySelector(
-                '[name="trade_in_date"]'
-            )?.value
-        );
-
-        setReview(
-            "reviewIMEI",
-            document.querySelector(
-                '[name="imei[]"]'
-            )?.value
-        );
-
-        setReview(
-            "reviewBattery",
-            battery?.value
-                ? battery.value + "%"
-                : "-"
-        );
-
-        setReview(
-            "reviewScreen",
-            document.querySelector(
-                '[name="screen_condition[]"]'
-            )?.value
-        );
-
-        setReview(
-            "reviewFrame",
-            document.querySelector(
-                '[name="frame_condition[]"]'
-            )?.value
-        );
-
-        setReview(
-            "reviewCamera",
-            document.querySelector(
-                '[name="camera_condition[]"]'
-            )?.value
-        );
-
-        setReview(
-    "reviewTradeValue",
-    "UGX " +
-    (
-        parseFloat(agreedTradeValue?.value) || 0
-    ).toLocaleString()
-);
-
-        setReview(
-            "reviewSelling",
-            "UGX " +
-            (
-                parseFloat(sellingPrice?.value) || 0
-            ).toLocaleString()
-        );
-
-        setReview(
-            "reviewCash",
-            "UGX " +
-            (
-                parseFloat(
-                    document.querySelector(
-                        '[name="cash_paid"]'
-                    )?.value
-                ) || 0
-            ).toLocaleString()
-        );
-
-        setReview(
-            "reviewTopup",
-            "UGX " +
-            (
-                parseFloat(customerTopup?.value) || 0
-            ).toLocaleString()
-        );
-
-        const agreed =
-    parseFloat(agreedTradeValue?.value) || 0;
-
-const selling =
-    parseFloat(sellingPrice?.value) || 0;
-
-setReview(
-    "reviewProfit",
-    "UGX " +
-    (selling - agreed).toLocaleString()
-);
-
-        const selected =
-            variantSelect?.selectedOptions[0];
-
-        if (selected) {
-
-            setReview(
-                "reviewDevice",
-                `${selected.dataset.brand} ${selected.dataset.model} ${selected.dataset.storage}`
-            );
-
-        }
-
-    }
-
-    document
-        .querySelectorAll("input,select,textarea")
-        .forEach(el => {
-
-            el.addEventListener(
-                "input",
-                updateReview
-            );
-
-            el.addEventListener(
-                "change",
-                () => {
-
-                updateReview();
-
-                calculateSuggestedValue();
-
-                }
-            );
-
-        });
-
-    // =====================================================
-    // FORM VALIDATION
-    // =====================================================
-
-    const form =
-        document.getElementById("tradeInForm");
-
-    form?.addEventListener(
-        "submit",
-        function (e) {
-
-            const customer =
-                document.querySelector(
-                    '[name="customer_name"]'
+            const response =
+                await fetch(
+                    `/trade-ins/api/search-products?q=${encodeURIComponent(keyword)}`
                 );
 
-            const imei =
-                document.querySelector(
-                    '[name="imei[]"]'
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Product search failed"
                 );
-
-            if (
-                !customer?.value.trim() ||
-                !selectedProduct?.value ||
-                !imei?.value.trim()
-            ) {
-
-                e.preventDefault();
-
-                alert(
-                    "Please complete all required fields."
-                );
-
-                return;
 
             }
 
+
+            const products =
+                await response.json();
+
+
+            if (!deviceSearchResults) {
+                return;
+            }
+
+
+            deviceSearchResults.innerHTML =
+                "";
+
+
+            if (!products.length) {
+
+                deviceSearchResults.innerHTML = `
+                    <div class="list-group-item text-muted">
+                        <i class="fas fa-search me-2"></i>
+                        No devices found
+                    </div>
+                `;
+
+                deviceSearchResults.style.display =
+                    "block";
+
+                return;
+            }
+
+
+            products.forEach(product => {
+
+                const item =
+                    document.createElement("button");
+
+                item.type =
+                    "button";
+
+                item.className =
+                    "list-group-item list-group-item-action";
+
+
+                item.innerHTML = `
+                    <i class="fas fa-mobile-screen-button me-2 text-success"></i>
+
+                    <strong>
+                        ${product.name || ""}
+                    </strong>
+                `;
+
+
+                item.addEventListener(
+                    "click",
+                    function () {
+
+                        deviceSearch.value =
+                            product.name || "";
+
+                        selectedProductId.value =
+                            product.id;
+
+
+                        deviceSearchResults.style.display =
+                            "none";
+
+                        deviceSearchResults.innerHTML =
+                            "";
+
+
+                        loadVariants(
+                            product.id
+                        );
+
+                    }
+                );
+
+
+                deviceSearchResults.appendChild(
+                    item
+                );
+
+            });
+
+
+            deviceSearchResults.style.display =
+                "block";
+
         }
-    );
 
-    updateReview();
+        catch (error) {
 
-    showStep(0);
+            console.error(
+                "Device search error:",
+                error
+            );
 
-});
+        }
+
+    }
+);
+
+
+// ============================================================
+// LOAD PRODUCT VARIANTS
+// ============================================================
+
+async function loadVariants(
+    productId
+) {
+
+    if (!variantSelect) {
+        return;
+    }
+
+
+    variantSelect.innerHTML = `
+        <option value="">
+            Loading variants...
+        </option>
+    `;
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/trade-ins/api/product/${productId}/variants`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Variant request failed"
+            );
+
+        }
+
+
+        const variants =
+            await response.json();
+
+
+        variantSelect.innerHTML = `
+            <option value="">
+                Select Variant
+            </option>
+        `;
+
+
+        variants.forEach(
+            variant => {
+
+                variantSelect.innerHTML += `
+                    <option
+                        value="${variant.id}"
+                        data-brand="${variant.brand || ""}"
+                        data-model="${variant.model || ""}"
+                        data-storage="${variant.storage || ""}"
+                        data-ram="${variant.ram || ""}"
+                        data-colour="${variant.colour || ""}"
+                        data-sku="${variant.sku || ""}"
+                        data-stock="${variant.stock || 0}"
+                        data-condition="${variant.condition || ""}"
+                        data-price="${variant.selling_price || 0}"
+                    >
+
+                        ${variant.storage || ""}
+                        /
+                        ${variant.ram || ""}
+                        /
+                        ${variant.colour || ""}
+
+                    </option>
+                `;
+
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Variant loading error:",
+            error
+        );
+
+
+        variantSelect.innerHTML = `
+            <option value="">
+                Unable to load variants
+            </option>
+        `;
+
+    }
+
+}
+
+
+// ============================================================
+// DEVICE SUMMARY
+// ============================================================
+
+variantSelect?.addEventListener(
+    "change",
+    function () {
+
+        const option =
+            this.selectedOptions[0];
+
+
+        if (
+            !option ||
+            !option.value
+        ) {
+
+            return;
+
+        }
+
+
+        const summaryCard =
+            document.getElementById(
+                "deviceSummaryCard"
+            );
+
+
+        if (summaryCard) {
+
+            summaryCard.style.display =
+                "block";
+
+        }
+
+
+        setText(
+            "summaryBrand",
+            option.dataset.brand
+        );
+
+        setText(
+            "summaryModel",
+            option.dataset.model
+        );
+
+        setText(
+            "summaryStorage",
+            option.dataset.storage
+        );
+
+        setText(
+            "summaryRam",
+            option.dataset.ram
+        );
+
+        setText(
+            "summaryColour",
+            option.dataset.colour
+        );
+
+        setText(
+            "summarySku",
+            option.dataset.sku
+        );
+
+        setText(
+            "summaryCondition",
+            option.dataset.condition
+        );
+
+        setText(
+            "summaryStock",
+            option.dataset.stock
+        );
+
+        setText(
+            "summarySellingPrice",
+            money(
+                option.dataset.price
+            )
+        );
+
+    }
+);
+
+
+// ============================================================
+// SET TEXT HELPER
+// ============================================================
+
+function setText(
+    id,
+    value
+) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (element) {
+
+        element.textContent =
+            value || "-";
+
+    }
+
+}
+
+
+// ============================================================
+// CLOSE SEARCH DROPDOWNS WHEN CLICKING OUTSIDE
+// ============================================================
+
+document.addEventListener(
+    "click",
+    function (event) {
+
+        if (
+            customerResults &&
+            customerSearch &&
+            !customerSearch.contains(event.target) &&
+            !customerResults.contains(event.target)
+        ) {
+
+            customerResults.style.display =
+                "none";
+
+        }
+
+
+        if (
+            deviceSearchResults &&
+            deviceSearch &&
+            !deviceSearch.contains(event.target) &&
+            !deviceSearchResults.contains(event.target)
+        ) {
+
+            deviceSearchResults.style.display =
+                "none";
+
+        }
+
+    }
+);

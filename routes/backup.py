@@ -12,6 +12,7 @@ from flask import (
 )
 
 from services.backup_service import BackupService
+from utils.auth import login_required
 
 backup_bp = Blueprint(
     "backup",
@@ -82,10 +83,8 @@ def delete_backup(filename):
         "backups"
     )
 
-    filepath = os.path.join(
-        backup_dir,
-        filename
-    )
+    filename = os.path.basename(filename)
+    filepath = os.path.join(backup_dir, filename)
 
     if os.path.exists(filepath):
         os.remove(filepath)

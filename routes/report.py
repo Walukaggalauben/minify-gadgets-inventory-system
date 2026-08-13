@@ -466,3 +466,10 @@ def low_stock_report_excel():
         download_name="low_stock_report.xlsx",
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )        
+
+@report_bp.route("/expenses")
+def expense_report():
+    from models.expense import Expense
+    expenses = Expense.query.order_by(Expense.expense_date.desc(), Expense.id.desc()).all()
+    total = sum(float(e.amount or 0) for e in expenses)
+    return render_template("reports/expense_report.html", expenses=expenses, total=total)

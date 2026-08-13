@@ -1,0 +1,302 @@
+{% extends "layout.html" %} {% block title %}Inventory{% endblock %} {% block
+content %}
+
+<div class="container-fluid">
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-1">Inventory</h3>
+
+      <small class="text-muted">
+        Monitor stock, variants, prices and IMEI availability.
+      </small>
+    </div>
+
+    <div>
+      <a href="{{ url_for('variant.create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i>
+        Add Variant
+      </a>
+    </div>
+  </div>
+
+  <!-- SUMMARY CARDS -->
+  <div class="row g-3 mb-4">
+    <!-- PRODUCT VARIANTS -->
+    <div class="col-xl-2 col-md-4 col-sm-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <small class="text-muted">
+            <i class="bi bi-box-seam"></i>
+            Product Variants
+          </small>
+
+          <h3 class="fw-bold mb-0 mt-2">{{ summary.variants }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOTAL UNITS -->
+    <div class="col-xl-2 col-md-4 col-sm-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <small class="text-muted">
+            <i class="bi bi-stack"></i>
+            Total Units
+          </small>
+
+          <h3 class="fw-bold mb-0 mt-2">{{ "{:,}".format(summary.units) }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY COST -->
+    <div class="col-xl-2 col-md-4 col-sm-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <small class="text-muted">
+            <i class="bi bi-wallet2"></i>
+            Inventory Cost
+          </small>
+
+          <h5 class="fw-bold mb-0 mt-2">
+            UGX {{ "{:,.0f}".format(summary.inventory_cost or 0) }}
+          </h5>
+
+          <small class="text-muted"> Current stock cost </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- POTENTIAL SALES -->
+    <div class="col-xl-2 col-md-4 col-sm-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <small class="text-muted">
+            <i class="bi bi-cash-stack"></i>
+            Potential Sales
+          </small>
+
+          <h5 class="fw-bold mb-0 mt-2">
+            UGX {{ "{:,.0f}".format(summary.potential_sales or 0) }}
+          </h5>
+
+          <small class="text-muted"> If all stock is sold </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPECTED PROFIT -->
+    <div class="col-xl-2 col-md-4 col-sm-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <small class="text-muted">
+            <i class="bi bi-graph-up-arrow"></i>
+            Expected Profit
+          </small>
+
+          <h5 class="fw-bold mb-0 mt-2 text-success">
+            UGX {{ "{:,.0f}".format(summary.expected_profit or 0) }}
+          </h5>
+
+          <small class="text-muted"> Gross profit potential </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- STOCK ALERTS -->
+    <div class="col-xl-2 col-md-4 col-sm-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <small class="text-muted">
+              <i class="bi bi-exclamation-triangle"></i>
+              Stock Alerts
+            </small>
+          </div>
+
+          <div class="mt-2">
+            <span class="badge bg-warning text-dark me-1">
+              Low: {{ summary.low }}
+            </span>
+
+            <span class="badge bg-danger"> Out: {{ summary.out }} </span>
+          </div>
+
+          <small class="text-muted d-block mt-2">
+            Inventory requiring attention
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH / FILTER -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <form method="GET" action="{{ url_for('inventory.index') }}">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-5">
+            <label class="form-label"> Search </label>
+
+            <input
+              type="text"
+              name="search"
+              class="form-control"
+              placeholder="Search SKU or barcode..."
+              value="{{ search }}"
+            />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label"> Stock Status </label>
+
+            <select name="status" class="form-select">
+              <option value="">All Stock</option>
+
+              <option value="in" {% if status == "in" %}selected{% endif %}>
+                In Stock
+              </option>
+
+              <option value="low" {% if status=="low" %}selected{% endif %}>
+                Low Stock
+              </option>
+
+              <option value="out" {% if status=="out" %}selected{% endif %}>
+                Out of Stock
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-search"></i>
+              Search
+            </button>
+
+            <a
+              href="{{ url_for('inventory.index') }}"
+              class="btn btn-outline-secondary"
+            >
+              Clear
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- INVENTORY TABLE -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">Stock Inventory</h5>
+
+        <span class="text-muted"> {{ variants|length }} variant(s) </span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Product</th>
+              <th>Brand</th>
+              <th>SKU</th>
+              <th>Barcode</th>
+              <th>Storage</th>
+              <th>RAM</th>
+              <th>Colour</th>
+              <th>Condition</th>
+              <th>Buying Price</th>
+              <th>Selling Price</th>
+              <th>Qty</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for variant in variants %}
+
+            <tr>
+              <!-- PRODUCT -->
+              <td>
+                <strong> {{ variant.product.name }} </strong>
+              </td>
+
+              <!-- BRAND -->
+              <td>{{ variant.product.brand.name }}</td>
+
+              <!-- SKU -->
+              <td>
+                <span class="fw-semibold"> {{ variant.sku }} </span>
+              </td>
+
+              <!-- BARCODE -->
+              <td>{{ variant.barcode or "-" }}</td>
+
+              <!-- STORAGE -->
+              <td>{{ variant.storage or "-" }}</td>
+
+              <!-- RAM -->
+              <td>{{ variant.ram or "-" }}</td>
+
+              <!-- COLOUR -->
+              <td>{{ variant.colour or "-" }}</td>
+
+              <!-- CONDITION -->
+              <td>{{ variant.condition or "-" }}</td>
+
+              <!-- BUYING PRICE -->
+              <td>UGX {{ "{:,.0f}".format(variant.buying_price or 0) }}</td>
+
+              <!-- SELLING PRICE -->
+              <td>
+                <strong>
+                  UGX {{ "{:,.0f}".format(variant.selling_price or 0) }}
+                </strong>
+              </td>
+
+              <!-- QUANTITY -->
+              <td>
+                <strong> {{ variant.quantity }} </strong>
+              </td>
+
+              <!-- STATUS -->
+              <td>
+                {% if variant.quantity <= 0 %}
+
+                <span class="badge bg-danger"> Out of Stock </span>
+
+                {% elif variant.quantity <= variant.minimum_stock %}
+
+                <span class="badge bg-warning text-dark"> Low Stock </span>
+
+                {% else %}
+
+                <span class="badge bg-success"> In Stock </span>
+
+                {% endif %}
+              </td>
+            </tr>
+
+            {% else %}
+
+            <tr>
+              <td colspan="12" class="text-center py-5">
+                <div class="text-muted">
+                  <i class="bi bi-box-seam" style="font-size: 2rem"> </i>
+
+                  <p class="mt-2 mb-0">No inventory items found.</p>
+                </div>
+              </td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -57,6 +57,12 @@ class Sale(db.Model):
 
     profit = db.Column(db.Numeric(15, 2), default=0)
 
+    # Credit / installment tracking
+    amount_paid = db.Column(db.Numeric(15, 2), default=0, nullable=False)
+    balance_due = db.Column(db.Numeric(15, 2), default=0, nullable=False)
+    payment_status = db.Column(db.String(20), default="Paid", nullable=False)
+    due_date = db.Column(db.Date, nullable=True)
+
     # =====================================================
     # USER / CASHIER
     # =====================================================
@@ -68,6 +74,13 @@ class Sale(db.Model):
     # =====================================================
     # SALE ITEMS
     # =====================================================
+
+    payments = db.relationship(
+        "SalePayment",
+        back_populates="sale",
+        cascade="all, delete-orphan",
+        lazy=True,
+    )
 
     items = db.relationship(
         "SaleItem", back_populates="sale", cascade="all, delete-orphan", lazy=True

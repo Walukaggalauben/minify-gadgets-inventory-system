@@ -1,6 +1,13 @@
 {% extends "layout.html" %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Dashboard
+<div class="row g-3 mt-1 mb-4">
+  <div class="col-md-4"><div class="card border-0 shadow-sm h-100"><div class="card-body"><small class="text-muted">Total Operating Expenses</small><h4 class="fw-bold mb-0 text-danger">UGX {{ "{:,.0f}".format(stats.total_expenses or 0) }}</h4></div></div></div>
+  <div class="col-md-4"><div class="card border-0 shadow-sm h-100"><div class="card-body"><small class="text-muted">Customer Credit Outstanding</small><h4 class="fw-bold mb-0 text-warning">UGX {{ "{:,.0f}".format(stats.outstanding_credit or 0) }}</h4></div></div></div>
+  <div class="col-md-4"><div class="card border-0 shadow-sm h-100"><div class="card-body"><small class="text-muted">Net Profit After Expenses</small><h4 class="fw-bold mb-0 text-success">UGX {{ "{:,.0f}".format(stats.net_profit_after_expenses or 0) }}</h4></div></div></div>
+</div>
+
+{% endblock %}
 
 {% block page_title %}Dashboard{% endblock %}
 
