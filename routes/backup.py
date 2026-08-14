@@ -55,11 +55,14 @@ def create_backup():
     success, filename = BackupService.backup_database()
 
     if success:
+
         flash(
-            f"Database backup created successfully: {filename}",
+            f"Database backup created successfully: " f"{filename}",
             "success",
         )
+
     else:
+
         flash(
             "Database backup failed.",
             "danger",
@@ -73,31 +76,46 @@ def download_backup(filename):
 
     backup_dir = os.path.join(current_app.root_path, "backups")
 
+    filename = os.path.basename(filename)
+
     return send_from_directory(backup_dir, filename, as_attachment=True)
+
+
+@backup_bp.route("/restore/<filename>", methods=["POST"])
+def restore_backup(filename):
+
+    filename = os.path.basename(filename)
+
+    success, message = BackupService.restore_database(filename)
+
+    if success:
+
+        flash(message, "success")
+
+    else:
+
+        flash(message, "danger")
+
+    return redirect(url_for("backup.index"))
+
 
 @backup_bp.route("/delete/<filename>")
 def delete_backup(filename):
 
-    backup_dir = os.path.join(
-        current_app.root_path,
-        "backups"
-    )
+    backup_dir = os.path.join(current_app.root_path, "backups")
 
     filename = os.path.basename(filename)
+
     filepath = os.path.join(backup_dir, filename)
 
     if os.path.exists(filepath):
-        os.remove(filepath)
-        flash(
-            "Backup deleted successfully.",
-            "success"
-        )
-    else:
-        flash(
-            "Backup file not found.",
-            "danger"
-        )
 
-    return redirect(
-        url_for("backup.index")
-    )
+        os.remove(filepath)
+
+        flash("Backup deleted successfully.", "success")
+
+    else:
+
+        flash("Backup file not found.", "danger")
+
+    return redirect(url_for("backup.index"))

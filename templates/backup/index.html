@@ -4,27 +4,57 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container-fluid py-3">
 
-    <h2 class="mb-4">
-        Backup & Restore
-    </h2>
+    <!-- HEADER -->
 
-    <!-- Create Backup Card -->
-    <div class="card shadow">
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <div class="card-body">
+        <div>
 
-            <h5>Create Database Backup</h5>
+            <h2 class="fw-bold mb-1">
+                <i class="fas fa-database text-success me-2"></i>
+                Backup & Restore
+            </h2>
 
-            <p>
-                Generate a complete backup of the ERP database.
+            <p class="text-muted mb-0">
+                Protect and restore your MINIFY GADGETS ERP database.
             </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- CREATE BACKUP -->
+
+    <div class="erp-panel mb-4">
+
+        <div class="erp-panel-header">
+
+            <div>
+
+                <h5 class="mb-1">
+                    <i class="fas fa-shield-halved text-success me-2"></i>
+                    Database Protection
+                </h5>
+
+                <small class="text-muted">
+                    Create a complete SQL backup of the current database.
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="erp-panel-body">
 
             <a
                 href="{{ url_for('backup.create_backup') }}"
                 class="btn btn-success"
             >
+                <i class="fas fa-plus me-1"></i>
                 Create Backup
             </a>
 
@@ -32,69 +62,211 @@
 
     </div>
 
-    <!-- Backup History Card -->
-    <div class="card mt-4 shadow">
 
-        <div class="card-header">
-            <h5>Available Backups</h5>
+    <!-- BACKUP HISTORY -->
+
+    <div class="erp-panel">
+
+        <div class="erp-panel-header">
+
+            <div>
+
+                <h5 class="mb-1">
+                    Available Backups
+                </h5>
+
+                <small class="text-muted">
+                    Existing database backup files
+                </small>
+
+            </div>
+
+            <span class="badge bg-success">
+                {{ backups|length }} Backup{% if backups|length != 1 %}s{% endif %}
+            </span>
+
         </div>
 
-        <div class="card-body">
 
-            <table class="table table-bordered table-hover">
+        <div class="erp-panel-body p-0">
 
-                <thead>
-                    <tr>
-                        <th>Filename</th>
-                        <th>Size (KB)</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
+            <div class="table-responsive">
 
-                <tbody>
+                <table class="table table-hover align-middle mb-0">
 
-                {% for backup in backups %}
+                    <thead class="table-light">
 
-                    <tr>
+                        <tr>
 
-                        <td>{{ backup.name }}</td>
+                            <th>Backup File</th>
 
-                        <td>{{ backup.size }}</td>
+                            <th>Size</th>
 
-                        <td>
+                            <th>Date</th>
 
-    <a
-        href="{{ url_for('backup.download_backup', filename=backup.name) }}"
-        class="btn btn-primary btn-sm"
-    >
-        Download
-    </a>
+                            <th class="text-end">
+                                Actions
+                            </th>
 
-    <a
-        href="{{ url_for('backup.delete_backup', filename=backup.name) }}"
-        class="btn btn-danger btn-sm"
-        onclick="return confirm('Are you sure you want to delete this backup?');"
-    >
-        Delete
-    </a>
+                        </tr>
 
-</td>
+                    </thead>
 
-                    </tr>
 
-                {% else %}
+                    <tbody>
 
-                    <tr>
-                        <td colspan="3" class="text-center">
-                            No backups found.
-                        </td>
-                    </tr>
+                    {% for backup in backups %}
 
-                {% endfor %}
+                        <tr>
 
-                </tbody>
+                            <td>
 
-            </table>
+                                <div class="d-flex align-items-center">
+
+                                    <div class="me-3 text-success">
+
+                                        <i class="fas fa-file-code fa-lg"></i>
+
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            {{ backup.name }}
+                                        </strong>
+
+                                        {% if loop.first %}
+
+                                            <div>
+                                                <span class="badge bg-success">
+                                                    Latest
+                                                </span>
+                                            </div>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                {{ backup.size }} KB
+
+                            </td>
+
+
+                            <td>
+
+                                {{ backup.date|int|datetimeformat }}
+
+                            </td>
+
+
+                            <td class="text-end">
+
+                                <div class="d-flex justify-content-end gap-2">
+
+                                    <!-- DOWNLOAD -->
+
+                                    <a
+                                        href="{{ url_for(
+                                            'backup.download_backup',
+                                            filename=backup.name
+                                        ) }}"
+                                        class="btn btn-primary btn-sm"
+                                        title="Download backup"
+                                    >
+
+                                        <i class="fas fa-download"></i>
+
+                                    </a>
+
+
+                                    <!-- RESTORE -->
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'backup.restore_backup',
+                                            filename=backup.name
+                                        ) }}"
+                                        onsubmit="return confirm(
+                                            'WARNING: Restoring this backup will replace the current database.\\n\\nA safety backup will be created automatically before restoration.\\n\\nDo you want to continue?'
+                                        );"
+                                        class="d-inline"
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-warning btn-sm"
+                                            title="Restore backup"
+                                        >
+
+                                            <i class="fas fa-rotate-left"></i>
+
+                                        </button>
+
+                                    </form>
+
+
+                                    <!-- DELETE -->
+
+                                    <a
+                                        href="{{ url_for(
+                                            'backup.delete_backup',
+                                            filename=backup.name
+                                        ) }}"
+                                        class="btn btn-danger btn-sm"
+                                        title="Delete backup"
+                                        onclick="return confirm(
+                                            'Are you sure you want to permanently delete this backup?'
+                                        );"
+                                    >
+
+                                        <i class="fas fa-trash"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% else %}
+
+                        <tr>
+
+                            <td
+                                colspan="4"
+                                class="text-center py-5"
+                            >
+
+                                <div class="text-muted">
+
+                                    <i class="fas fa-database fa-2x mb-3"></i>
+
+                                    <p class="mb-0">
+                                        No backups found.
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 

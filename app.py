@@ -9,6 +9,16 @@ from db import db
 def create_app():
 
     app = Flask(__name__)
+    @app.template_filter("datetimeformat")
+    def datetimeformat(value):
+        from datetime import datetime
+
+        try:
+            return datetime.fromtimestamp(float(value)).strftime(
+                "%d %b %Y, %I:%M %p"
+            )
+        except (TypeError, ValueError, OSError):
+            return "-"
 
     app.config.from_object(Config)
 

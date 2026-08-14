@@ -27,10 +27,11 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # =====================================
-    # MySQL Backup
+    # MySQL Backup / Restore
     # =====================================
 
     MYSQLDUMP_PATH = os.getenv("MYSQLDUMP_PATH")
+    MYSQL_PATH = os.getenv("MYSQL_PATH")
 
     # =====================================
     # Uploads
