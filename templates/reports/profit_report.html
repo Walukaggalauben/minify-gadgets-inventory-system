@@ -2,45 +2,426 @@
 
 {% block title %}Profit Report{% endblock %}
 
+{% block page_title %}Profit Report{% endblock %}
+
 {% block content %}
 
 <div class="container-fluid">
 
-<h2 class="mb-4">Profit Report</h2>
+    <!-- HEADER -->
 
-<table class="table table-striped">
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-<thead class="table-dark">
+        <div>
+            <h2 class="fw-bold mb-1">
+                Profit Report
+            </h2>
 
-<tr>
+            <p class="text-muted mb-0">
+                Analyse sales revenue and profit performance.
+            </p>
+        </div>
 
-<th>Invoice</th>
-<th>Customer</th>
-<th>Total Sale</th>
-<th>Profit</th>
+        <div class="d-flex gap-2">
 
-</tr>
+            <a href="{{ url_for('report.profit_report_pdf',
+                                start_date=start_date,
+                                end_date=end_date) }}"
+               class="btn btn-danger">
 
-</thead>
+                <i class="fas fa-file-pdf me-1"></i>
+                PDF
 
-<tbody>
+            </a>
 
-{% for sale in sales %}
+            <a href="{{ url_for('report.profit_report_excel',
+                                start_date=start_date,
+                                end_date=end_date) }}"
+               class="btn btn-success">
 
-<tr>
+                <i class="fas fa-file-excel me-1"></i>
+                Excel
 
-<td>{{ sale.invoice_number }}</td>
-<td>{{ sale.customer_name }}</td>
-<td>UGX {{ "{:,.0f}".format(sale.total_amount) }}</td>
-<td>UGX {{ "{:,.0f}".format(sale.profit) }}</td>
+            </a>
 
-</tr>
+            <a href="{{ url_for('report.index') }}"
+               class="btn btn-outline-secondary">
 
-{% endfor %}
+                <i class="fas fa-arrow-left me-1"></i>
+                Reports
 
-</tbody>
+            </a>
 
-</table>
+        </div>
+
+    </div>
+
+
+    <!-- FILTERS -->
+
+    <div class="erp-card mb-4">
+
+        <div class="mb-3">
+
+            <h5 class="fw-bold mb-1">
+                Report Filters
+            </h5>
+
+            <small class="text-muted">
+                Select a date range to analyse profit.
+            </small>
+
+        </div>
+
+
+        <form method="GET">
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+
+                    <label class="form-label fw-semibold">
+                        Start Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="start_date"
+                        class="form-control"
+                        value="{{ start_date or '' }}"
+                    >
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <label class="form-label fw-semibold">
+                        End Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="end_date"
+                        class="form-control"
+                        value="{{ end_date or '' }}"
+                    >
+
+                </div>
+
+
+                <div class="col-md-4 d-flex align-items-end">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100"
+                    >
+
+                        <i class="fas fa-chart-line me-1"></i>
+                        Generate Report
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- PROFIT SUMMARY -->
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-12 col-md-4">
+
+            <div class="erp-card h-100">
+
+                <div class="erp-icon blue">
+                    <i class="fas fa-receipt"></i>
+                </div>
+
+                <div class="flex-grow-1">
+
+                    <small>
+                        Sales Transactions
+                    </small>
+
+                    <h3 class="erp-value">
+                        {{ sales|length }}
+                    </h3>
+
+                    <span class="text-primary fw-semibold">
+                        Transactions in period
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-12 col-md-4">
+
+            <div class="erp-card h-100">
+
+                <div class="erp-icon green">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+
+                <div class="flex-grow-1">
+
+                    <small>
+                        Total Sales
+                    </small>
+
+                    <h3 class="erp-value">
+
+                        UGX {{
+                            "{:,.0f}".format(
+                                sales
+                                | map(attribute='total_amount')
+                                | map('float')
+                                | sum
+                            )
+                        }}
+
+                    </h3>
+
+                    <span class="text-success fw-semibold">
+                        Revenue generated
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-12 col-md-4">
+
+            <div class="erp-card h-100">
+
+                <div class="erp-icon orange">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+
+                <div class="flex-grow-1">
+
+                    <small>
+                        Total Profit
+                    </small>
+
+                    <h3 class="erp-value">
+
+                        UGX {{
+                            "{:,.0f}".format(
+                                sales
+                                | map(attribute='profit')
+                                | map('float')
+                                | sum
+                            )
+                        }}
+
+                    </h3>
+
+                    <span class="text-warning fw-semibold">
+                        Gross profit generated
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROFIT TABLE -->
+
+    <div class="erp-card">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h5 class="fw-bold mb-1">
+                    Profit Transactions
+                </h5>
+
+                <small class="text-muted">
+                    Sales revenue and profit by transaction
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th>Invoice</th>
+
+                        <th>Date</th>
+
+                        <th>Customer</th>
+
+                        <th class="text-end">
+                            Total Sale
+                        </th>
+
+                        <th class="text-end">
+                            Profit
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for sale in sales %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+                                {{ sale.invoice_number }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if sale.sale_date %}
+
+                                {{ sale.sale_date.strftime('%d/%m/%Y') }}
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+                            {{ sale.customer_name or "Walk-in Customer" }}
+                        </td>
+
+
+                        <td class="text-end">
+
+                            UGX {{
+                                "{:,.0f}".format(
+                                    sale.total_amount or 0
+                                )
+                            }}
+
+                        </td>
+
+
+                        <td class="text-end text-success fw-semibold">
+
+                            UGX {{
+                                "{:,.0f}".format(
+                                    sale.profit or 0
+                                )
+                            }}
+
+                        </td>
+
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="text-center py-5 text-muted"
+                        >
+
+                            <i class="fas fa-chart-line fa-2x mb-3"></i>
+
+                            <div>
+                                No profit records found.
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+
+                {% if sales %}
+
+                <tfoot>
+
+                    <tr class="table-light">
+
+                        <th colspan="3"
+                            class="text-end">
+
+                            Totals
+
+                        </th>
+
+                        <th class="text-end">
+
+                            UGX {{
+                                "{:,.0f}".format(
+                                    sales
+                                    | map(attribute='total_amount')
+                                    | map('float')
+                                    | sum
+                                )
+                            }}
+
+                        </th>
+
+                        <th class="text-end text-success">
+
+                            UGX {{
+                                "{:,.0f}".format(
+                                    sales
+                                    | map(attribute='profit')
+                                    | map('float')
+                                    | sum
+                                )
+                            }}
+
+                        </th>
+
+                    </tr>
+
+                </tfoot>
+
+                {% endif %}
+
+            </table>
+
+        </div>
+
+    </div>
 
 </div>
 

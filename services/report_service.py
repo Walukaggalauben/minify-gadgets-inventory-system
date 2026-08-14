@@ -74,7 +74,7 @@ class ReportService:
         }
 
         return sales, summary
-    
+
         # ----------------------------------------------------
     # REPORT DASHBOARD
     # ----------------------------------------------------
@@ -166,12 +166,19 @@ class ReportService:
             for v in variants
         )
 
+        expected_profit = selling_value - stock_value
+
+
+
         summary = {
             "products": len(variants),
             "stock": total_stock,
             "cost_value": stock_value,
-            "selling_value": selling_value
+            "selling_value": selling_value,
+            "expected_profit": expected_profit,
         }
+
+
 
         return variants, summary
 
@@ -268,4 +275,4 @@ class ReportService:
         }
 
         return sales, summary
-    
+

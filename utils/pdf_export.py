@@ -270,9 +270,9 @@ class PDFExporter:
         )
 
 
-    # ==========================================================
+        # =============================================
     # INVENTORY REPORT
-    # ==========================================================
+    # =============================================
 
     @staticmethod
     def inventory_report(
@@ -288,21 +288,59 @@ class PDFExporter:
             "Buying",
             "Selling",
             "Stock",
+            "Cost Value",
+            "Selling Value",
+            "Profit",
         ]
 
         rows = []
 
         for item in variants:
 
+            quantity = item.quantity or 0
+
+            buying_price = float(
+                item.buying_price or 0
+            )
+
+            selling_price = float(
+                item.selling_price or 0
+            )
+
+            cost_value = (
+                buying_price * quantity
+            )
+
+            selling_value = (
+                selling_price * quantity
+            )
+
+            expected_profit = (
+                selling_value - cost_value
+            )
+
             rows.append(
                 [
-                    item.product.name,
-                    item.sku,
+                    item.product.name
+                    if item.product else "",
+
+                    item.sku or "-",
+
                     item.colour or "-",
+
                     item.storage or "-",
-                    f"{float(item.buying_price):,.2f}",
-                    f"{float(item.selling_price):,.2f}",
-                    item.quantity,
+
+                    f"{buying_price:,.2f}",
+
+                    f"{selling_price:,.2f}",
+
+                    quantity,
+
+                    f"{cost_value:,.2f}",
+
+                    f"{selling_value:,.2f}",
+
+                    f"{expected_profit:,.2f}",
                 ]
             )
 
@@ -311,15 +349,30 @@ class PDFExporter:
             headers=headers,
             rows=rows,
             summary={
-                "Products": summary.get(
+                "Total Variants": summary.get(
                     "products",
                     len(variants)
                 ),
+
                 "Total Stock": summary.get(
                     "stock",
-                    sum(v.quantity for v in variants)
+                    sum(
+                        v.quantity or 0
+                        for v in variants
+                    )
                 ),
-                "Inventory Value": f"{summary.get('value',0):,.2f}",
+
+                "Inventory Cost Value": (
+                    f"{summary.get('cost_value', 0):,.2f}"
+                ),
+
+                "Potential Selling Value": (
+                    f"{summary.get('selling_value', 0):,.2f}"
+                ),
+
+                "Expected Profit": (
+                    f"{summary.get('expected_profit', 0):,.2f}"
+                ),
             },
         )    
         # ==========================================================

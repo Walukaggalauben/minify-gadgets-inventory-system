@@ -2,74 +2,464 @@
 
 {% block title %}Inventory Report{% endblock %}
 
+{% block page_title %}Inventory Report{% endblock %}
+
 {% block content %}
 
-<div class="container-fluid">
+<div class="container-fluid py-3">
 
-    <h2 class="mb-4">Inventory Report</h2>
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-            <div class="row text-center">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="fas fa-boxes-stacked text-success me-2"></i>
+                Inventory Report
+            </h2>
 
-                <div class="col-md-4">
-                    <h6>Total Products</h6>
-                    <h3>{{ summary.total_products }}</h3>
+            <p class="text-muted mb-0">
+                Current inventory position, stock valuation and expected profit.
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a
+                href="{{ url_for('report.inventory_report_excel') }}"
+                class="btn btn-success"
+            >
+                <i class="fas fa-file-excel me-1"></i>
+                Excel
+            </a>
+
+            <a
+                href="{{ url_for('report.inventory_report_pdf') }}"
+                class="btn btn-danger"
+            >
+                <i class="fas fa-file-pdf me-1"></i>
+                PDF
+            </a>
+
+            <a
+                href="{{ url_for('report.index') }}"
+                class="btn btn-outline-secondary"
+            >
+                <i class="fas fa-arrow-left me-1"></i>
+                Reports
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- INVENTORY SUMMARY -->
+    <!-- ===================================================== -->
+
+    <div class="row g-3 mb-4">
+
+        <!-- TOTAL VARIANTS -->
+
+        <div class="col-12 col-md-6 col-xl-3">
+
+            <div class="erp-card h-100">
+
+                <div class="erp-icon green">
+                    <i class="fas fa-boxes-stacked"></i>
                 </div>
 
-                <div class="col-md-4">
-                    <h6>Total Stock</h6>
-                    <h3>{{ summary.total_stock }}</h3>
-                </div>
+                <div class="flex-grow-1">
 
-                <div class="col-md-4">
-                    <h6>Inventory Value</h6>
-                    <h3>UGX {{ "{:,.0f}".format(summary.inventory_value or 0) }}</h3>
+                    <small>Total Variants</small>
+
+                    <h3 class="erp-value">
+                        {{ summary.products or 0 }}
+                    </h3>
+
+                    <span class="text-success fw-semibold">
+                        Active inventory variants
+                    </span>
+
                 </div>
 
             </div>
 
         </div>
-    </div>
 
-    <div class="card shadow-sm">
 
-        <div class="card-header">
-            <strong>Inventory</strong>
+        <!-- TOTAL UNITS -->
+
+        <div class="col-12 col-md-6 col-xl-3">
+
+            <div class="erp-card h-100">
+
+                <div class="erp-icon blue">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+
+                <div class="flex-grow-1">
+
+                    <small>Total Units</small>
+
+                    <h3 class="erp-value">
+                        {{ "{:,.0f}".format(summary.stock or 0) }}
+                    </h3>
+
+                    <span class="text-primary fw-semibold">
+                        Units currently in stock
+                    </span>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="card-body p-0">
 
-            <table class="table table-striped table-hover">
+        <!-- COST VALUE -->
 
-                <thead class="table-dark">
-                <tr>
-                    <th>Product</th>
-                    <th>Variant</th>
-                    <th>Buying</th>
-                    <th>Selling</th>
-                    <th>Quantity</th>
-                </tr>
-                </thead>
+        <div class="col-12 col-md-6 col-xl-3">
 
-                <tbody>
+            <div class="erp-card h-100">
 
-                {% for product in products %}
-                <tr>
+                <div class="erp-icon orange">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
 
-                    <td>{{ product.product.name }}</td>
-                    <td>{{ product.storage }} / {{ product.ram }}</td>
-                    <td>{{ product.buying_price }}</td>
-                    <td>{{ product.selling_price }}</td>
-                    <td>{{ product.quantity }}</td>
+                <div class="flex-grow-1">
 
-                </tr>
-                {% endfor %}
+                    <small>Inventory Cost Value</small>
 
-                </tbody>
+                    <h3 class="erp-value">
+                        UGX {{ "{:,.0f}".format(summary.cost_value or 0) }}
+                    </h3>
 
-            </table>
+                    <span class="text-warning fw-semibold">
+                        Current stock at buying cost
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- EXPECTED PROFIT -->
+
+        <div class="col-12 col-md-6 col-xl-3">
+
+            <div class="erp-card h-100">
+
+                <div class="erp-icon green">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+
+                <div class="flex-grow-1">
+
+                    <small>Expected Profit</small>
+
+                    <h3 class="erp-value">
+                        UGX {{ "{:,.0f}".format(summary.expected_profit or 0) }}
+                    </h3>
+
+                    <span class="text-success fw-semibold">
+                        If all stock is sold
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- SELLING VALUE -->
+    <!-- ===================================================== -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-12">
+
+            <div class="erp-panel">
+
+                <div class="erp-panel-body">
+
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+
+                        <div>
+
+                            <small class="text-muted">
+                                Potential Selling Value
+                            </small>
+
+                            <h3 class="fw-bold text-success mb-0">
+                                UGX {{ "{:,.0f}".format(summary.selling_value or 0) }}
+                            </h3>
+
+                        </div>
+
+                        <div class="text-end">
+
+                            <small class="text-muted d-block">
+                                Expected Profit Margin
+                            </small>
+
+                            {% if summary.selling_value %}
+
+                                <strong class="text-success">
+
+                                    {{
+                                        "{:.2f}".format(
+                                            (
+                                                (summary.expected_profit or 0)
+                                                / summary.selling_value
+                                            ) * 100
+                                        )
+                                    }}%
+
+                                </strong>
+
+                            {% else %}
+
+                                <strong class="text-muted">
+                                    0.00%
+                                </strong>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- INVENTORY TABLE -->
+    <!-- ===================================================== -->
+
+    <div class="erp-panel">
+
+        <div class="erp-panel-header justify-content-between">
+
+            <div>
+
+                <h5 class="mb-1">
+                    Inventory Position
+                </h5>
+
+                <small class="text-muted">
+                    Current stock across all product variants
+                </small>
+
+            </div>
+
+            <div class="text-end">
+
+                <small class="text-muted d-block">
+                    Potential Selling Value
+                </small>
+
+                <strong class="text-success">
+                    UGX {{ "{:,.0f}".format(summary.selling_value or 0) }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="erp-panel-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+
+                    <tr>
+
+                        <th>Product</th>
+                        <th>Variant</th>
+                        <th>SKU</th>
+                        <th>Colour</th>
+                        <th>Buying Price</th>
+                        <th>Selling Price</th>
+                        <th class="text-end">Qty</th>
+                        <th class="text-end">Cost Value</th>
+                        <th class="text-end">Selling Value</th>
+                        <th class="text-end">Expected Profit</th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for product in products %}
+
+                    {% set quantity = product.quantity or 0 %}
+                    {% set buying_price = product.buying_price or 0 %}
+                    {% set selling_price = product.selling_price or 0 %}
+
+                    {% set cost_value = buying_price * quantity %}
+                    {% set selling_value = selling_price * quantity %}
+                    {% set expected_profit = selling_value - cost_value %}
+
+                    <tr>
+
+                        <!-- PRODUCT -->
+
+                        <td>
+
+                            <strong>
+                                {{ product.product.name }}
+                            </strong>
+
+                        </td>
+
+
+                        <!-- VARIANT -->
+
+                        <td>
+
+                            {% if product.storage %}
+                                {{ product.storage }}
+                            {% endif %}
+
+                            {% if product.ram %}
+                                / {{ product.ram }}
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- SKU -->
+
+                        <td>
+
+                            <span class="text-muted">
+                                {{ product.sku or "-" }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- COLOUR -->
+
+                        <td>
+                            {{ product.colour or "-" }}
+                        </td>
+
+
+                        <!-- BUYING PRICE -->
+
+                        <td>
+
+                            UGX {{ "{:,.0f}".format(buying_price) }}
+
+                        </td>
+
+
+                        <!-- SELLING PRICE -->
+
+                        <td>
+
+                            UGX {{ "{:,.0f}".format(selling_price) }}
+
+                        </td>
+
+
+                        <!-- QUANTITY -->
+
+                        <td class="text-end">
+
+                            {% if quantity <= (product.minimum_stock or 0) %}
+
+                                <span class="badge bg-danger">
+                                    {{ quantity }}
+                                </span>
+
+                            {% else %}
+
+                                <strong>
+                                    {{ quantity }}
+                                </strong>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- COST VALUE -->
+
+                        <td class="text-end">
+
+                            UGX {{ "{:,.0f}".format(cost_value) }}
+
+                        </td>
+
+
+                        <!-- SELLING VALUE -->
+
+                        <td class="text-end">
+
+                            UGX {{ "{:,.0f}".format(selling_value) }}
+
+                        </td>
+
+
+                        <!-- EXPECTED PROFIT -->
+
+                        <td class="text-end">
+
+                            <strong class="text-success">
+                                UGX {{ "{:,.0f}".format(expected_profit) }}
+                            </strong>
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="10"
+                            class="text-center py-5 text-muted"
+                        >
+
+                            <i class="fas fa-box-open fa-2x mb-3 d-block"></i>
+
+                            No inventory records found.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 

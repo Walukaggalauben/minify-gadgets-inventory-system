@@ -2,45 +2,440 @@
 
 {% block title %}Purchase Report{% endblock %}
 
+{% block page_title %}Purchase Report{% endblock %}
+
 {% block content %}
 
 <div class="container-fluid">
 
-<h2 class="mb-4">Purchase Report</h2>
+    <!-- HEADER -->
 
-<table class="table table-bordered table-striped">
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-<thead class="table-dark">
-<tr>
+        <div>
+            <h2 class="fw-bold mb-1">
+                Purchase Report
+            </h2>
 
-<th>Purchase No</th>
-<th>Supplier</th>
-<th>Date</th>
-<th>Status</th>
-<th>Total</th>
+            <p class="text-muted mb-0">
+                View purchases, suppliers and procurement activity.
+            </p>
+        </div>
 
-</tr>
-</thead>
+        <div class="d-flex gap-2">
 
-<tbody>
+            <a href="{{ url_for('report.purchase_report_pdf',
+                                start_date=start_date,
+                                end_date=end_date) }}"
+               class="btn btn-danger">
 
-{% for purchase in purchases %}
+                <i class="fas fa-file-pdf me-1"></i>
+                PDF
 
-<tr>
+            </a>
 
-<td>{{ purchase.purchase_number }}</td>
-<td>{{ purchase.supplier.name }}</td>
-<td>{{ purchase.purchase_date }}</td>
-<td>{{ purchase.status }}</td>
-<td>UGX {{ "{:,.0f}".format(purchase.total_amount) }}</td>
+            <a href="{{ url_for('report.purchase_report_excel',
+                                start_date=start_date,
+                                end_date=end_date) }}"
+               class="btn btn-success">
 
-</tr>
+                <i class="fas fa-file-excel me-1"></i>
+                Excel
 
-{% endfor %}
+            </a>
 
-</tbody>
+            <a href="{{ url_for('report.index') }}"
+               class="btn btn-outline-secondary">
 
-</table>
+                <i class="fas fa-arrow-left me-1"></i>
+                Reports
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- FILTERS -->
+
+    <div class="erp-card mb-4">
+
+        <div class="mb-3">
+
+            <h5 class="fw-bold mb-1">
+                Report Filters
+            </h5>
+
+            <small class="text-muted">
+                Select a date range to generate the purchase report.
+            </small>
+
+        </div>
+
+
+        <form method="GET">
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+
+                    <label class="form-label fw-semibold">
+                        Start Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="start_date"
+                        class="form-control"
+                        value="{{ start_date or '' }}"
+                    >
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <label class="form-label fw-semibold">
+                        End Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="end_date"
+                        class="form-control"
+                        value="{{ end_date or '' }}"
+                    >
+
+                </div>
+
+
+                <div class="col-md-4 d-flex align-items-end">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100"
+                    >
+
+                        <i class="fas fa-search me-1"></i>
+                        Generate Report
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- SUMMARY CARDS -->
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-12 col-md-6 col-xl-4">
+
+            <div class="erp-card h-100">
+
+                <div class="erp-icon blue">
+                    <i class="fas fa-cart-shopping"></i>
+                </div>
+
+                <div class="flex-grow-1">
+
+                    <small>
+                        Purchase Count
+                    </small>
+
+                    <h3 class="erp-value">
+                        {{ summary.count or 0 }}
+                    </h3>
+
+                    <span class="text-primary fw-semibold">
+                        Purchase transactions
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-12 col-md-6 col-xl-4">
+
+            <div class="erp-card h-100">
+
+                <div class="erp-icon green">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+
+                <div class="flex-grow-1">
+
+                    <small>
+                        Total Purchases
+                    </small>
+
+                    <h3 class="erp-value">
+                        UGX {{ "{:,.0f}".format(summary.total or 0) }}
+                    </h3>
+
+                    <span class="text-success fw-semibold">
+                        Procurement value
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-12 col-md-6 col-xl-4">
+
+            <div class="erp-card h-100">
+
+                <div class="erp-icon orange">
+                    <i class="fas fa-truck"></i>
+                </div>
+
+                <div class="flex-grow-1">
+
+                    <small>
+                        Suppliers Involved
+                    </small>
+
+                    <h3 class="erp-value">
+
+                        {{ purchases
+                           | map(attribute='supplier')
+                           | select
+                           | map(attribute='id')
+                           | unique
+                           | list
+                           | length }}
+
+                    </h3>
+
+                    <span class="text-warning fw-semibold">
+                        Suppliers represented
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PURCHASE TABLE -->
+
+    <div class="erp-card">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h5 class="fw-bold mb-1">
+                    Purchase Transactions
+                </h5>
+
+                <small class="text-muted">
+                    Purchase activity for the selected period
+                </small>
+
+            </div>
+
+            <strong class="text-success">
+
+                UGX {{ "{:,.0f}".format(summary.total or 0) }}
+
+            </strong>
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th>Purchase No.</th>
+
+                        <th>Supplier</th>
+
+                        <th>Date</th>
+
+                        <th>Invoice</th>
+
+                        <th>Payment</th>
+
+                        <th>Status</th>
+
+                        <th class="text-end">
+                            Total
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for purchase in purchases %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+                                {{ purchase.purchase_number }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if purchase.supplier %}
+
+                                {{ purchase.supplier.name }}
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ purchase.purchase_date.strftime('%d/%m/%Y') }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ purchase.invoice_number or "-" }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ purchase.payment_method or "-" }}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if purchase.status == "Completed" %}
+
+                                <span class="badge bg-success">
+                                    {{ purchase.status }}
+                                </span>
+
+                            {% elif purchase.status == "Cancelled" %}
+
+                                <span class="badge bg-danger">
+                                    {{ purchase.status }}
+                                </span>
+
+                            {% elif purchase.status == "Draft" %}
+
+                                <span class="badge bg-secondary">
+                                    {{ purchase.status }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-warning text-dark">
+                                    {{ purchase.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td class="text-end fw-semibold">
+
+                            UGX {{ "{:,.0f}".format(
+                                purchase.total_amount or 0
+                            ) }}
+
+                        </td>
+
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="text-center py-5 text-muted"
+                        >
+
+                            <i class="fas fa-cart-shopping fa-2x mb-3"></i>
+
+                            <div>
+                                No purchase records found.
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+
+                {% if purchases %}
+
+                <tfoot>
+
+                    <tr class="table-light">
+
+                        <th colspan="6"
+                            class="text-end">
+
+                            Total Purchases
+
+                        </th>
+
+                        <th class="text-end text-success">
+
+                            UGX {{ "{:,.0f}".format(
+                                summary.total or 0
+                            ) }}
+
+                        </th>
+
+                    </tr>
+
+                </tfoot>
+
+                {% endif %}
+
+            </table>
+
+        </div>
+
+    </div>
 
 </div>
 

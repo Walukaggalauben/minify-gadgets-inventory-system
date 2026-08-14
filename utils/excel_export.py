@@ -89,7 +89,7 @@ class ExcelExporter:
 
         return output
     
-        # ==========================================================
+           # ==========================================================
     # INVENTORY REPORT
     # ==========================================================
 
@@ -100,33 +100,122 @@ class ExcelExporter:
         ws = wb.active
         ws.title = "Inventory Report"
 
+        # ------------------------------------------------------
+        # TITLE
+        # ------------------------------------------------------
+
         ws.append(["MINIFY GADGETS"])
         ws.append(["Inventory Report"])
         ws.append([])
 
-        ws.append([
+        # ------------------------------------------------------
+        # HEADERS
+        # ------------------------------------------------------
+
+        headers = [
             "Product",
+            "Variant",
             "SKU",
             "Colour",
             "Storage",
             "Buying Price",
             "Selling Price",
-            "Stock"
-        ])
+            "Quantity",
+            "Cost Value",
+            "Selling Value",
+            "Expected Profit",
+        ]
+
+        ws.append(headers)
 
         for cell in ws[4]:
             cell.font = Font(bold=True)
 
+        # ------------------------------------------------------
+        # INVENTORY DATA
+        # ------------------------------------------------------
+
         for item in variants:
+
+            quantity = item.quantity or 0
+            buying_price = float(item.buying_price or 0)
+            selling_price = float(item.selling_price or 0)
+
+            cost_value = buying_price * quantity
+            selling_value = selling_price * quantity
+            expected_profit = selling_value - cost_value
+
+            variant_parts = []
+
+            if item.storage:
+                variant_parts.append(str(item.storage))
+
+            if item.ram:
+                variant_parts.append(str(item.ram))
+
+            if item.colour:
+                variant_parts.append(str(item.colour))
+
+            variant = " / ".join(variant_parts)
+
             ws.append([
-                item.product.name,
-                item.sku,
-                item.colour,
-                item.storage,
-                float(item.buying_price),
-                float(item.selling_price),
-                item.quantity
+                item.product.name if item.product else "",
+                variant,
+                item.sku or "",
+                item.colour or "",
+                item.storage or "",
+                buying_price,
+                selling_price,
+                quantity,
+                cost_value,
+                selling_value,
+                expected_profit,
             ])
+
+        # ------------------------------------------------------
+        # NUMBER FORMATTING
+        # ------------------------------------------------------
+
+        for row in ws.iter_rows(min_row=5):
+
+            for cell in row:
+
+                if cell.column in [6, 7, 9, 10, 11]:
+                    cell.number_format = '#,##0.00'
+
+                elif cell.column == 8:
+                    cell.number_format = '#,##0'
+
+        # ------------------------------------------------------
+        # COLUMN WIDTHS
+        # ------------------------------------------------------
+
+        widths = {
+            "A": 28,
+            "B": 22,
+            "C": 18,
+            "D": 15,
+            "E": 15,
+            "F": 16,
+            "G": 16,
+            "H": 12,
+            "I": 18,
+            "J": 18,
+            "K": 18,
+        }
+
+        for column, width in widths.items():
+            ws.column_dimensions[column].width = width
+
+        # ------------------------------------------------------
+        # FREEZE HEADER
+        # ------------------------------------------------------
+
+        ws.freeze_panes = "A5"
+
+        # ------------------------------------------------------
+        # OUTPUT
+        # ------------------------------------------------------
 
         output = BytesIO()
         wb.save(output)
