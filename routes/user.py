@@ -8,19 +8,17 @@ from flask import (
 )
 
 from services.user_service import UserService
+from models.system_setting import SystemSetting
 
 from utils.auth import login_required
 
-user_bp = Blueprint(
-    "user",
-    __name__,
-    url_prefix="/users"
-)
+user_bp = Blueprint("user", __name__, url_prefix="/users")
 
 
 # ==========================================
 # VIEW USERS
 # ==========================================
+
 
 @user_bp.route("/")
 def index():
@@ -29,13 +27,14 @@ def index():
     search = request.args.get("search", "").strip()
     role = request.args.get("role", "").strip()
     status = request.args.get("status", "").strip()
+    settings = SystemSetting.get_settings()
 
     users = UserService.get_users(
         page=page,
-        per_page=25,
+        per_page=settings.records_per_page,
         search=search,
         role=role,
-        status=status
+        status=status,
     )
 
     stats = UserService.get_statistics()
@@ -48,11 +47,14 @@ def index():
         roles=roles,
         search=search,
         selected_role=role,
-        selected_status=status
+        selected_status=status,
     )
+
+
 # ==========================================
 # CREATE USER
 # ==========================================
+
 
 @user_bp.route("/create", methods=["GET", "POST"])
 def create():
@@ -63,23 +65,18 @@ def create():
 
         success, message = UserService.create_user(request.form)
 
-        flash(
-            message,
-            "success" if success else "danger"
-        )
+        flash(message, "success" if success else "danger")
 
         if success:
             return redirect(url_for("user.index"))
 
-    return render_template(
-        "users/create.html",
-        roles=roles
-    )
+    return render_template("users/create.html", roles=roles)
 
 
 # ==========================================
 # EDIT USER
 # ==========================================
+
 
 @user_bp.route("/edit/<int:user_id>", methods=["GET", "POST"])
 def edit(user_id):
@@ -94,29 +91,20 @@ def edit(user_id):
 
     if request.method == "POST":
 
-        success, message = UserService.update_user(
-            user,
-            request.form
-        )
+        success, message = UserService.update_user(user, request.form)
 
-        flash(
-            message,
-            "success" if success else "danger"
-        )
+        flash(message, "success" if success else "danger")
 
         if success:
             return redirect(url_for("user.index"))
 
-    return render_template(
-        "users/edit.html",
-        user=user,
-        roles=roles
-    )
+    return render_template("users/edit.html", user=user, roles=roles)
 
 
 # ==========================================
 # CHANGE PASSWORD
 # ==========================================
+
 
 @user_bp.route("/password/<int:user_id>", methods=["POST"])
 def change_password(user_id):
@@ -135,10 +123,7 @@ def change_password(user_id):
 
     UserService.change_password(user, password)
 
-    flash(
-        "Password changed successfully.",
-        "success"
-    )
+    flash("Password changed successfully.", "success")
 
     return redirect(url_for("user.edit", user_id=user.id))
 
@@ -146,6 +131,7 @@ def change_password(user_id):
 # ==========================================
 # ACTIVATE / DEACTIVATE USER
 # ==========================================
+
 
 @user_bp.route("/toggle/<int:user_id>")
 def toggle(user_id):
@@ -158,10 +144,7 @@ def toggle(user_id):
 
     UserService.toggle_status(user)
 
-    flash(
-        "User status updated.",
-        "success"
-    )
+    flash("User status updated.", "success")
 
     return redirect(url_for("user.index"))
 
@@ -171,7 +154,6 @@ def toggle(user_id):
 # ==========================================
 
 
-    
 @user_bp.route("/profile/<int:user_id>")
 def profile(user_id):
     user = UserService.get_user(user_id)
@@ -180,7 +162,4 @@ def profile(user_id):
         flash("User not found.", "danger")
         return redirect(url_for("user.index"))
 
-    return render_template(
-        "users/profile.html",
-        user=user
-    )    
+    return render_template("users/profile.html", user=user)
