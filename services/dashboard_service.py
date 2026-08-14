@@ -29,6 +29,14 @@ class DashboardService:
 
         # Operating expenses and customer credit
         total_expenses = db.session.query(func.coalesce(func.sum(Expense.amount), 0)).scalar() or 0
+
+        year_expenses = (
+            db.session.query(func.coalesce(func.sum(Expense.amount), 0))
+            .filter(func.extract("year", Expense.expense_date) == today.year)
+            .scalar()
+            or 0
+        )
+
         outstanding_credit = db.session.query(func.coalesce(func.sum(Sale.balance_due), 0)).filter(Sale.balance_due > 0).scalar() or 0
 
         # ==================================================
@@ -503,8 +511,9 @@ class DashboardService:
             "year_profit": year_profit,
             "average_sale": average_sale,
             "total_expenses": total_expenses,
+            "year_expenses": year_expenses,
             "outstanding_credit": outstanding_credit,
-            "net_profit_after_expenses": float(year_profit) - float(total_expenses),
+            "net_profit_after_expenses": float(year_profit) - float(year_expenses),
             "sales_summary": sales_summary,
             "profit_summary": profit_summary,
             "purchase_summary": purchase_summary,

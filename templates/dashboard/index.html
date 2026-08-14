@@ -1,13 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}Dashboard
-<div class="row g-3 mt-1 mb-4">
-  <div class="col-md-4"><div class="card border-0 shadow-sm h-100"><div class="card-body"><small class="text-muted">Total Operating Expenses</small><h4 class="fw-bold mb-0 text-danger">UGX {{ "{:,.0f}".format(stats.total_expenses or 0) }}</h4></div></div></div>
-  <div class="col-md-4"><div class="card border-0 shadow-sm h-100"><div class="card-body"><small class="text-muted">Customer Credit Outstanding</small><h4 class="fw-bold mb-0 text-warning">UGX {{ "{:,.0f}".format(stats.outstanding_credit or 0) }}</h4></div></div></div>
-  <div class="col-md-4"><div class="card border-0 shadow-sm h-100"><div class="card-body"><small class="text-muted">Net Profit After Expenses</small><h4 class="fw-bold mb-0 text-success">UGX {{ "{:,.0f}".format(stats.net_profit_after_expenses or 0) }}</h4></div></div></div>
-</div>
-
-{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block page_title %}Dashboard{% endblock %}
 
@@ -53,6 +46,82 @@
         </div>
 
     </div>
+
+<!-- ========================================================= -->
+<!-- EXPENSE & FINANCIAL OVERVIEW -->
+<!-- ========================================================= -->
+
+<div class="row g-3 mb-4">
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="erp-card h-100">
+            <div class="erp-icon red">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="flex-grow-1">
+                <small>Total Operating Expenses</small>
+                <h4 class="erp-value">
+                    UGX {{ "{:,.0f}".format(stats.total_expenses or 0) }}
+                </h4>
+                <span class="text-danger fw-semibold">
+                    All recorded expenses
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="erp-card h-100">
+            <div class="erp-icon blue">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="flex-grow-1">
+                <small>This Year Expenses</small>
+                <h4 class="erp-value">
+                    UGX {{ "{:,.0f}".format(stats.year_expenses or 0) }}
+                </h4>
+                <span class="text-primary fw-semibold">
+                    Current financial year
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="erp-card h-100">
+            <div class="erp-icon orange">
+                <i class="fas fa-credit-card"></i>
+            </div>
+            <div class="flex-grow-1">
+                <small>Customer Credit Outstanding</small>
+                <h4 class="erp-value">
+                    UGX {{ "{:,.0f}".format(stats.outstanding_credit or 0) }}
+                </h4>
+                <span class="text-warning fw-semibold">
+                    Unpaid customer balances
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="erp-card h-100">
+            <div class="erp-icon green">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="flex-grow-1">
+                <small>Net Profit After Expenses</small>
+                <h4 class="erp-value">
+                    UGX {{ "{:,.0f}".format(stats.net_profit_after_expenses or 0) }}
+                </h4>
+                <span class="text-success fw-semibold">
+                    Current financial year
+                </span>
+            </div>
+        </div>
+    </div>
+
+</div>
 
     
 <!-- ========================================================= -->

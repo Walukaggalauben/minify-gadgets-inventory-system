@@ -1,0 +1,390 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    .expense-page {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .expense-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .expense-title {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .expense-title-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: #00695c;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        box-shadow: 0 4px 12px rgba(0,105,92,.18);
+    }
+
+    .expense-title h1 {
+        margin: 0;
+        font-size: 26px;
+    }
+
+    .expense-title p {
+        margin: 4px 0 0;
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .expense-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 30px;
+        box-shadow: 0 3px 15px rgba(0,0,0,.07);
+        border: 1px solid #e8eeee;
+    }
+
+    .expense-section-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: #263238;
+        margin-bottom: 22px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #edf2f2;
+    }
+
+    .expense-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+    }
+
+    .expense-field {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .expense-field.full {
+        grid-column: 1 / -1;
+    }
+
+    .expense-field label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #37474f;
+        margin-bottom: 8px;
+    }
+
+    .expense-field label span {
+        color: #e53935;
+    }
+
+    .expense-field input,
+    .expense-field select,
+    .expense-field textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border: 1px solid #d8e1e1;
+        border-radius: 9px;
+        background: #fafcfc;
+        color: #263238;
+        font-size: 14px;
+        outline: none;
+        transition: .2s;
+    }
+
+    .expense-field input:focus,
+    .expense-field select:focus,
+    .expense-field textarea:focus {
+        border-color: #00897b;
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(0,137,123,.10);
+    }
+
+    .expense-field textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .amount-wrapper {
+        position: relative;
+    }
+
+    .amount-prefix {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #00695c;
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+    .amount-wrapper input {
+        padding-left: 55px;
+    }
+
+    .expense-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 30px;
+        padding-top: 22px;
+        border-top: 1px solid #edf2f2;
+    }
+
+    .expense-btn {
+        border: none;
+        border-radius: 9px;
+        padding: 12px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .expense-btn-primary {
+        background: #00695c;
+        color: white;
+    }
+
+    .expense-btn-primary:hover {
+        background: #004d40;
+    }
+
+    .expense-btn-secondary {
+        background: #eef3f3;
+        color: #455a64;
+    }
+
+    .expense-btn-secondary:hover {
+        background: #e0e8e8;
+    }
+
+    @media (max-width: 700px) {
+        .expense-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .expense-field.full {
+            grid-column: auto;
+        }
+
+        .expense-card {
+            padding: 20px;
+        }
+
+        .expense-header {
+            align-items: flex-start;
+        }
+
+        .expense-actions {
+            flex-direction: column-reverse;
+        }
+
+        .expense-btn {
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="expense-page">
+
+    <div class="expense-header">
+
+        <div class="expense-title">
+
+            <div class="expense-title-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+
+            <div>
+                <h1>Add Expense</h1>
+                <p>Record and track a business expense</p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="expense-card">
+
+        <div class="expense-section-title">
+            <i class="fas fa-file-invoice-dollar"></i>
+            Expense Details
+        </div>
+
+
+        <form method="POST" action="{{ url_for('expenses.create') }}">
+
+            <div class="expense-grid">
+
+                <div class="expense-field">
+
+                    <label for="expense_date">
+                        Expense Date <span>*</span>
+                    </label>
+
+                    <input
+                        type="date"
+                        id="expense_date"
+                        name="expense_date"
+                        value="{{ today }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="expense-field">
+
+                    <label for="category">
+                        Category <span>*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="category"
+                        name="category"
+                        placeholder="e.g. Rent, Electricity, Transport"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="expense-field full">
+
+                    <label for="description">
+                        Description <span>*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="description"
+                        name="description"
+                        placeholder="What was this expense for?"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="expense-field">
+
+                    <label for="amount">
+                        Amount <span>*</span>
+                    </label>
+
+                    <div class="amount-wrapper">
+
+                        <span class="amount-prefix">UGX</span>
+
+                        <input
+                            type="number"
+                            id="amount"
+                            name="amount"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="0"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="expense-field">
+
+                    <label for="payment_method">
+                        Payment Method
+                    </label>
+
+                    <select id="payment_method" name="payment_method">
+
+                        <option value="Cash">Cash</option>
+                        <option value="Mobile Money">Mobile Money</option>
+                        <option value="Bank">Bank</option>
+                        <option value="Card">Card</option>
+                        <option value="Other">Other</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="expense-field full">
+
+                    <label for="reference">
+                        Reference
+                    </label>
+
+                    <input
+                        type="text"
+                        id="reference"
+                        name="reference"
+                        placeholder="Receipt number, transaction ID, etc."
+                    >
+
+                </div>
+
+
+                <div class="expense-field full">
+
+                    <label for="notes">
+                        Notes
+                    </label>
+
+                    <textarea
+                        id="notes"
+                        name="notes"
+                        placeholder="Add any additional information about this expense..."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="expense-actions">
+
+                <a
+                    href="{{ url_for('expenses.index') }}"
+                    class="expense-btn expense-btn-secondary"
+                >
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="expense-btn expense-btn-primary"
+                >
+                    <i class="fas fa-save"></i>
+                    Save Expense
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

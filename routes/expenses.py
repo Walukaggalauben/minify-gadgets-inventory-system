@@ -25,7 +25,10 @@ def index():
     if category:
         query = query.filter(Expense.category == category)
     expenses = query.order_by(Expense.expense_date.desc(), Expense.id.desc()).all()
-    total = sum((Decimal(str(x.amount or 0)) for x in expenses), Decimal("0"))
+    total = sum(
+    (Decimal(str(x.amount or 0)) for x in expenses),
+    Decimal("0")
+)
     categories = [x[0] for x in db.session.query(Expense.category).distinct().order_by(Expense.category).all()]
     return render_template("expenses/index.html", expenses=expenses, total=total, categories=categories, search=search, selected_category=category)
 
@@ -67,3 +70,78 @@ def delete(id):
     db.session.commit()
     flash("Expense deleted.", "success")
     return redirect(url_for("expenses.index"))
+
+# ==========================================================
+# EDIT EXPENSE
+# ==========================================================
+
+@expenses_bp.route("/edit/<int:id>", methods=["GET", "POST"])
+def edit(id):
+
+    expense = Expense.query.get_or_404(id)
+
+    if request.method == "POST":
+        try:
+            amount = Decimal(
+                request.form.get("amount", "0")
+            )
+
+            if amount <= 0:
+                raise ValueError(
+                    "Expense amount must be greater than zero."
+                )
+
+            category = request.form.get(
+                "category", ""
+            ).strip()
+
+            description = request.form.get(
+                "description", ""
+            ).strip()
+
+            if not category or not description:
+                raise ValueError(
+                    "Category and description are required."
+                )
+
+            expense.expense_date = datetime.strptime(
+                request.form["expense_date"],
+                "%Y-%m-%d",
+            ).date()
+
+            expense.category = category
+            expense.description = description
+            expense.amount = amount
+            expense.payment_method = request.form.get(
+                "payment_method", "Cash"
+            )
+            expense.reference = request.form.get(
+                "reference"
+            )
+            expense.notes = request.form.get(
+                "notes"
+            )
+
+            db.session.commit()
+
+            flash(
+                "Expense updated successfully.",
+                "success",
+            )
+
+            return redirect(
+                url_for("expenses.index")
+            )
+
+        except (ValueError, InvalidOperation) as exc:
+            db.session.rollback()
+
+            flash(
+                str(exc),
+                "danger",
+            )
+
+    return render_template(
+        "expenses/edit.html",
+        expense=expense,
+    )
