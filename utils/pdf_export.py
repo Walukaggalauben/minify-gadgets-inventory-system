@@ -1,6 +1,8 @@
 from io import BytesIO
 from datetime import datetime
 
+from utils.timezone import application_now
+
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.styles import getSampleStyleSheet
@@ -17,22 +19,14 @@ from reportlab.platypus import (
 class PDFExporter:
 
     @staticmethod
-    def create_table_pdf(
-        title,
-        headers,
-        rows,
-        summary=None
-    ):
+    def create_table_pdf(title, headers, rows, summary=None):
         """
         Generic PDF Generator
         """
 
         buffer = BytesIO()
 
-        doc = SimpleDocTemplate(
-            buffer,
-            pagesize=(11 * inch, 8.5 * inch)
-        )
+        doc = SimpleDocTemplate(buffer, pagesize=(11 * inch, 8.5 * inch))
 
         styles = getSampleStyleSheet()
 
@@ -43,33 +37,17 @@ class PDFExporter:
 
         elements = []
 
-        elements.append(
-            Paragraph(
-                "<b>MINIFY GADGETS</b>",
-                title_style
-            )
-        )
+        elements.append(Paragraph("<b>MINIFY GADGETS</b>", title_style))
 
-        elements.append(
-            Paragraph(
-                "Inventory Management System",
-                styles["Heading2"]
-            )
-        )
+        elements.append(Paragraph("Inventory Management System", styles["Heading2"]))
 
         elements.append(Spacer(1, 12))
 
-        elements.append(
-            Paragraph(
-                f"<b>{title}</b>",
-                styles["Heading2"]
-            )
-        )
+        elements.append(Paragraph(f"<b>{title}</b>", styles["Heading2"]))
 
         elements.append(
             Paragraph(
-                f"Generated: {datetime.now().strftime('%d %B %Y %I:%M %p')}",
-                normal
+                f"Generated: {application_now().strftime('%d %B %Y %I:%M %p')}", normal
             )
         )
 
@@ -85,35 +63,30 @@ class PDFExporter:
         table.setStyle(
             TableStyle(
                 [
-
                     (
                         "BACKGROUND",
                         (0, 0),
                         (-1, 0),
                         colors.HexColor("#0f766e"),
                     ),
-
                     (
                         "TEXTCOLOR",
                         (0, 0),
                         (-1, 0),
                         colors.white,
                     ),
-
                     (
                         "FONTNAME",
                         (0, 0),
                         (-1, 0),
                         "Helvetica-Bold",
                     ),
-
                     (
                         "FONTSIZE",
                         (0, 0),
                         (-1, -1),
                         9,
                     ),
-
                     (
                         "GRID",
                         (0, 0),
@@ -121,35 +94,30 @@ class PDFExporter:
                         0.5,
                         colors.grey,
                     ),
-
                     (
                         "BACKGROUND",
                         (0, 1),
                         (-1, -1),
                         colors.beige,
                     ),
-
                     (
                         "BOTTOMPADDING",
                         (0, 0),
                         (-1, 0),
                         10,
                     ),
-
                     (
                         "ALIGN",
                         (0, 0),
                         (-1, -1),
                         "CENTER",
                     ),
-
                     (
                         "VALIGN",
                         (0, 0),
                         (-1, -1),
                         "MIDDLE",
                     ),
-
                 ]
             )
         )
@@ -160,20 +128,12 @@ class PDFExporter:
 
             elements.append(Spacer(1, 20))
 
-            elements.append(
-                Paragraph(
-                    "<b>Summary</b>",
-                    styles["Heading2"]
-                )
-            )
+            elements.append(Paragraph("<b>Summary</b>", styles["Heading2"]))
 
             for key, value in summary.items():
 
                 elements.append(
-                    Paragraph(
-                        f"<b>{key.replace('_',' ').title()}:</b> {value}",
-                        normal
-                    )
+                    Paragraph(f"<b>{key.replace('_',' ').title()}:</b> {value}", normal)
                 )
 
         doc.build(elements)
@@ -184,16 +144,12 @@ class PDFExporter:
 
         return pdf
 
-
     # ==========================================================
     # SALES REPORT
     # ==========================================================
 
     @staticmethod
-    def sales_report(
-        sales,
-        summary
-    ):
+    def sales_report(sales, summary):
 
         headers = [
             "Invoice",
@@ -228,14 +184,12 @@ class PDFExporter:
             },
         )
         # ==========================================================
+
     # PURCHASE REPORT
     # ==========================================================
 
     @staticmethod
-    def purchase_report(
-        purchases,
-        summary
-    ):
+    def purchase_report(purchases, summary):
 
         headers = [
             "Purchase No",
@@ -269,16 +223,13 @@ class PDFExporter:
             },
         )
 
-
         # =============================================
+
     # INVENTORY REPORT
     # =============================================
 
     @staticmethod
-    def inventory_report(
-        variants,
-        summary
-    ):
+    def inventory_report(variants, summary):
 
         headers = [
             "Product",
@@ -299,47 +250,27 @@ class PDFExporter:
 
             quantity = item.quantity or 0
 
-            buying_price = float(
-                item.buying_price or 0
-            )
+            buying_price = float(item.buying_price or 0)
 
-            selling_price = float(
-                item.selling_price or 0
-            )
+            selling_price = float(item.selling_price or 0)
 
-            cost_value = (
-                buying_price * quantity
-            )
+            cost_value = buying_price * quantity
 
-            selling_value = (
-                selling_price * quantity
-            )
+            selling_value = selling_price * quantity
 
-            expected_profit = (
-                selling_value - cost_value
-            )
+            expected_profit = selling_value - cost_value
 
             rows.append(
                 [
-                    item.product.name
-                    if item.product else "",
-
+                    item.product.name if item.product else "",
                     item.sku or "-",
-
                     item.colour or "-",
-
                     item.storage or "-",
-
                     f"{buying_price:,.2f}",
-
                     f"{selling_price:,.2f}",
-
                     quantity,
-
                     f"{cost_value:,.2f}",
-
                     f"{selling_value:,.2f}",
-
                     f"{expected_profit:,.2f}",
                 ]
             )
@@ -349,41 +280,22 @@ class PDFExporter:
             headers=headers,
             rows=rows,
             summary={
-                "Total Variants": summary.get(
-                    "products",
-                    len(variants)
-                ),
-
+                "Total Variants": summary.get("products", len(variants)),
                 "Total Stock": summary.get(
-                    "stock",
-                    sum(
-                        v.quantity or 0
-                        for v in variants
-                    )
+                    "stock", sum(v.quantity or 0 for v in variants)
                 ),
-
-                "Inventory Cost Value": (
-                    f"{summary.get('cost_value', 0):,.2f}"
-                ),
-
-                "Potential Selling Value": (
-                    f"{summary.get('selling_value', 0):,.2f}"
-                ),
-
-                "Expected Profit": (
-                    f"{summary.get('expected_profit', 0):,.2f}"
-                ),
+                "Inventory Cost Value": (f"{summary.get('cost_value', 0):,.2f}"),
+                "Potential Selling Value": (f"{summary.get('selling_value', 0):,.2f}"),
+                "Expected Profit": (f"{summary.get('expected_profit', 0):,.2f}"),
             },
-        )    
+        )
         # ==========================================================
+
     # PROFIT REPORT
     # ==========================================================
 
     @staticmethod
-    def profit_report(
-        sales,
-        summary
-    ):
+    def profit_report(sales, summary):
 
         headers = [
             "Invoice",
@@ -418,16 +330,12 @@ class PDFExporter:
             },
         )
 
-
     # ==========================================================
     # IMEI REPORT
     # ==========================================================
 
     @staticmethod
-    def imei_report(
-        imeis,
-        summary=None
-    ):
+    def imei_report(imeis, summary=None):
 
         headers = [
             "IMEI",
@@ -436,6 +344,13 @@ class PDFExporter:
             "Storage",
             "Colour",
             "Status",
+            "Supplier",
+            "Purchase",
+            "Buying Cost",
+            "Customer",
+            "Sale",
+            "Selling Price",
+            "Profit",
         ]
 
         rows = []
@@ -444,11 +359,7 @@ class PDFExporter:
 
             variant = item.product_variant
 
-            product = (
-                variant.product.name
-                if variant and variant.product
-                else "-"
-            )
+            product = variant.product.name if variant and variant.product else "-"
 
             rows.append(
                 [
@@ -458,6 +369,25 @@ class PDFExporter:
                     variant.storage if variant else "-",
                     variant.colour if variant else "-",
                     item.status,
+                    item.supplier.name if item.supplier else "-",
+                    item.purchase_number or "-",
+                    str(item.buying_price or 0),
+                    (
+                        item.sale_items[0].sale.customer_name
+                        if item.sale_items and item.sale_items[0].sale
+                        else "-"
+                    ),
+                    (
+                        item.sale_items[0].sale.invoice_number
+                        if item.sale_items and item.sale_items[0].sale
+                        else "-"
+                    ),
+                    (
+                        str(item.sale_items[0].selling_price or 0)
+                        if item.sale_items
+                        else "-"
+                    ),
+                    str(item.sale_items[0].profit or 0) if item.sale_items else "-",
                 ]
             )
 
@@ -465,20 +395,8 @@ class PDFExporter:
 
             summary = {
                 "Total IMEIs": len(imeis),
-                "In Stock": len(
-                    [
-                        i
-                        for i in imeis
-                        if i.status == "In Stock"
-                    ]
-                ),
-                "Sold": len(
-                    [
-                        i
-                        for i in imeis
-                        if i.status == "Sold"
-                    ]
-                ),
+                "In Stock": len([i for i in imeis if i.status == "In Stock"]),
+                "Sold": len([i for i in imeis if i.status == "Sold"]),
             }
 
         return PDFExporter.create_table_pdf(
@@ -486,16 +404,14 @@ class PDFExporter:
             headers=headers,
             rows=rows,
             summary=summary,
-        )    
+        )
         # ==========================================================
+
     # LOW STOCK REPORT
     # ==========================================================
 
     @staticmethod
-    def low_stock_report(
-        variants,
-        summary=None
-    ):
+    def low_stock_report(variants, summary=None):
 
         headers = [
             "Product",
@@ -523,13 +439,11 @@ class PDFExporter:
 
         if summary is None:
 
-            summary = {
-                "Low Stock Products": len(variants)
-            }
+            summary = {"Low Stock Products": len(variants)}
 
         return PDFExporter.create_table_pdf(
             title="Low Stock Report",
             headers=headers,
             rows=rows,
             summary=summary,
-        )    
+        )

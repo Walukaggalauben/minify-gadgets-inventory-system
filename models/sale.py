@@ -1,4 +1,4 @@
-from datetime import datetime
+from utils.timezone import utc_now_naive
 
 from db import db
 
@@ -18,7 +18,7 @@ class Sale(db.Model):
 
     invoice_number = db.Column(db.String(50), unique=True, nullable=False)
 
-    sale_date = db.Column(db.DateTime, default=datetime.utcnow)
+    sale_date = db.Column(db.DateTime, default=utc_now_naive)
 
     status = db.Column(db.String(20), default="Completed")
 

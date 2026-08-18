@@ -1,374 +1,249 @@
-{% extends "layout.html" %}
-
-{% block title %}Product Variants{% endblock %}
-
-{% block content %}
+{% extends "layout.html" %} {% block title %}Product Variants{% endblock %} {%
+block content %}
 
 <div class="container-fluid mt-4">
+  <!-- PAGE HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-0">Product Variants</h3>
 
-    <!-- PAGE HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <div>
-            <h3 class="fw-bold mb-0">Product Variants</h3>
-
-            <small class="text-muted">
-                Manage product variants, pricing, stock and barcodes.
-            </small>
-        </div>
-
-        <a href="{{ url_for('variant.create') }}"
-           class="btn btn-success">
-
-            <i class="bi bi-plus-circle"></i>
-            Add Variant
-
-        </a>
-
+      <small class="text-muted">
+        Manage product variants, pricing, stock and barcodes.
+      </small>
     </div>
 
+    <a href="{{ url_for('variant.create') }}" class="btn btn-success">
+      <i class="fas fa-circle-plus"></i>
+      Add Variant
+    </a>
+  </div>
 
-    <!-- SEARCH -->
-    <div class="card shadow-sm mb-4">
+  <!-- SEARCH -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form method="GET" action="{{ url_for('variant.index') }}">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-10">
+            <input
+              type="text"
+              name="search"
+              class="form-control"
+              value="{{ search or '' }}"
+              placeholder="Search product, SKU, barcode, storage, RAM or colour..."
+            />
+          </div>
 
-        <div class="card-body">
+          <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-success w-100">
+              <i class="fas fa-search"></i>
+              Search
+            </button>
 
-            <form method="GET"
-                  action="{{ url_for('variant.index') }}">
+            {% if search %}
 
-                <div class="row g-2 align-items-center">
+            <a
+              href="{{ url_for('variant.index') }}"
+              class="btn btn-outline-secondary"
+            >
+              <i class="fas fa-xmark"></i>
+            </a>
 
-                    <div class="col-md-10">
-
-                        <input
-                            type="text"
-                            name="search"
-                            class="form-control"
-                            value="{{ search or '' }}"
-                            placeholder="Search product, SKU, barcode, storage, RAM or colour..."
-                        >
-
-                    </div>
-
-                    <div class="col-md-2 d-flex gap-2">
-
-                        <button type="submit"
-                                class="btn btn-success w-100">
-
-                            <i class="bi bi-search"></i>
-                            Search
-
-                        </button>
-
-                        {% if search %}
-
-                        <a href="{{ url_for('variant.index') }}"
-                           class="btn btn-outline-secondary">
-
-                            <i class="bi bi-x-lg"></i>
-
-                        </a>
-
-                        {% endif %}
-
-                    </div>
-
-                </div>
-
-            </form>
-
+            {% endif %}
+          </div>
         </div>
-
+      </form>
     </div>
+  </div>
 
+  <!-- VARIANTS TABLE -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Product</th>
+              <th>SKU</th>
+              <th>Barcode</th>
+              <th>Storage</th>
+              <th>RAM</th>
+              <th>Colour</th>
+              <th>Buying Price</th>
+              <th>Selling Price</th>
+              <th>Profit</th>
+              <th>Qty</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
 
-    <!-- VARIANTS TABLE -->
-    <div class="card shadow-sm">
+          <tbody>
+            {% for variant in variants %}
 
-        <div class="card-body">
+            <tr>
+              <!-- PRODUCT -->
+              <td>
+                <strong> {{ variant.product.name }} </strong>
 
-            <div class="table-responsive">
+                <br />
 
-                <table class="table table-hover align-middle">
+                <small class="text-muted">
+                  {{ variant.product.brand.name }}
+                </small>
+              </td>
 
-                    <thead class="table-light">
+              <!-- SKU -->
+              <td>
+                <span class="fw-semibold"> {{ variant.sku }} </span>
+              </td>
 
-                        <tr>
+              <!-- BARCODE -->
+              <td>
+                {% if variant.barcode %}
 
-                            <th>Product</th>
-                            <th>SKU</th>
-                            <th>Barcode</th>
-                            <th>Storage</th>
-                            <th>RAM</th>
-                            <th>Colour</th>
-                            <th>Buying Price</th>
-                            <th>Selling Price</th>
-                            <th>Profit</th>
-                            <th>Qty</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                <span class="font-monospace"> {{ variant.barcode }} </span>
 
-                        </tr>
+                {% else %}
 
-                    </thead>
+                <span class="text-muted"> — </span>
 
-                    <tbody>
+                {% endif %}
+              </td>
 
-                    {% for variant in variants %}
+              <!-- STORAGE -->
+              <td>{{ variant.storage or "—" }}</td>
 
-                    <tr>
+              <!-- RAM -->
+              <td>{{ variant.ram or "—" }}</td>
 
-                        <!-- PRODUCT -->
-                        <td>
+              <!-- COLOUR -->
+              <td>{{ variant.colour or "—" }}</td>
 
-                            <strong>
-                                {{ variant.product.name }}
-                            </strong>
+              <!-- BUYING PRICE -->
+              <td>UGX {{ "{:,.0f}".format( variant.buying_price or 0 ) }}</td>
 
-                            <br>
+              <!-- SELLING PRICE -->
+              <td>UGX {{ "{:,.0f}".format( variant.selling_price or 0 ) }}</td>
 
-                            <small class="text-muted">
-                                {{ variant.product.brand.name }}
-                            </small>
+              <!-- PROFIT -->
+              <td>
+                {% set profit = (variant.selling_price or 0) -
+                (variant.buying_price or 0) %} {% if profit > 0 %}
 
-                        </td>
+                <span class="text-success fw-semibold">
+                  UGX {{ "{:,.0f}".format(profit) }}
+                </span>
 
+                {% elif profit < 0 %}
 
-                        <!-- SKU -->
-                        <td>
+                <span class="text-danger fw-semibold">
+                  UGX {{ "{:,.0f}".format(profit) }}
+                </span>
 
-                            <span class="fw-semibold">
-                                {{ variant.sku }}
-                            </span>
+                {% else %}
 
-                        </td>
+                <span class="text-muted"> UGX 0 </span>
 
+                {% endif %}
+              </td>
 
-                        <!-- BARCODE -->
-                        <td>
+              <!-- QUANTITY -->
+              <td>
+                {% if variant.quantity <= 0 %}
 
-                            {% if variant.barcode %}
+                <span class="badge bg-danger"> 0 </span>
 
-                                <span class="font-monospace">
-                                    {{ variant.barcode }}
-                                </span>
+                {% elif variant.quantity <= variant.minimum_stock %}
 
-                            {% else %}
+                <span class="badge bg-warning text-dark">
+                  {{ variant.quantity }}
+                </span>
 
-                                <span class="text-muted">
-                                    —
-                                </span>
+                {% else %}
 
-                            {% endif %}
+                <span class="badge bg-success"> {{ variant.quantity }} </span>
 
-                        </td>
+                {% endif %}
+              </td>
 
+              <!-- STATUS -->
+              <td>
+                {% if variant.is_active %}
 
-                        <!-- STORAGE -->
-                        <td>
-                            {{ variant.storage or "—" }}
-                        </td>
+                <span class="badge bg-success"> Active </span>
 
+                {% else %}
 
-                        <!-- RAM -->
-                        <td>
-                            {{ variant.ram or "—" }}
-                        </td>
+                <span class="badge bg-secondary"> Inactive </span>
 
+                {% endif %}
+              </td>
 
-                        <!-- COLOUR -->
-                        <td>
-                            {{ variant.colour or "—" }}
-                        </td>
-
-
-                        <!-- BUYING PRICE -->
-                        <td>
-
-                            UGX
-                            {{ "{:,.0f}".format(
-                                variant.buying_price or 0
-                            ) }}
-
-                        </td>
-
-
-                        <!-- SELLING PRICE -->
-                        <td>
-
-                            UGX
-                            {{ "{:,.0f}".format(
-                                variant.selling_price or 0
-                            ) }}
-
-                        </td>
-
-
-                        <!-- PROFIT -->
-                        <td>
-
-                            {% set profit =
-                                (variant.selling_price or 0)
-                                - (variant.buying_price or 0)
-                            %}
-
-                            {% if profit > 0 %}
-
-                                <span class="text-success fw-semibold">
-
-                                    UGX {{ "{:,.0f}".format(profit) }}
-
-                                </span>
-
-                            {% elif profit < 0 %}
-
-                                <span class="text-danger fw-semibold">
-
-                                    UGX {{ "{:,.0f}".format(profit) }}
-
-                                </span>
-
-                            {% else %}
-
-                                <span class="text-muted">
-                                    UGX 0
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <!-- QUANTITY -->
-                        <td>
-
-                            {% if variant.quantity <= 0 %}
-
-                                <span class="badge bg-danger">
-                                    0
-                                </span>
-
-                            {% elif variant.quantity <= variant.minimum_stock %}
-
-                                <span class="badge bg-warning text-dark">
-                                    {{ variant.quantity }}
-                                </span>
-
-                            {% else %}
-
-                                <span class="badge bg-success">
-                                    {{ variant.quantity }}
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <!-- STATUS -->
-                        <td>
-
-                            {% if variant.is_active %}
-
-                                <span class="badge bg-success">
-                                    Active
-                                </span>
-
-                            {% else %}
-
-                                <span class="badge bg-secondary">
-                                    Inactive
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <!-- ACTIONS -->
-                        <td>
-
-                            <div class="btn-group btn-group-sm">
-
-                                <a href="{{ url_for(
+              <!-- ACTIONS -->
+              <td>
+                <div class="btn-group btn-group-sm">
+                  <a
+                    href="{{ url_for(
                                     'variant.edit',
                                     id=variant.id
                                 ) }}"
-                                   class="btn btn-outline-primary"
-                                   title="Edit Variant">
+                    class="btn btn-outline-primary"
+                    title="Edit Variant"
+                  >
+                    <i class="fas fa-pen"></i>
+                  </a>
 
-                                    <i class="bi bi-pencil"></i>
-
-                                </a>
-
-                                <a href="{{ url_for(
+                  <a
+                    href="{{ url_for(
                                     'variant.toggle',
                                     id=variant.id
                                 ) }}"
-                                   class="btn btn-outline-secondary"
-                                   title="{% if variant.is_active %}Deactivate{% else %}Activate{% endif %}"
-                                   onclick="return confirm('{% if variant.is_active %}Deactivate{% else %}Activate{% endif %} this variant?');">
+                    class="btn btn-outline-secondary"
+                    title="{% if variant.is_active %}Deactivate{% else %}Activate{% endif %}"
+                    onclick="
+                      return confirm(
+                        '{% if variant.is_active %}Deactivate{% else %}Activate{% endif %} this variant?',
+                      );
+                    "
+                  >
+                    {% if variant.is_active %}
 
-                                    {% if variant.is_active %}
-
-                                        <i class="bi bi-toggle-on"></i>
-
-                                    {% else %}
-
-                                        <i class="bi bi-toggle-off"></i>
-
-                                    {% endif %}
-
-                                </a>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
+                    <i class="fas fa-toggle-on"></i>
 
                     {% else %}
 
-                    <tr>
+                    <i class="fas fa-toggle-off"></i>
 
-                        <td colspan="12"
-                            class="text-center py-5">
+                    {% endif %}
+                  </a>
+                </div>
+              </td>
+            </tr>
 
-                            <div class="text-muted">
+            {% else %}
 
-                                <i class="bi bi-box-seam"
-                                   style="font-size: 2rem;"></i>
+            <tr>
+              <td colspan="12" class="text-center py-5">
+                <div class="text-muted">
+                  <i class="fas fa-box" style="font-size: 2rem"></i>
 
-                                <p class="mt-2 mb-0">
-                                    No product variants found.
-                                </p>
+                  <p class="mt-2 mb-0">No product variants found.</p>
 
-                                {% if search %}
+                  {% if search %}
 
-                                <small>
-                                    Try a different search term.
-                                </small>
+                  <small> Try a different search term. </small>
 
-                                {% endif %}
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
 
-                            </div>
-
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-
+  </div>
 </div>
 
 {% endblock %}

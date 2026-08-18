@@ -1,4 +1,4 @@
-from datetime import datetime
+from utils.timezone import utc_now_naive
 
 from flask import (
     Blueprint,
@@ -11,8 +11,6 @@ from flask import (
 )
 
 from services.auth_service import AuthService
-
-
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -32,8 +30,9 @@ def login():
             session["user_id"] = user.id
             session["username"] = user.username
             session["role"] = user.role.name if user.role else ""
-            session["last_activity"] = datetime.utcnow().timestamp()
-            user.last_login = datetime.utcnow()
+            session["last_activity"] = utc_now_naive().timestamp()
+            user.last_login = utc_now_naive()
+            user.last_login = utc_now_naive()
             from db import db
 
             db.session.commit()

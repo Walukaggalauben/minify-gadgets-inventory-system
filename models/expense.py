@@ -1,4 +1,4 @@
-from datetime import datetime
+from utils.timezone import utc_now_naive
 from db import db
 
 
@@ -15,7 +15,7 @@ class Expense(db.Model):
     reference = db.Column(db.String(100))
     notes = db.Column(db.Text)
     created_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utc_now_naive)
 
     user = db.relationship("User", backref=db.backref("expenses", lazy=True))
 

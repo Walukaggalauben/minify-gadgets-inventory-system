@@ -130,17 +130,27 @@ def view(id):
 
     customer = Customer.query.get_or_404(id)
 
-    purchase_count = Sale.query.filter_by(customer_id=customer.id).count()
+    purchase_count = Sale.query.filter(
+        Sale.customer_id == customer.id,
+        Sale.status != "Cancelled",
+    ).count()
 
     outstanding_balance = (
         db.session.query(db.func.coalesce(db.func.sum(Sale.balance_due), 0))
-        .filter(Sale.customer_id == customer.id, Sale.balance_due > 0)
+        .filter(
+            Sale.customer_id == customer.id,
+            Sale.status != "Cancelled",
+            Sale.balance_due > 0,
+        )
         .scalar()
     )
 
     lifetime_spend = (
         db.session.query(db.func.coalesce(db.func.sum(Sale.total_amount), 0))
-        .filter(Sale.customer_id == customer.id)
+        .filter(
+            Sale.customer_id == customer.id,
+            Sale.status != "Cancelled",
+        )
         .scalar()
     )
 

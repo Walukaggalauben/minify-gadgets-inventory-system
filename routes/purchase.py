@@ -17,8 +17,9 @@ from models.purchase import Purchase
 from models.supplier import Supplier
 from models.product_variant import ProductVariant
 
-from services.purchase_service import PurchaseService
+from utils.timezone import application_date
 
+from services.purchase_service import PurchaseService
 
 purchase_bp = Blueprint(
     "purchase",
@@ -30,6 +31,7 @@ purchase_bp = Blueprint(
 # ==========================================================
 # PURCHASE LIST
 # ==========================================================
+
 
 @purchase_bp.route("/")
 def index():
@@ -49,14 +51,11 @@ def index():
 
     if search:
 
-        query = query.join(
-            Supplier,
-            Purchase.supplier_id == Supplier.id
-        ).filter(
+        query = query.join(Supplier, Purchase.supplier_id == Supplier.id).filter(
             db.or_(
                 Purchase.purchase_number.ilike(f"%{search}%"),
                 Purchase.invoice_number.ilike(f"%{search}%"),
-                Supplier.name.ilike(f"%{search}%")
+                Supplier.name.ilike(f"%{search}%"),
             )
         )
 
@@ -65,15 +64,9 @@ def index():
     # ------------------------------------------------------
 
     if status:
-        query = query.filter(
-            Purchase.status == status
-        )
+        query = query.filter(Purchase.status == status)
 
-    purchases = (
-        query
-        .order_by(Purchase.purchase_date.desc())
-        .all()
-    )
+    purchases = query.order_by(Purchase.purchase_date.desc()).all()
 
     return render_template(
         "purchases/index.html",
@@ -82,9 +75,11 @@ def index():
         status=status,
     )
 
+
 # ==========================================================
 # CREATE PURCHASE
 # ==========================================================
+
 
 @purchase_bp.route("/create", methods=["GET", "POST"])
 def create():
@@ -92,62 +87,36 @@ def create():
     if not login_required():
         return redirect(url_for("auth.login"))
 
-    suppliers = (
-        Supplier.query
-        .order_by(Supplier.name)
-        .all()
-    )
+    suppliers = Supplier.query.order_by(Supplier.name).all()
 
-    variants = (
-        ProductVariant.query
-        .filter_by(is_active=True)
-        .all()
-    )
+    variants = ProductVariant.query.filter_by(is_active=True).all()
 
     if request.method == "POST":
 
         try:
 
-            supplier_id = int(
-                request.form.get("supplier_id")
-            )
+            supplier_id = int(request.form.get("supplier_id"))
 
             purchase_date = datetime.strptime(
                 request.form.get("purchase_date"),
                 "%Y-%m-%d",
             ).date()
 
-            invoice_number = request.form.get(
-                "invoice_number"
-            )
+            invoice_number = request.form.get("invoice_number")
 
-            payment_method = request.form.get(
-                "payment_method"
-            )
+            payment_method = request.form.get("payment_method")
 
-            notes = request.form.get(
-                "notes"
-            )
+            notes = request.form.get("notes")
 
-            variant_ids = request.form.getlist(
-                "variant_id[]"
-            )
+            variant_ids = request.form.getlist("variant_id[]")
 
-            quantities = request.form.getlist(
-                "quantity[]"
-            )
+            quantities = request.form.getlist("quantity[]")
 
-            unit_costs = request.form.getlist(
-                "unit_cost[]"
-            )
+            unit_costs = request.form.getlist("unit_cost[]")
 
-            selling_prices = request.form.getlist(
-                "default_selling_price[]"
-            )
+            selling_prices = request.form.getlist("default_selling_price[]")
 
-            imei_groups = request.form.getlist(
-                "imeis[]"
-            )
+            imei_groups = request.form.getlist("imeis[]")
 
             items = []
 
@@ -175,21 +144,13 @@ def create():
 
                 buying_price = float(unit_cost)
 
-                default_selling_price = float(
-                    selling_price
-                )
+                default_selling_price = float(selling_price)
 
-                imeis = [
-                    i.strip()
-                    for i in imei_text.splitlines()
-                    if i.strip()
-                ]
+                imeis = [i.strip() for i in imei_text.splitlines() if i.strip()]
 
                 items.append(
                     {
-                        "product_variant_id": int(
-                            variant_id
-                        ),
+                        "product_variant_id": int(variant_id),
                         "quantity": quantity,
                         "unit_cost": buying_price,
                         "default_selling_price": default_selling_price,
@@ -208,9 +169,7 @@ def create():
                     "purchases/create.html",
                     suppliers=suppliers,
                     variants=variants,
-                    today=datetime.today().strftime(
-                        "%Y-%m-%d"
-                    ),
+                    today=application_date().strftime("%Y-%m-%d"),
                 )
 
             PurchaseService.create_purchase(
@@ -228,9 +187,7 @@ def create():
                 "success",
             )
 
-            return redirect(
-                url_for("purchase.index")
-            )
+            return redirect(url_for("purchase.index"))
 
         except Exception as e:
 
@@ -243,14 +200,14 @@ def create():
         "purchases/create.html",
         suppliers=suppliers,
         variants=variants,
-        today=datetime.today().strftime(
-            "%Y-%m-%d"
-        ),
+        today=application_date().strftime("%Y-%m-%d"),
     )
+
 
 # ==========================================================
 # EDIT PURCHASE
 # ==========================================================
+
 
 @purchase_bp.route("/edit/<int:purchase_id>", methods=["GET", "POST"])
 def edit(purchase_id):
@@ -266,67 +223,37 @@ def edit(purchase_id):
 
     if purchase.status == "Cancelled":
 
-        flash(
-            "A cancelled purchase cannot be edited.",
-            "warning"
-        )
+        flash("A cancelled purchase cannot be edited.", "warning")
 
-        return redirect(
-            url_for("purchase.index")
-        )
+        return redirect(url_for("purchase.index"))
 
-    suppliers = (
-        Supplier.query
-        .order_by(Supplier.name)
-        .all()
-    )
+    suppliers = Supplier.query.order_by(Supplier.name).all()
 
-    variants = (
-        ProductVariant.query
-        .filter_by(is_active=True)
-        .all()
-    )
+    variants = ProductVariant.query.filter_by(is_active=True).all()
 
     if request.method == "POST":
 
         try:
 
-            supplier_id = int(
-                request.form.get("supplier_id")
-            )
+            supplier_id = int(request.form.get("supplier_id"))
 
             purchase_date = datetime.strptime(
-                request.form.get("purchase_date"),
-                "%Y-%m-%d"
+                request.form.get("purchase_date"), "%Y-%m-%d"
             ).date()
 
-            invoice_number = request.form.get(
-                "invoice_number"
-            )
+            invoice_number = request.form.get("invoice_number")
 
-            payment_method = request.form.get(
-                "payment_method"
-            )
+            payment_method = request.form.get("payment_method")
 
-            notes = request.form.get(
-                "notes"
-            )
+            notes = request.form.get("notes")
 
-            variant_ids = request.form.getlist(
-                "variant_id[]"
-            )
+            variant_ids = request.form.getlist("variant_id[]")
 
-            quantities = request.form.getlist(
-                "quantity[]"
-            )
+            quantities = request.form.getlist("quantity[]")
 
-            unit_costs = request.form.getlist(
-                "unit_cost[]"
-            )
+            unit_costs = request.form.getlist("unit_cost[]")
 
-            selling_prices = request.form.getlist(
-                "default_selling_price[]"
-            )
+            selling_prices = request.form.getlist("default_selling_price[]")
 
             items = []
 
@@ -352,25 +279,16 @@ def edit(purchase_id):
 
                 items.append(
                     {
-                        "product_variant_id": int(
-                            variant_id
-                        ),
+                        "product_variant_id": int(variant_id),
                         "quantity": quantity,
-                        "unit_cost": float(
-                            unit_cost
-                        ),
-                        "default_selling_price": float(
-                            selling_price
-                        ),
+                        "unit_cost": float(unit_cost),
+                        "default_selling_price": float(selling_price),
                     }
                 )
 
             if not items:
 
-                flash(
-                    "Please add at least one purchase item.",
-                    "warning"
-                )
+                flash("Please add at least one purchase item.", "warning")
 
                 return render_template(
                     "purchases/edit.html",
@@ -389,24 +307,13 @@ def edit(purchase_id):
                 items=items,
             )
 
-            flash(
-                "Purchase updated successfully.",
-                "success"
-            )
+            flash("Purchase updated successfully.", "success")
 
-            return redirect(
-                url_for(
-                    "purchase.view",
-                    purchase_id=purchase.id
-                )
-            )
+            return redirect(url_for("purchase.view", purchase_id=purchase.id))
 
         except Exception as e:
 
-            flash(
-                str(e),
-                "danger"
-            )
+            flash(str(e), "danger")
 
     return render_template(
         "purchases/edit.html",
@@ -414,6 +321,7 @@ def edit(purchase_id):
         suppliers=suppliers,
         variants=variants,
     )
+
 
 @purchase_bp.route("/view/<int:purchase_id>")
 def view(purchase_id):
@@ -426,9 +334,11 @@ def print_purchase(purchase_id):
     purchase = Purchase.query.get_or_404(purchase_id)
     return render_template("purchases/print.html", purchase=purchase)
 
+
 # ==========================================================
 # CANCEL PURCHASE
 # ==========================================================
+
 
 @purchase_bp.route("/cancel/<int:purchase_id>", methods=["POST"])
 def cancel(purchase_id):
@@ -442,10 +352,7 @@ def cancel(purchase_id):
 
         PurchaseService.cancel_purchase(purchase)
 
-        flash(
-            f"Purchase {purchase.purchase_number} cancelled successfully.",
-            "success"
-        )
+        flash(f"Purchase {purchase.purchase_number} cancelled successfully.", "success")
 
     except Exception as e:
 

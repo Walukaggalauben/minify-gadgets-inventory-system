@@ -1,10 +1,20 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+)
 
 from db import db
 from models.system_setting import SystemSetting
+from services.currency_service import CurrencyService
 
 system_settings_bp = Blueprint(
-    "system_settings", __name__, url_prefix="/system-settings"
+    "system_settings",
+    __name__,
+    url_prefix="/system-settings",
 )
 
 
@@ -13,14 +23,27 @@ def index():
 
     settings = SystemSetting.get_settings()
 
+    currencies = CurrencyService.get_active_currencies()
+
     if request.method == "POST":
 
         try:
+
             # ==========================================
             # GENERAL SETTINGS
             # ==========================================
 
-            settings.currency = request.form.get("currency", "UGX").strip() or "UGX"
+            currency_code = request.form.get("currency", "UGX").strip().upper()
+
+            selected_currency = CurrencyService.get_by_code(currency_code)
+
+            if selected_currency is None:
+
+                flash("Invalid currency selected.", "danger")
+
+                return redirect(url_for("system_settings.index"))
+
+            settings.currency = selected_currency.code
 
             settings.timezone = (
                 request.form.get("timezone", "Africa/Kampala").strip()
@@ -87,7 +110,12 @@ def index():
 
             records_per_page = request.form.get("records_per_page", type=int)
 
-            if records_per_page not in (10, 25, 50, 100):
+            if records_per_page not in (
+                10,
+                25,
+                50,
+                100,
+            ):
                 records_per_page = 25
 
             settings.records_per_page = records_per_page
@@ -116,4 +144,68 @@ def index():
 
             flash("Unable to save system settings. " "Please try again.", "danger")
 
-    return render_template("settings/index.html", settings=settings)
+    return render_template(
+        "settings/index.html",
+        settings=settings,
+        currencies=currencies,
+    )
+
+@system_settings_bp.route(
+    "/currency-rate",
+    methods=["GET"]
+)
+def currency_rate():
+
+    from_currency = (
+        request.args.get(
+            "from",
+            ""
+        )
+        .strip()
+        .upper()
+    )
+
+    to_currency = (
+        request.args.get(
+            "to",
+            ""
+        )
+        .strip()
+        .upper()
+    )
+
+    if not from_currency or not to_currency:
+
+        return {
+            "success": False,
+            "message": (
+                "Both source and target currencies "
+                "are required."
+            ),
+        }, 400
+
+    try:
+
+        rate = CurrencyService.get_rate(
+            from_currency,
+            to_currency,
+        )
+
+        return {
+            "success": True,
+            "from_currency": from_currency,
+            "to_currency": to_currency,
+            "rate": float(rate),
+        }
+
+    except Exception as error:
+
+        print(
+            "CURRENCY RATE ERROR:",
+            error
+        )
+
+        return {
+            "success": False,
+            "message": str(error),
+        }, 400

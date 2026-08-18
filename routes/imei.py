@@ -129,7 +129,11 @@ def delete(imei_id):
 
     imei = IMEIService.get(imei_id)
 
-    IMEIService.delete(imei)
+    try:
+        IMEIService.delete(imei)
+    except ValueError as e:
+        flash(str(e), "danger")
+        return redirect(url_for("imei.index"))
 
     flash(
         "IMEI deleted successfully.",

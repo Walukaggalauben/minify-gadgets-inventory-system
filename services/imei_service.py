@@ -48,6 +48,48 @@ class IMEIService:
     @staticmethod
     def update(imei, data):
 
+        # A sold/purchase-traceable IMEI is historical inventory data.
+        # Its identity, variant and status must not be rewritten from the
+        # generic IMEI editor. Notes remain editable.
+        has_sale_history = bool(imei.sale_items)
+        has_purchase_history = imei.purchase_item_id is not None
+
+        if has_sale_history:
+            requested_imei = str(data.get("imei", imei.imei)).strip()
+            requested_serial = data.get("serial_number") or None
+            requested_variant = int(data["product_variant_id"]) if data.get("product_variant_id") else imei.product_variant_id
+            requested_status = data.get("status", imei.status)
+
+            if (
+                requested_imei != imei.imei
+                or requested_serial != imei.serial_number
+                or requested_variant != imei.product_variant_id
+                or requested_status != imei.status
+            ):
+                raise ValueError(
+                    "This IMEI has sale history and cannot have its identity, "
+                    "product variant, or status changed. Edit notes only."
+                )
+
+            imei.notes = data.get("notes")
+            db.session.commit()
+            return imei
+
+        if has_purchase_history:
+            requested_imei = str(data.get("imei", imei.imei)).strip()
+            requested_serial = data.get("serial_number") or None
+            requested_variant = int(data["product_variant_id"]) if data.get("product_variant_id") else imei.product_variant_id
+
+            if (
+                requested_imei != imei.imei
+                or requested_serial != imei.serial_number
+                or requested_variant != imei.product_variant_id
+            ):
+                raise ValueError(
+                    "This IMEI is linked to a purchase and its identity or "
+                    "product variant cannot be changed."
+                )
+
         # Prevent duplicate IMEI
         existing = IMEI.query.filter(
             IMEI.imei == data["imei"],
@@ -79,6 +121,11 @@ class IMEIService:
 
     @staticmethod
     def delete(imei):
+
+        if imei.purchase_item_id is not None or imei.sale_items:
+            raise ValueError(
+                "This IMEI is part of inventory/sales history and cannot be deleted."
+            )
 
         db.session.delete(imei)
         db.session.commit()

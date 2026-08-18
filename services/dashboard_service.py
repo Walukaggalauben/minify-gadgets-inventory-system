@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 
+
 from sqlalchemy import func
 
 from db import db
@@ -16,6 +17,9 @@ from models.sale_item import SaleItem
 from models.supplier import Supplier
 from models.system_setting import SystemSetting
 from models.expense import Expense
+from models.customer_credit_transaction import CustomerCreditTransaction
+
+from utils.timezone import application_date
 
 
 class DashboardService:
@@ -23,12 +27,41 @@ class DashboardService:
     @staticmethod
     def get_statistics():
 
-        today = date.today()
+        today = application_date()
+
+        # Week starts on Monday.
+        week_start = today - timedelta(days=today.weekday())
 
         settings = SystemSetting.get_settings()
 
+        # ==================================================
+        # CUSTOMER CREDIT / OTHER BUSINESS INCOME
+        # ==================================================
+        # Customer overpayments are NOT part of Sale.profit.
+        # Only credits explicitly converted to business income
+        # become additional business income. Refunds are deducted.
+        converted_credit_income = (
+            db.session.query(
+                func.coalesce(func.sum(CustomerCreditTransaction.amount), 0)
+            )
+            .filter(CustomerCreditTransaction.transaction_type == "CONVERTED_TO_INCOME")
+            .scalar()
+            or 0
+        )
+
+        customer_credit_refunds = (
+            db.session.query(
+                func.coalesce(func.sum(CustomerCreditTransaction.amount), 0)
+            )
+            .filter(CustomerCreditTransaction.transaction_type == "REFUND")
+            .scalar()
+            or 0
+        )
+
         # Operating expenses and customer credit
-        total_expenses = db.session.query(func.coalesce(func.sum(Expense.amount), 0)).scalar() or 0
+        total_expenses = (
+            db.session.query(func.coalesce(func.sum(Expense.amount), 0)).scalar() or 0
+        )
 
         year_expenses = (
             db.session.query(func.coalesce(func.sum(Expense.amount), 0))
@@ -37,7 +70,12 @@ class DashboardService:
             or 0
         )
 
-        outstanding_credit = db.session.query(func.coalesce(func.sum(Sale.balance_due), 0)).filter(Sale.balance_due > 0).scalar() or 0
+        outstanding_credit = (
+            db.session.query(func.coalesce(func.sum(Sale.balance_due), 0))
+            .filter(Sale.balance_due > 0)
+            .scalar()
+            or 0
+        )
 
         # ==================================================
         # BASIC COUNTS
@@ -125,31 +163,75 @@ class DashboardService:
         returned_imeis = IMEI.query.filter(IMEI.status == "Returned").count()
 
         # ==================================================
+        # CUSTOMER CREDIT - PERIOD BREAKDOWNS
+        # ==================================================
+
+        today_credit_income = (
+            db.session.query(
+                func.coalesce(func.sum(CustomerCreditTransaction.amount), 0)
+            )
+            .filter(
+                CustomerCreditTransaction.transaction_type == "CONVERTED_TO_INCOME",
+                func.date(CustomerCreditTransaction.created_at) == today,
+            )
+            .scalar()
+            or 0
+        )
+
+        today_credit_refunds = (
+            db.session.query(
+                func.coalesce(func.sum(CustomerCreditTransaction.amount), 0)
+            )
+            .filter(
+                CustomerCreditTransaction.transaction_type == "REFUND",
+                func.date(CustomerCreditTransaction.created_at) == today,
+            )
+            .scalar()
+            or 0
+        )
+
+        # ==================================================
         # TODAY
         # ==================================================
 
         today_sales = (
             db.session.query(func.sum(Sale.total_amount))
-            .filter(func.date(Sale.sale_date) == today)
+            .filter(
+                func.date(Sale.sale_date) == today,
+                Sale.status != "Cancelled",
+            )
+            .scalar()
+            or 0
+        )
+
+        today_sale_profit = (
+            db.session.query(func.sum(Sale.profit))
+            .filter(
+                func.date(Sale.sale_date) == today,
+                Sale.status != "Cancelled",
+            )
             .scalar()
             or 0
         )
 
         today_profit = (
-            db.session.query(func.sum(Sale.profit))
-            .filter(func.date(Sale.sale_date) == today)
-            .scalar()
-            or 0
+            float(today_sale_profit)
+            + float(today_credit_income)
+            - float(today_credit_refunds)
         )
 
         today_transactions = Sale.query.filter(
-            func.date(Sale.sale_date) == today
+            func.date(Sale.sale_date) == today,
+            Sale.status != "Cancelled",
         ).count()
 
         products_sold_today = (
             db.session.query(func.sum(SaleItem.quantity))
             .join(Sale)
-            .filter(func.date(Sale.sale_date) == today)
+            .filter(
+                func.date(Sale.sale_date) == today,
+                Sale.status != "Cancelled",
+            )
             .scalar()
             or 0
         )
@@ -165,25 +247,104 @@ class DashboardService:
         # WEEK
         # ==================================================
 
-        week_start = today - timedelta(days=today.weekday())
+        # Calculate the week boundary BEFORE any week-based queries use it.
+        # Monday is the first day of the week.
+
+        # ==================================================
+        # WEEK - CUSTOMER CREDIT
+        # ==================================================
+
+        week_credit_income = (
+            db.session.query(
+                func.coalesce(func.sum(CustomerCreditTransaction.amount), 0)
+            )
+            .filter(
+                CustomerCreditTransaction.transaction_type == "CONVERTED_TO_INCOME",
+                func.date(CustomerCreditTransaction.created_at) >= week_start,
+            )
+            .scalar()
+            or 0
+        )
+
+        week_credit_refunds = (
+            db.session.query(
+                func.coalesce(func.sum(CustomerCreditTransaction.amount), 0)
+            )
+            .filter(
+                CustomerCreditTransaction.transaction_type == "REFUND",
+                func.date(CustomerCreditTransaction.created_at) >= week_start,
+            )
+            .scalar()
+            or 0
+        )
+
+        # ==================================================
+        # WEEK SALES / PURCHASES
+        # ==================================================
 
         week_sales = (
             db.session.query(func.sum(Sale.total_amount))
-            .filter(func.date(Sale.sale_date) >= week_start)
+            .filter(
+                func.date(Sale.sale_date) >= week_start,
+                Sale.status != "Cancelled",
+            )
+            .scalar()
+            or 0
+        )
+
+        week_sale_profit = (
+            db.session.query(func.sum(Sale.profit))
+            .filter(
+                func.date(Sale.sale_date) >= week_start,
+                Sale.status != "Cancelled",
+            )
             .scalar()
             or 0
         )
 
         week_profit = (
-            db.session.query(func.sum(Sale.profit))
-            .filter(func.date(Sale.sale_date) >= week_start)
-            .scalar()
-            or 0
+            float(week_sale_profit)
+            + float(week_credit_income)
+            - float(week_credit_refunds)
         )
 
         week_purchases = (
             db.session.query(func.sum(Purchase.total_amount))
             .filter(Purchase.purchase_date >= week_start)
+            .scalar()
+            or 0
+        )
+
+        # ==================================================
+        # MONTH - CUSTOMER CREDIT
+        # ==================================================
+
+        month_credit_income = (
+            db.session.query(
+                func.coalesce(func.sum(CustomerCreditTransaction.amount), 0)
+            )
+            .filter(
+                CustomerCreditTransaction.transaction_type == "CONVERTED_TO_INCOME",
+                func.extract("year", CustomerCreditTransaction.created_at)
+                == today.year,
+                func.extract("month", CustomerCreditTransaction.created_at)
+                == today.month,
+            )
+            .scalar()
+            or 0
+        )
+
+        month_credit_refunds = (
+            db.session.query(
+                func.coalesce(func.sum(CustomerCreditTransaction.amount), 0)
+            )
+            .filter(
+                CustomerCreditTransaction.transaction_type == "REFUND",
+                func.extract("year", CustomerCreditTransaction.created_at)
+                == today.year,
+                func.extract("month", CustomerCreditTransaction.created_at)
+                == today.month,
+            )
             .scalar()
             or 0
         )
@@ -197,19 +358,27 @@ class DashboardService:
             .filter(
                 func.extract("year", Sale.sale_date) == today.year,
                 func.extract("month", Sale.sale_date) == today.month,
+                Sale.status != "Cancelled",
+            )
+            .scalar()
+            or 0
+        )
+
+        month_sale_profit = (
+            db.session.query(func.sum(Sale.profit))
+            .filter(
+                func.extract("year", Sale.sale_date) == today.year,
+                func.extract("month", Sale.sale_date) == today.month,
+                Sale.status != "Cancelled",
             )
             .scalar()
             or 0
         )
 
         month_profit = (
-            db.session.query(func.sum(Sale.profit))
-            .filter(
-                func.extract("year", Sale.sale_date) == today.year,
-                func.extract("month", Sale.sale_date) == today.month,
-            )
-            .scalar()
-            or 0
+            float(month_sale_profit)
+            + float(month_credit_income)
+            - float(month_credit_refunds)
         )
 
         month_purchases = (
@@ -223,21 +392,63 @@ class DashboardService:
         )
 
         # ==================================================
+        # YEAR - CUSTOMER CREDIT
+        # ==================================================
+
+        year_credit_income = (
+            db.session.query(
+                func.coalesce(func.sum(CustomerCreditTransaction.amount), 0)
+            )
+            .filter(
+                CustomerCreditTransaction.transaction_type == "CONVERTED_TO_INCOME",
+                func.extract("year", CustomerCreditTransaction.created_at)
+                == today.year,
+            )
+            .scalar()
+            or 0
+        )
+
+        year_credit_refunds = (
+            db.session.query(
+                func.coalesce(func.sum(CustomerCreditTransaction.amount), 0)
+            )
+            .filter(
+                CustomerCreditTransaction.transaction_type == "REFUND",
+                func.extract("year", CustomerCreditTransaction.created_at)
+                == today.year,
+            )
+            .scalar()
+            or 0
+        )
+
+        # ==================================================
         # YEAR
         # ==================================================
 
         year_sales = (
             db.session.query(func.sum(Sale.total_amount))
-            .filter(func.extract("year", Sale.sale_date) == today.year)
+            .filter(
+                func.extract("year", Sale.sale_date) == today.year,
+                Sale.status != "Cancelled",
+            )
+            .scalar()
+            or 0
+        )
+
+        year_sale_profit = (
+            db.session.query(func.sum(Sale.profit))
+            .filter(
+                func.extract("year", Sale.sale_date) == today.year,
+                Sale.status != "Cancelled",
+            )
             .scalar()
             or 0
         )
 
         year_profit = (
-            db.session.query(func.sum(Sale.profit))
-            .filter(func.extract("year", Sale.sale_date) == today.year)
-            .scalar()
-            or 0
+            float(year_sale_profit)
+            + float(year_credit_income)
+            - float(year_credit_refunds)
         )
 
         year_purchases = (
@@ -247,13 +458,23 @@ class DashboardService:
             or 0
         )
 
-        average_sale = db.session.query(func.avg(Sale.total_amount)).scalar() or 0
+        average_sale = (
+            db.session.query(func.avg(Sale.total_amount))
+            .filter(Sale.status != "Cancelled")
+            .scalar()
+            or 0
+        )
 
         # ==================================================
         # RECENT SALES
         # ==================================================
 
-        recent_sales = Sale.query.order_by(Sale.sale_date.desc()).limit(10).all()
+        recent_sales = (
+            Sale.query.filter(Sale.status != "Cancelled")
+            .order_by(Sale.sale_date.desc())
+            .limit(10)
+            .all()
+        )
 
         # ==================================================
         # RECENT PURCHASES
@@ -276,6 +497,8 @@ class DashboardService:
             )
             .join(ProductVariant, SaleItem.product_variant_id == ProductVariant.id)
             .join(Product, ProductVariant.product_id == Product.id)
+            .join(Sale, SaleItem.sale_id == Sale.id)
+            .filter(Sale.status != "Cancelled")
             .group_by(Product.id, Product.name)
             .order_by(func.sum(SaleItem.quantity).desc())
             .limit(10)
@@ -288,10 +511,13 @@ class DashboardService:
 
         profitable_products = (
             db.session.query(
-                Product.name.label("product"), func.sum(SaleItem.profit).label("profit")
+                Product.name.label("product"),
+                func.sum(SaleItem.profit).label("profit"),
             )
             .join(ProductVariant, SaleItem.product_variant_id == ProductVariant.id)
             .join(Product, ProductVariant.product_id == Product.id)
+            .join(Sale, SaleItem.sale_id == Sale.id)
+            .filter(Sale.status != "Cancelled")
             .group_by(Product.id, Product.name)
             .order_by(func.sum(SaleItem.profit).desc())
             .limit(10)
@@ -311,6 +537,8 @@ class DashboardService:
             .join(Product, Brand.id == Product.brand_id)
             .join(ProductVariant, Product.id == ProductVariant.product_id)
             .join(SaleItem, ProductVariant.id == SaleItem.product_variant_id)
+            .join(Sale, SaleItem.sale_id == Sale.id)
+            .filter(Sale.status != "Cancelled")
             .group_by(Brand.id, Brand.name)
             .order_by(func.sum(SaleItem.total).desc())
             .all()
@@ -329,6 +557,8 @@ class DashboardService:
             .join(Product, Category.id == Product.category_id)
             .join(ProductVariant, Product.id == ProductVariant.product_id)
             .join(SaleItem, ProductVariant.id == SaleItem.product_variant_id)
+            .join(Sale, SaleItem.sale_id == Sale.id)
+            .filter(Sale.status != "Cancelled")
             .group_by(Category.id, Category.name)
             .order_by(func.sum(SaleItem.total).desc())
             .all()
@@ -425,12 +655,38 @@ class DashboardService:
                 or 0
             )
 
-            profit = (
+            sale_profit = (
                 db.session.query(func.sum(Sale.profit))
                 .filter(func.date(Sale.sale_date) == current_day)
                 .scalar()
                 or 0
             )
+
+            credit_income = (
+                db.session.query(
+                    func.coalesce(func.sum(CustomerCreditTransaction.amount), 0)
+                )
+                .filter(
+                    CustomerCreditTransaction.transaction_type == "CONVERTED_TO_INCOME",
+                    func.date(CustomerCreditTransaction.created_at) == current_day,
+                )
+                .scalar()
+                or 0
+            )
+
+            credit_refunds = (
+                db.session.query(
+                    func.coalesce(func.sum(CustomerCreditTransaction.amount), 0)
+                )
+                .filter(
+                    CustomerCreditTransaction.transaction_type == "REFUND",
+                    func.date(CustomerCreditTransaction.created_at) == current_day,
+                )
+                .scalar()
+                or 0
+            )
+
+            profit = float(sale_profit) + float(credit_income) - float(credit_refunds)
 
             chart_labels.append(current_day.strftime("%d %b"))
 
@@ -501,18 +757,32 @@ class DashboardService:
             # -------------------------
             "today_sales": today_sales,
             "today_profit": today_profit,
+            "today_sale_profit": float(today_sale_profit),
+            "today_credit_income": float(today_credit_income),
+            "today_credit_refunds": float(today_credit_refunds),
             "today_transactions": today_transactions,
             "products_sold_today": products_sold_today,
             "week_sales": week_sales,
             "week_profit": week_profit,
+            "week_sale_profit": float(week_sale_profit),
+            "week_credit_income": float(week_credit_income),
+            "week_credit_refunds": float(week_credit_refunds),
             "month_sales": month_sales,
             "month_profit": month_profit,
+            "month_sale_profit": float(month_sale_profit),
+            "month_credit_income": float(month_credit_income),
+            "month_credit_refunds": float(month_credit_refunds),
             "year_sales": year_sales,
             "year_profit": year_profit,
+            "year_sale_profit": float(year_sale_profit),
+            "year_credit_income": float(year_credit_income),
+            "year_credit_refunds": float(year_credit_refunds),
             "average_sale": average_sale,
             "total_expenses": total_expenses,
             "year_expenses": year_expenses,
             "outstanding_credit": outstanding_credit,
+            "converted_credit_income": float(converted_credit_income),
+            "customer_credit_refunds": float(customer_credit_refunds),
             "net_profit_after_expenses": float(year_profit) - float(year_expenses),
             "sales_summary": sales_summary,
             "profit_summary": profit_summary,

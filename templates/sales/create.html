@@ -4,7 +4,7 @@ content %}
 <div class="container-fluid">
   <!-- ==================================================
        PAGE HEADER
-  =================================================== -->
+  ===================================================-->
 
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -24,7 +24,7 @@ content %}
 
   <!-- ==================================================
        SALE FORM
-  =================================================== -->
+  ===================================================-->
 
   <form method="POST" id="saleForm">
     <div class="row">
@@ -56,7 +56,7 @@ content %}
                   class="form-control"
                   placeholder="Search customer by name, phone or customer code..."
                   autocomplete="off"
-                  value="{% if selected_customer %}{{ selected_customer.full_name }} ({{ selected_customer.phone }}){% endif %}"
+                  value="{% if selected_customer %}{{selected_customer.full_name }} ({{ selected_customer.phone }}){% endif %}"
                 />
 
                 <div id="customerSearchResults" class="list-group mt-2"></div>
@@ -65,21 +65,21 @@ content %}
                   type="hidden"
                   id="customer_id"
                   name="customer_id"
-                  value="{% if selected_customer %}{{ selected_customer.id }}{% endif %}"
+                  value="{% if selected_customer %}{{selected_customer.id }}{% endif %}"
                 />
 
                 <input
                   type="hidden"
                   id="customer_name"
                   name="customer_name"
-                  value="{% if selected_customer %}{{ selected_customer.full_name }}{% endif %}"
+                  value="{% if selected_customer %}{{selected_customer.full_name }}{% endif %}"
                 />
 
                 <input
                   type="hidden"
                   id="customer_phone"
                   name="customer_phone"
-                  value="{% if selected_customer %}{{ selected_customer.phone }}{% endif %}"
+                  value="{% if selected_customer %}{{selected_customer.phone }}{% endif %}"
                 />
               </div>
             </div>
@@ -122,7 +122,7 @@ content %}
                 id="barcodeScanner"
                 class="form-control"
                 style="max-width: 420px"
-                placeholder="Scan product barcode and press Enter"
+                placeholder="Scan product barcode andpress Enter"
                 autocomplete="off"
               />
               <button
@@ -189,11 +189,8 @@ content %}
                   type="text"
                   id="imeiSearch"
                   class="form-control"
-                  placeholder="Type last digits..."
+                  placeholder="Search IMEI ending or serial..."
                   autocomplete="off"
-                  inputmode="numeric"
-                  maxlength="15"
-                  pattern="[0-9]{1,15}"
                   disabled
                 />
 
@@ -407,49 +404,101 @@ content %}
                  PAYMENT METHOD
             =================================================== -->
 
-            <label class="form-label"> Payment Method </label>
+            <label class="form-label">Payment Method</label>
 
-            <select name="payment_method" class="form-select mb-3" required>
+            <select
+              name="payment_method"
+              id="paymentMethod"
+              class="form-select mb-3"
+              required
+            >
               <option value="Cash">Cash</option>
-
               <option value="Mobile Money">Mobile Money</option>
-
               <option value="Card">Card</option>
-
               <option value="Bank Transfer">Bank Transfer</option>
               <option value="Credit">Credit / Installment</option>
             </select>
 
+            <div class="border rounded p-3 mb-3">
+              <div class="row">
+                <div class="col-md-5 mb-3 mb-md-0">
+                  <label class="form-label">Payment Currency</label>
+                  <select
+                    name="payment_currency"
+                    id="paymentCurrency"
+                    class="form-select"
+                  >
+                    {% for currency in currencies %}
+                    <option
+                      value="{{ currency.code }}"
+                      {% if currency.code == settings.currency %}selected{% endif %}
+                    >
+                      {{ currency.code }}
+                      {% if currency.symbol %} — {{ currency.symbol }}{% endif %}
+                      — {{ currency.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                  <small class="text-muted">Currency received from the customer.</small>
+                </div>
+
+                <div class="col-md-7">
+                  <label class="form-label">Amount Received</label>
+                  <div class="input-group">
+                    <span class="input-group-text" id="paymentCurrencySymbol">{{ settings.currency }}</span>
+                    <input
+                      type="number"
+                      name="amount_paid"
+                      id="amountPaid"
+                      class="form-control"
+                      min="0"
+                      step="0.01"
+                      value="0"
+                      autocomplete="off"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mt-3">
+                <div class="col-md-7">
+                  <label class="form-label">Manual Exchange Rate <span class="text-muted">(optional)</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text">1 <span id="manualRateFromCurrency">{{ settings.currency }}</span> =</span>
+                    <input
+                      type="number"
+                      name="manual_exchange_rate"
+                      id="manualExchangeRate"
+                      class="form-control"
+                      min="0.000001"
+                      step="0.000001"
+                      placeholder="Use current rate"
+                      autocomplete="off"
+                    />
+                    <span class="input-group-text">{{ settings.currency }}</span>
+                  </div>
+                  <small class="text-muted">Leave blank to use the current rate. Enter a rate only when the actual shop rate differs.</small>
+                </div>
+              </div>
+
+              <div id="exchangeRateBox" class="alert alert-light border mt-3 mb-0">
+                <div class="d-flex justify-content-between">
+                  <span><i class="fas fa-exchange-alt text-success me-1"></i>Exchange Rate</span>
+                  <strong id="exchangeRateText">1 {{ settings.currency }} = 1 {{ settings.currency }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mt-2">
+                  <span>{{ settings.currency }} Equivalent</span>
+                  <strong class="text-success" id="ugxEquivalent">{{ settings.currency }} 0.00</strong>
+                </div>
+                <small id="exchangeRateStatus" class="text-muted d-block mt-2">Enter the amount received.</small>
+              </div>
+            </div>
+
             <div id="creditFields" class="border rounded p-3 mb-3 d-none">
-              <label class="form-label">Amount Paid Now</label>
-              <input
-                type="number"
-                name="amount_paid"
-                id="amountPaid"
-                class="form-control mb-2"
-                min="0"
-                step="0.01"
-                value="0"
-              />
               <label class="form-label">Due Date</label>
-              <input
-                type="date"
-                name="due_date"
-                id="dueDate"
-                class="form-control mb-2"
-              />
-              <input
-                type="text"
-                name="payment_reference"
-                class="form-control mb-2"
-                placeholder="Payment reference (optional)"
-              />
-              <textarea
-                name="payment_notes"
-                class="form-control"
-                rows="2"
-                placeholder="Installment / credit notes (optional)"
-              ></textarea>
+              <input type="date" name="due_date" id="dueDate" class="form-control mb-2" />
+              <input type="text" name="payment_reference" class="form-control mb-2" placeholder="Payment reference (optional)" />
+              <textarea name="payment_notes" class="form-control" rows="2" placeholder="Installment / credit notes (optional)"></textarea>
             </div>
 
             <!-- ==================================================
@@ -473,12 +522,116 @@ content %}
   </form>
 </div>
 
-{% endblock %} {% block scripts %}
+{% endblock %}
 
+{% block scripts %}
 <script src="{{ url_for('static', filename='js/api.js') }}"></script>
-
 <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
-
 <script src="{{ url_for('static', filename='js/sales.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const paymentMethod = document.getElementById("paymentMethod");
+    const paymentCurrency = document.getElementById("paymentCurrency");
+    const amountPaid = document.getElementById("amountPaid");
+    const creditFields = document.getElementById("creditFields");
+    const exchangeRateText = document.getElementById("exchangeRateText");
+    const ugxEquivalent = document.getElementById("ugxEquivalent");
+    const exchangeRateStatus = document.getElementById("exchangeRateStatus");
+    const paymentCurrencySymbol = document.getElementById("paymentCurrencySymbol");
+    const manualExchangeRate = document.getElementById("manualExchangeRate");
+    const manualRateFromCurrency = document.getElementById("manualRateFromCurrency");
+    const BASE_CURRENCY = "{{ settings.currency }}";
+    let currentRate = 1;
+
+    function formatNumber(value) {
+        return Number(value).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function updateCurrencySymbol() {
+        paymentCurrencySymbol.textContent = paymentCurrency.value || BASE_CURRENCY;
+        manualRateFromCurrency.textContent = paymentCurrency.value || BASE_CURRENCY;
+    }
+
+    function getEffectiveRate() {
+        const override = parseFloat(manualExchangeRate.value);
+        return Number.isFinite(override) && override > 0 ? override : currentRate;
+    }
+
+    function calculateEquivalent() {
+        const amount = parseFloat(amountPaid.value) || 0;
+        const rate = getEffectiveRate();
+        if (!Number.isFinite(rate) || rate <= 0) {
+            ugxEquivalent.textContent = `${BASE_CURRENCY} 0.00`;
+            return;
+        }
+        const converted = amount * rate;
+        ugxEquivalent.textContent = `${BASE_CURRENCY} ${formatNumber(converted)}`;
+        exchangeRateText.textContent = `1 ${paymentCurrency.value} = ${formatNumber(rate)} ${BASE_CURRENCY}`;
+    }
+
+    async function loadExchangeRate() {
+        const fromCurrency = paymentCurrency.value;
+        updateCurrencySymbol();
+        if (!fromCurrency) return;
+
+        if (fromCurrency === BASE_CURRENCY) {
+            currentRate = 1;
+            manualExchangeRate.value = "";
+            manualExchangeRate.disabled = true;
+            exchangeRateText.textContent = `1 ${BASE_CURRENCY} = 1 ${BASE_CURRENCY}`;
+            exchangeRateStatus.textContent = "Base currency — no conversion required.";
+            calculateEquivalent();
+            return;
+        }
+
+        manualExchangeRate.disabled = false;
+        exchangeRateStatus.textContent = manualExchangeRate.value ? "Manual rate override is being used." : "Loading current exchange rate...";
+
+        try {
+            const response = await fetch(`/system-settings/currency-rate?from=${encodeURIComponent(fromCurrency)}&to=${encodeURIComponent(BASE_CURRENCY)}`);
+            if (!response.ok) throw new Error("Unable to retrieve exchange rate.");
+            const data = await response.json();
+            if (!data.success) throw new Error(data.message || "Exchange rate unavailable.");
+            currentRate = Number(data.rate);
+            if (!Number.isFinite(currentRate) || currentRate <= 0) throw new Error("Invalid exchange rate.");
+            const rate = getEffectiveRate();
+            exchangeRateText.textContent = `1 ${fromCurrency} = ${formatNumber(rate)} ${BASE_CURRENCY}`;
+            exchangeRateStatus.textContent = manualExchangeRate.value ? "Manual rate override is being used for this transaction." : "Current exchange rate loaded.";
+            calculateEquivalent();
+        } catch (error) {
+            currentRate = 0;
+            exchangeRateText.textContent = "Rate unavailable";
+            exchangeRateStatus.textContent = error.message || "Could not load exchange rate.";
+            ugxEquivalent.textContent = `${BASE_CURRENCY} 0.00`;
+        }
+    }
+
+    paymentMethod.addEventListener("change", function () {
+        const isCredit = this.value === "Credit";
+        creditFields.classList.toggle("d-none", !isCredit);
+        if (isCredit) amountPaid.value = "0";
+        calculateEquivalent();
+    });
+
+    paymentCurrency.addEventListener("change", async function () {
+        await loadExchangeRate();
+        calculateEquivalent();
+    });
+
+    amountPaid.addEventListener("input", calculateEquivalent);
+
+    manualExchangeRate.addEventListener("input", function () {
+        const rate = getEffectiveRate();
+        if (Number.isFinite(rate) && rate > 0) {
+            exchangeRateText.textContent = `1 ${paymentCurrency.value} = ${formatNumber(rate)} ${BASE_CURRENCY}`;
+            exchangeRateStatus.textContent = manualExchangeRate.value ? "Manual rate override is being used for this transaction." : "Current exchange rate loaded.";
+        }
+        calculateEquivalent();
+    });
+
+    updateCurrencySymbol();
+    loadExchangeRate();
+});
+</script>
 
 {% endblock %}

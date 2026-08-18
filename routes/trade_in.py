@@ -11,6 +11,9 @@ from models.product import Product
 from models.product_variant import ProductVariant
 from models.trade_in_item import TradeInItem
 from models.imei import IMEI
+
+from utils.timezone import application_date
+
 from services.trade_in_service import TradeInService
 
 trade_in_bp = Blueprint("trade_in", __name__, url_prefix="/trade-ins")
@@ -245,7 +248,7 @@ def create():
         "trade_ins/create.html",
         products=products,
         variants=variants,
-        today=datetime.today().strftime("%Y-%m-%d"),
+        today=application_date().strftime("%Y-%m-%d"),
     )
     # ==========================================================
 
@@ -299,7 +302,9 @@ def delete(id):
         # A trade-in cannot be deleted after its device has already been sold.
         for item in trade_in.items:
             if item.imei and item.imei.status == "Sold":
-                raise Exception("This trade-in contains a device that has already been sold and cannot be deleted.")
+                raise Exception(
+                    "This trade-in contains a device that has already been sold and cannot be deleted."
+                )
 
         # Restore stock before deleting.
         for item in trade_in.items:

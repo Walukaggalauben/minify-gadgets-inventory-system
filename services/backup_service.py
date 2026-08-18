@@ -3,6 +3,8 @@ import subprocess
 from datetime import datetime
 from urllib.parse import urlparse
 
+from utils.timezone import application_now
+
 from flask import current_app
 
 
@@ -13,10 +15,7 @@ class BackupService:
 
         database_uri = current_app.config["SQLALCHEMY_DATABASE_URI"]
 
-        mysqldump_path = (
-            current_app.config.get("MYSQLDUMP_PATH")
-            or "mysqldump"
-        )
+        mysqldump_path = current_app.config.get("MYSQLDUMP_PATH") or "mysqldump"
 
         parsed = urlparse(database_uri)
 
@@ -25,24 +24,13 @@ class BackupService:
         password = parsed.password or ""
         database = parsed.path.lstrip("/")
 
-        backup_dir = os.path.join(
-            current_app.root_path,
-            "backups"
-        )
+        backup_dir = os.path.join(current_app.root_path, "backups")
 
-        os.makedirs(
-            backup_dir,
-            exist_ok=True
-        )
+        os.makedirs(backup_dir, exist_ok=True)
 
-        filename = datetime.now().strftime(
-            "backup_%Y%m%d_%H%M%S.sql"
-        )
+        filename = application_now().strftime("backup_%Y%m%d_%H%M%S.sql")
 
-        filepath = os.path.join(
-            backup_dir,
-            filename
-        )
+        filepath = os.path.join(backup_dir, filename)
 
         command = [
             mysqldump_path,
@@ -57,11 +45,7 @@ class BackupService:
 
         command.append(database)
 
-        with open(
-            filepath,
-            "w",
-            encoding="utf-8"
-        ) as output:
+        with open(filepath, "w", encoding="utf-8") as output:
 
             result = subprocess.run(
                 command,
@@ -78,18 +62,12 @@ class BackupService:
 
         return True, filename
 
-
     @staticmethod
     def restore_database(backup_filename):
 
-        database_uri = current_app.config[
-            "SQLALCHEMY_DATABASE_URI"
-        ]
+        database_uri = current_app.config["SQLALCHEMY_DATABASE_URI"]
 
-        mysql_path = (
-            current_app.config.get("MYSQL_PATH")
-            or "mysql"
-        )
+        mysql_path = current_app.config.get("MYSQL_PATH") or "mysql"
 
         parsed = urlparse(database_uri)
 
@@ -98,49 +76,29 @@ class BackupService:
         password = parsed.password or ""
         database = parsed.path.lstrip("/")
 
-        backup_dir = os.path.join(
-            current_app.root_path,
-            "backups"
-        )
+        backup_dir = os.path.join(current_app.root_path, "backups")
 
-        backup_filename = os.path.basename(
-            backup_filename
-        )
+        backup_filename = os.path.basename(backup_filename)
 
-        filepath = os.path.join(
-            backup_dir,
-            backup_filename
-        )
+        filepath = os.path.join(backup_dir, backup_filename)
 
         # Validate backup file
 
         if not os.path.isfile(filepath):
 
-            return (
-                False,
-                "Backup file not found."
-            )
+            return (False, "Backup file not found.")
 
         if not backup_filename.lower().endswith(".sql"):
 
-            return (
-                False,
-                "Invalid backup file."
-            )
+            return (False, "Invalid backup file.")
 
         # Create safety backup
 
-        safety_success, safety_filename = (
-            BackupService.backup_database()
-        )
+        safety_success, safety_filename = BackupService.backup_database()
 
         if not safety_success:
 
-            return (
-                False,
-                "Restore cancelled because "
-                "the safety backup failed."
-            )
+            return (False, "Restore cancelled because " "the safety backup failed.")
 
         # Build MySQL restore command
 
@@ -154,9 +112,7 @@ class BackupService:
 
         if password:
 
-            command.append(
-                f"-p{password}"
-            )
+            command.append(f"-p{password}")
 
         command.append(database)
 
@@ -164,11 +120,7 @@ class BackupService:
 
         try:
 
-            with open(
-                filepath,
-                "r",
-                encoding="utf-8"
-            ) as sql_file:
+            with open(filepath, "r", encoding="utf-8") as sql_file:
 
                 result = subprocess.run(
                     command,
@@ -180,10 +132,7 @@ class BackupService:
 
             if result.returncode != 0:
 
-                error_message = (
-                    result.stderr.strip()
-                    or "Database restore failed."
-                )
+                error_message = result.stderr.strip() or "Database restore failed."
 
                 print(error_message)
 
@@ -192,14 +141,14 @@ class BackupService:
                     "Restore failed. "
                     f"Safety backup preserved: "
                     f"{safety_filename}. "
-                    f"{error_message}"
+                    f"{error_message}",
                 )
 
             return (
                 True,
                 "Database restored successfully. "
                 f"Safety backup: "
-                f"{safety_filename}"
+                f"{safety_filename}",
             )
 
         except Exception as e:
@@ -211,5 +160,5 @@ class BackupService:
                 "Restore failed. "
                 f"Safety backup preserved: "
                 f"{safety_filename}. "
-                f"{str(e)}"
+                f"{str(e)}",
             )

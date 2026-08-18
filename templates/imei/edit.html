@@ -14,6 +14,19 @@
 
         <div class="card-body">
 
+            {% if imei.sale_items %}
+                <div class="alert alert-warning">
+                    <strong>Historical IMEI:</strong> This device has sale history.
+                    Its IMEI, serial number, product variant, and status are locked.
+                    Only notes can be edited.
+                </div>
+            {% elif imei.purchase_item_id %}
+                <div class="alert alert-info">
+                    <strong>Purchase-traceable IMEI:</strong> Its IMEI, serial number,
+                    and product variant are locked to preserve purchase traceability.
+                </div>
+            {% endif %}
+
             <form method="POST">
 
                 <div class="mb-3">
@@ -52,7 +65,8 @@
                         name="imei"
                         class="form-control"
                         value="{{ imei.imei }}"
-                        required>
+                        required
+                        {% if imei.purchase_item_id or imei.sale_items %}readonly{% endif %}>
 
                 </div>
 
@@ -64,7 +78,8 @@
                         type="text"
                         name="serial_number"
                         class="form-control"
-                        value="{{ imei.serial_number or '' }}">
+                        value="{{ imei.serial_number or '' }}"
+                        {% if imei.purchase_item_id or imei.sale_items %}readonly{% endif %}>
 
                 </div>
 
@@ -74,7 +89,8 @@
 
                     <select
                         name="status"
-                        class="form-select">
+                        class="form-select"
+                        {% if imei.sale_items %}disabled{% endif %}>
 
                         <option value="In Stock"
                             {% if imei.status == "In Stock" %}selected{% endif %}>

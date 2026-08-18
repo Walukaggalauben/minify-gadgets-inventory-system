@@ -103,7 +103,7 @@
                     <h3 class="erp-value">
 
                         {{ imeis
-                           | selectattr('status', 'equalto', 'Available')
+                           | selectattr('status', 'equalto', 'In Stock')
                            | list
                            | length }}
 
@@ -195,6 +195,16 @@
 
                         <th>Product</th>
 
+                        <th>Supplier / Purchase</th>
+
+                        <th>Buying Cost</th>
+
+                        <th>Customer / Sale</th>
+
+                        <th>Selling Price</th>
+
+                        <th>Profit</th>
+
                         <th>Status</th>
 
                     </tr>
@@ -237,14 +247,44 @@
 
                         </td>
 
+                        <td>
+                            {% if imei.purchase %}
+                                <div>{{ imei.supplier.name if imei.supplier else "-" }}</div>
+                                <small class="text-muted">{{ imei.purchase_number or "-" }}</small>
+                            {% else %}-{% endif %}
+                        </td>
+
+                        <td>
+                            UGX {{ "{:,.2f}".format(imei.buying_price or 0) }}
+                        </td>
+
+                        <td>
+                            {% if imei.sale_items %}
+                                {% set si = imei.sale_items[0] %}
+                                <div>{{ si.sale.customer_name if si.sale else "-" }}</div>
+                                <small class="text-muted">{{ si.sale.invoice_number if si.sale else "-" }}</small>
+                            {% else %}-{% endif %}
+                        </td>
+
+                        <td>
+                            {% if imei.sale_items %}
+                                UGX {{ "{:,.2f}".format(imei.sale_items[0].selling_price or 0) }}
+                            {% else %}-{% endif %}
+                        </td>
+
+                        <td>
+                            {% if imei.sale_items %}
+                                UGX {{ "{:,.2f}".format(imei.sale_items[0].profit or 0) }}
+                            {% else %}-{% endif %}
+                        </td>
 
                         <td>
 
-                            {% if imei.status == "Available" %}
+                            {% if imei.status == "In Stock" %}
 
                                 <span class="badge bg-success">
                                     <i class="fas fa-check me-1"></i>
-                                    Available
+                                    In Stock
                                 </span>
 
                             {% elif imei.status == "Sold" %}
@@ -278,7 +318,7 @@
                     <tr>
 
                         <td
-                            colspan="4"
+                            colspan="10"
                             class="text-center py-5 text-muted"
                         >
 

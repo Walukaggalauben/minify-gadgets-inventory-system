@@ -285,7 +285,14 @@ class ExcelExporter:
             "SKU",
             "Storage",
             "Colour",
-            "Status"
+            "Status",
+            "Supplier",
+            "Purchase",
+            "Buying Cost",
+            "Customer",
+            "Sale",
+            "Selling Price",
+            "Profit"
         ])
 
         for cell in ws[4]:
@@ -301,7 +308,14 @@ class ExcelExporter:
                 variant.sku if variant else "",
                 variant.storage if variant else "",
                 variant.colour if variant else "",
-                item.status
+                item.status,
+                item.supplier.name if item.supplier else "-",
+                item.purchase_number or "-",
+                float(item.buying_price or 0),
+                item.sale_items[0].sale.customer_name if item.sale_items and item.sale_items[0].sale else "-",
+                item.sale_items[0].sale.invoice_number if item.sale_items and item.sale_items[0].sale else "-",
+                float(item.sale_items[0].selling_price or 0) if item.sale_items else "-",
+                float(item.sale_items[0].profit or 0) if item.sale_items else "-"
             ])
 
         output = BytesIO()

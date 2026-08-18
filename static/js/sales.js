@@ -254,9 +254,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       imeiSearch.disabled = false;
 
-      imeiSearch.placeholder = "Type last digits of IMEI...";
+      imeiSearch.placeholder = "Search IMEI ending or serial...";
 
-      selectedImeiText.textContent = `${availableIMEIs.length} IMEI(s) available — type the last digits`;
+      selectedImeiText.textContent = `${availableIMEIs.length} device identifier(s) available — search IMEI ending or serial`;
 
       selectedImeiText.className = "text-muted";
 
@@ -301,16 +301,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const search = searchValue.trim();
 
     if (!search) {
-      selectedImeiText.textContent = `${availableIMEIs.length} IMEI(s) available — type the last digits`;
+      selectedImeiText.textContent = `${availableIMEIs.length} device identifier(s) available — search IMEI ending or serial`;
 
       selectedImeiText.className = "text-muted";
 
       return;
     }
 
-    const matches = availableIMEIs.filter((item) =>
-      String(item.imei).endsWith(search),
-    );
+    const matches = availableIMEIs.filter((item) => {
+      const imei = String(item.imei || "").toLowerCase();
+      const serial = String(item.serial_number || "").toLowerCase();
+      return imei.endsWith(search.toLowerCase()) || serial.includes(search.toLowerCase());
+    });
 
     // NO MATCH
 

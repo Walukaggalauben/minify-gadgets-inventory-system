@@ -16,26 +16,18 @@ def create_app():
         from datetime import datetime
 
         try:
-            return datetime.fromtimestamp(float(value)).strftime(
-                "%d %b %Y, %I:%M %p"
-            )
+            return datetime.fromtimestamp(float(value)).strftime("%d %b %Y, %I:%M %p")
         except (TypeError, ValueError, OSError):
             return "-"
 
     app.config.from_object(Config)
 
     # Upload configuration
-    app.config["UPLOAD_FOLDER"] = os.path.join(
-        app.static_folder,
-        "uploads"
-    )
+    app.config["UPLOAD_FOLDER"] = os.path.join(app.static_folder, "uploads")
 
     app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
 
-    os.makedirs(
-        app.config["UPLOAD_FOLDER"],
-        exist_ok=True
-    )
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
     db.init_app(app)
 
@@ -61,6 +53,9 @@ def create_app():
     from models.system_setting import SystemSetting
     from models.expense import Expense
     from models.sale_payment import SalePayment
+    from models.currency import Currency
+    from models.exchange_rate import ExchangeRate
+    from models.notification import Notification	
 
     # ==========================================
     # COMPANY AVAILABLE IN EVERY TEMPLATE
@@ -68,9 +63,7 @@ def create_app():
 
     @app.context_processor
     def inject_company():
-        return {
-            "company": Company.query.first()
-        }
+        return {"company": Company.query.first()}
 
     # ==========================================
     # REGISTER BLUEPRINTS
@@ -96,6 +89,7 @@ def create_app():
     from routes.system_settings import system_settings_bp
     from routes.expenses import expenses_bp
     from routes.inventory import inventory_bp
+    from routes.notifications import notifications_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
@@ -117,6 +111,7 @@ def create_app():
     app.register_blueprint(system_settings_bp)
     app.register_blueprint(expenses_bp)
     app.register_blueprint(inventory_bp)
+    app.register_blueprint(notifications_bp)
 
     # ==========================================
     # SESSION AUTHENTICATION + TIMEOUT
@@ -125,22 +120,14 @@ def create_app():
     @app.before_request
     def enforce_session_auth():
 
-        public_endpoints = {
-            "auth.login",
-            "static"
-        }
+        public_endpoints = {"auth.login", "static"}
 
-        if (
-            request.endpoint in public_endpoints
-            or request.path.startswith("/static/")
-        ):
+        if request.endpoint in public_endpoints or request.path.startswith("/static/"):
             return None
 
         # User is not logged in
         if "user_id" not in session:
-            return redirect(
-                url_for("auth.login")
-            )
+            return redirect(url_for("auth.login"))
 
         # ==========================================
         # SESSION TIMEOUT
@@ -148,45 +135,30 @@ def create_app():
 
         settings = SystemSetting.get_settings()
 
-        timeout_minutes = (
-            settings.session_timeout_minutes
-            or 60
-        )
+        timeout_minutes = settings.session_timeout_minutes or 60
 
-        last_activity = session.get(
-            "last_activity"
-        )
+        last_activity = session.get("last_activity")
 
         if last_activity:
 
-            elapsed_seconds = (
-                datetime.utcnow().timestamp()
-                - float(last_activity)
-            )
+            elapsed_seconds = datetime.utcnow().timestamp() - float(last_activity)
 
-            if elapsed_seconds >= (
-                timeout_minutes * 60
-            ):
+            if elapsed_seconds >= (timeout_minutes * 60):
 
                 session.clear()
 
                 flash(
-                    "Your session expired due to inactivity. "
-                    "Please log in again.",
-                    "warning"
+                    "Your session expired due to inactivity. " "Please log in again.",
+                    "warning",
                 )
 
-                return redirect(
-                    url_for("auth.login")
-                )
+                return redirect(url_for("auth.login"))
 
         # ==========================================
         # UPDATE LAST ACTIVITY
         # ==========================================
 
-        session["last_activity"] = (
-            datetime.utcnow().timestamp()
-        )
+        session["last_activity"] = datetime.utcnow().timestamp()
 
         return None
 
@@ -194,10 +166,7 @@ def create_app():
     # FLASK-MIGRATE
     # ==========================================
 
-    Migrate(
-        app,
-        db
-    )
+    Migrate(app, db)
 
     # ==========================================
     # SEED DEFAULT TRADE-IN RULES
@@ -205,11 +174,12 @@ def create_app():
 
     with app.app_context():
 
-        from services.trade_in_rule_service import (
-            TradeInRuleService
-        )
+        from services.trade_in_rule_service import TradeInRuleService
+        from services.currency_service import CurrencyService
 
         TradeInRuleService.seed_defaults()
+
+        CurrencyService.seed_default_currencies()
 
     return app
 
@@ -218,6 +188,4 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(
-        debug=True
-    )
+    app.run(debug=True)

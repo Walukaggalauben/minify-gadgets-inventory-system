@@ -78,13 +78,11 @@ page_title %}Sales{% endblock %} {% block content %}
 
             <td>
               {% if sale.status == "Completed" %}
-
-              <span class="badge bg-success"> {{ sale.status }} </span>
-
+              <span class="badge bg-success">{{ sale.status }}</span>
+              {% elif sale.status == "Cancelled" %}
+              <span class="badge bg-danger">{{ sale.status }}</span>
               {% else %}
-
-              <span class="badge bg-secondary"> {{ sale.status }} </span>
-
+              <span class="badge bg-secondary">{{ sale.status }}</span>
               {% endif %}
             </td>
             <td class="text-center">

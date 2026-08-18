@@ -1,5 +1,5 @@
 from decimal import Decimal
-from datetime import datetime
+
 
 from db import db
 
@@ -8,6 +8,8 @@ from models.trade_in import TradeIn
 from models.trade_in_item import TradeInItem
 from models.product_variant import ProductVariant
 from models.imei import IMEI
+
+from utils.timezone import application_now
 
 
 class TradeInService:
@@ -19,7 +21,7 @@ class TradeInService:
     @staticmethod
     def generate_trade_in_number():
 
-        year = datetime.now().year
+        year = application_now().year
 
         last = TradeIn.query.order_by(TradeIn.id.desc()).first()
 
@@ -121,7 +123,9 @@ class TradeInService:
 
                 imei_number = (item.get("imei") or "").strip()
                 if not imei_number:
-                    raise Exception(f"IMEI is required for trade-in device {variant.sku}.")
+                    raise Exception(
+                        f"IMEI is required for trade-in device {variant.sku}."
+                    )
                 if IMEI.query.filter_by(imei=imei_number).first():
                     raise Exception(f"IMEI already exists: {imei_number}")
 
@@ -131,7 +135,7 @@ class TradeInService:
                     buying_price=buying_price,
                     default_selling_price=selling_price,
                     acquisition_source="Trade In",
-                    received_date=datetime.utcnow(),
+                    received_date=application_now().replace(tzinfo=None),
                     status="In Stock",
                 )
 
