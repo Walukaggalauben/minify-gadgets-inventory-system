@@ -368,41 +368,187 @@
       </div>
       {% endif %}
 
-      {% if sale.payments %}
-      <hr>
-      <h6>Payment History</h6>
-      <div class="table-responsive">
-        <table class="table table-sm align-middle">
-          <thead>
+      
+            {% if sale.payments %}
+<hr>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <h6 class="mb-0">
+        <i class="fas fa-receipt text-success me-1"></i>
+        Payment History
+    </h6>
+
+    <span class="badge bg-light text-dark border">
+        {{ sale.payments|length }}
+        Payment{% if sale.payments|length != 1 %}s{% endif %}
+    </span>
+
+</div>
+
+<div class="table-responsive">
+
+    <table class="table table-sm table-hover align-middle">
+
+        <thead class="table-success">
+
             <tr>
-              <th>Date</th>
-              <th>Method</th>
-              <th>Currency</th>
-              <th>Original Amount</th>
-              <th>Rate</th>
-              <th>Reference</th>
-              <th class="text-end">UGX Received</th>
+
+                <th>Receipt No.</th>
+
+                <th>Date</th>
+
+                <th>Method</th>
+
+                <th>Currency</th>
+
+                <th>Original Amount</th>
+
+                <th>Rate</th>
+
+                <th>Reference</th>
+
+                <th class="text-end">
+                    UGX Received
+                </th>
+
+                <th class="text-center">
+                    Action
+                </th>
+
             </tr>
-          </thead>
-          <tbody>
+
+        </thead>
+
+        <tbody>
+
             {% for p in sale.payments|sort(attribute='payment_date', reverse=True) %}
+
             <tr>
-              <td>{{ p.payment_date.strftime("%d %b %Y %H:%M") }}</td>
-              <td>{{ p.payment_method }}</td>
-              <td>{{ p.currency.code if p.currency else 'UGX' }}</td>
-              <td>
-                {{ p.currency.symbol if p.currency and p.currency.symbol else (p.currency.code if p.currency else 'UGX') }}
-                {{ "{:,.2f}".format(p.original_amount or p.amount) }}
-              </td>
-              <td>{{ "{:,.6f}".format(p.exchange_rate or 1) }}</td>
-              <td>{{ p.reference or '-' }}</td>
-              <td class="text-end">UGX {{ "{:,.2f}".format(p.amount or 0) }}</td>
+
+                <!-- RECEIPT NUMBER -->
+
+                <td>
+
+                    <span class="fw-semibold text-success">
+
+                        {{ p.receipt_number }}
+
+                    </span>
+
+                </td>
+
+
+                <!-- DATE -->
+
+                <td>
+
+                    {{ p.payment_date.strftime("%d %b %Y %H:%M") }}
+
+                </td>
+
+
+                <!-- PAYMENT METHOD -->
+
+                <td>
+
+                    <span class="badge bg-light text-dark border">
+
+                        {{ p.payment_method }}
+
+                    </span>
+
+                </td>
+
+
+                <!-- CURRENCY -->
+
+                <td>
+
+                    {{ p.currency.code if p.currency else 'UGX' }}
+
+                </td>
+
+
+                <!-- ORIGINAL AMOUNT -->
+
+                <td>
+
+                    {{ p.currency.symbol
+                       if p.currency and p.currency.symbol
+                       else (p.currency.code if p.currency else 'UGX') }}
+
+                    {{ "{:,.2f}".format(
+                        p.original_amount or p.amount
+                    ) }}
+
+                </td>
+
+
+                <!-- EXCHANGE RATE -->
+
+                <td>
+
+                    {{ "{:,.6f}".format(
+                        p.exchange_rate or 1
+                    ) }}
+
+                </td>
+
+
+                <!-- REFERENCE -->
+
+                <td>
+
+                    {{ p.reference or '-' }}
+
+                </td>
+
+
+                <!-- UGX RECEIVED -->
+
+                <td class="text-end fw-semibold">
+
+                    UGX {{ "{:,.2f}".format(
+                        p.amount or 0
+                    ) }}
+
+                </td>
+
+
+                <!-- RECEIPT BUTTON -->
+
+                <td class="text-center">
+
+                    <a
+                        href="{{ url_for(
+                            'sale.payment_receipt',
+                            payment_id=p.id
+                        ) }}"
+                        target="_blank"
+                        class="btn btn-sm btn-outline-success"
+                        title="Print Payment Receipt"
+                    >
+
+                        <i class="fas fa-receipt me-1"></i>
+
+                        Receipt
+
+                    </a>
+
+                </td>
+
             </tr>
+
             {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% endif %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endif %}
     </div>
   </div>
 </div>

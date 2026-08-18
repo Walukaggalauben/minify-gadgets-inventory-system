@@ -12,6 +12,22 @@ class SalePayment(db.Model):
     sale_id = db.Column(db.Integer, db.ForeignKey("sales.id"), nullable=False)
 
     # ==========================================
+    # RECEIPT NUMBER
+    # ==========================================
+    #
+    # Every actual payment receives its own
+    # permanent receipt number.
+    #
+    # Example:
+    # RCT-2026-000001
+    #
+    # This is different from the sale invoice
+    # number because one sale can have multiple
+    # payments and therefore multiple receipts.
+    #
+    receipt_number = db.Column(db.String(50), nullable=False, unique=True, index=True)
+
+    # ==========================================
     # PAYMENT AMOUNT
     # ==========================================
 
@@ -62,4 +78,4 @@ class SalePayment(db.Model):
 
     def __repr__(self):
 
-        return f"<SalePayment {self.id}>"
+        return f"<SalePayment " f"{self.receipt_number}>"

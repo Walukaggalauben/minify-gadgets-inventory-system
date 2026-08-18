@@ -31,7 +31,7 @@ from models.customer_credit_transaction import CustomerCreditTransaction
 
 from services.sale_service import SaleService
 from services.currency_service import CurrencyService
-
+from services.receipt_service import ReceiptService
 
 sale_bp = Blueprint(
     "sale",
@@ -44,37 +44,23 @@ sale_bp = Blueprint(
 # SALES LIST
 # ==========================================================
 
+
 @sale_bp.route("/")
 def index():
 
-    search = request.args.get(
-        "search",
-        ""
-    ).strip()
+    search = request.args.get("search", "").strip()
 
     query = Sale.query
 
     if search:
 
         query = query.filter(
-            Sale.invoice_number.ilike(
-                f"%{search}%"
-            )
-            | Sale.customer_name.ilike(
-                f"%{search}%"
-            )
-            | Sale.customer_phone.ilike(
-                f"%{search}%"
-            )
+            Sale.invoice_number.ilike(f"%{search}%")
+            | Sale.customer_name.ilike(f"%{search}%")
+            | Sale.customer_phone.ilike(f"%{search}%")
         )
 
-    sales = (
-        query
-        .order_by(
-            Sale.sale_date.desc()
-        )
-        .all()
-    )
+    sales = query.order_by(Sale.sale_date.desc()).all()
 
     return render_template(
         "sales/index.html",
@@ -86,27 +72,21 @@ def index():
 # CREATE SALE
 # ==========================================================
 
-@sale_bp.route(
-    "/create",
-    methods=["GET", "POST"]
-)
+
+@sale_bp.route("/create", methods=["GET", "POST"])
 def create():
 
     if request.method == "POST":
 
         try:
 
-            items = json.loads(
-                request.form["cart_items"]
-            )
+            items = json.loads(request.form["cart_items"])
 
             # ======================================================
             # PAYMENT DETAILS
             # ======================================================
 
-            payment_method = request.form[
-                "payment_method"
-            ]
+            payment_method = request.form["payment_method"]
 
             amount_paid = request.form.get(
                 "amount_paid",
@@ -126,17 +106,15 @@ def create():
                 or "UGX"
             )
 
-            manual_exchange_rate = request.form.get(
-                "manual_exchange_rate",
-                "",
-            ).strip() or None
-
-            due_date = (
+            manual_exchange_rate = (
                 request.form.get(
-                    "due_date"
-                )
+                    "manual_exchange_rate",
+                    "",
+                ).strip()
                 or None
             )
+
+            due_date = request.form.get("due_date") or None
 
             if due_date:
 
@@ -149,47 +127,27 @@ def create():
 
                 except ValueError:
 
-                    raise Exception(
-                        "Invalid due date."
-                    )
+                    raise Exception("Invalid due date.")
 
-            payment_reference = (
-                request.form.get(
-                    "payment_reference"
-                )
-            )
+            payment_reference = request.form.get("payment_reference")
 
-            payment_notes = (
-                request.form.get(
-                    "payment_notes"
-                )
-            )
+            payment_notes = request.form.get("payment_notes")
 
             # ======================================================
             # CREATE SALE
             # ======================================================
 
             SaleService.create_sale(
-                customer_id=request.form.get(
-                    "customer_id"
-                ),
-                customer_name=request.form.get(
-                    "customer_name"
-                ),
-                customer_phone=request.form.get(
-                    "customer_phone"
-                ),
+                customer_id=request.form.get("customer_id"),
+                customer_name=request.form.get("customer_name"),
+                customer_phone=request.form.get("customer_phone"),
                 payment_method=payment_method,
-                created_by=session[
-                    "user_id"
-                ],
+                created_by=session["user_id"],
                 items=items,
-
                 # Payment
                 amount_paid=amount_paid,
                 payment_currency=payment_currency,
                 manual_exchange_rate=manual_exchange_rate,
-
                 # Credit / installment
                 due_date=due_date,
                 payment_reference=payment_reference,
@@ -201,9 +159,7 @@ def create():
                 "success",
             )
 
-            return redirect(
-                url_for("sale.index")
-            )
+            return redirect(url_for("sale.index"))
 
         except Exception as e:
 
@@ -216,56 +172,21 @@ def create():
     # LOAD POS DATA
     # ==========================================================
 
-    brands = (
-        Brand.query
-        .order_by(
-            Brand.name
-        )
-        .all()
-    )
+    brands = Brand.query.order_by(Brand.name).all()
 
-    products = (
-        Product.query
-        .order_by(
-            Product.name
-        )
-        .all()
-    )
+    products = Product.query.order_by(Product.name).all()
 
-    variants = (
-        ProductVariant.query
-        .order_by(
-            ProductVariant.sku
-        )
-        .all()
-    )
+    variants = ProductVariant.query.order_by(ProductVariant.sku).all()
 
-    imeis = (
-        IMEI.query
-        .filter_by(
-            status="In Stock"
-        )
-        .all()
-    )
+    imeis = IMEI.query.filter_by(status="In Stock").all()
 
-    settings = (
-        SystemSetting.get_settings()
-    )
+    settings = SystemSetting.get_settings()
 
     # ==========================================================
     # ACTIVE CURRENCIES
     # ==========================================================
 
-    currencies = (
-        Currency.query
-        .filter_by(
-            is_active=True
-        )
-        .order_by(
-            Currency.code
-        )
-        .all()
-    )
+    currencies = Currency.query.filter_by(is_active=True).order_by(Currency.code).all()
 
     # ==========================================================
     # PRESELECT CUSTOMER
@@ -280,23 +201,16 @@ def create():
 
     if customer_id:
 
-        selected_customer = (
-            Customer.query.get(
-                customer_id
-            )
-        )
+        selected_customer = Customer.query.get(customer_id)
 
     return render_template(
         "sales/create.html",
-
         brands=brands,
         products=products,
         variants=variants,
         imeis=imeis,
-
         settings=settings,
         currencies=currencies,
-
         selected_customer=selected_customer,
     )
 
@@ -305,21 +219,13 @@ def create():
 # VIEW SALE
 # ==========================================================
 
-@sale_bp.route(
-    "/view/<int:sale_id>"
-)
+
+@sale_bp.route("/view/<int:sale_id>")
 def view_sale(sale_id):
 
-    sale = Sale.query.get_or_404(
-        sale_id
-    )
+    sale = Sale.query.get_or_404(sale_id)
 
-    currencies = (
-        Currency.query
-        .filter_by(is_active=True)
-        .order_by(Currency.code)
-        .all()
-    )
+    currencies = Currency.query.filter_by(is_active=True).order_by(Currency.code).all()
 
     settings = SystemSetting.get_settings()
 
@@ -338,9 +244,11 @@ def view_sale(sale_id):
         overpayment_credit=credit,
     )
 
+
 # ==========================================================
 # CANCEL SALE
 # ==========================================================
+
 
 @sale_bp.route(
     "/<int:sale_id>/cancel",
@@ -372,24 +280,20 @@ def cancel_sale(sale_id):
         )
     )
 
+
 # ==========================================================
 # PRINT SALE
 # ==========================================================
 
-@sale_bp.route(
-    "/print/<int:sale_id>"
-)
+
+@sale_bp.route("/print/<int:sale_id>")
 def print_sale(sale_id):
 
-    sale = Sale.query.get_or_404(
-        sale_id
-    )
+    sale = Sale.query.get_or_404(sale_id)
 
     company = Company.query.first()
 
-    settings = (
-        SystemSetting.get_settings()
-    )
+    settings = SystemSetting.get_settings()
 
     if not company:
 
@@ -409,23 +313,53 @@ def print_sale(sale_id):
 
 
 # ==========================================================
+# PAYMENT RECEIPT
+# ==========================================================
+
+
+@sale_bp.route("/receipt/<int:payment_id>")
+def payment_receipt(payment_id):
+
+    payment = SalePayment.query.get_or_404(payment_id)
+
+    sale = payment.sale
+
+    company = Company.query.first()
+
+    settings = SystemSetting.get_settings()
+
+    if not company:
+
+        company = Company(
+            business_name="MINIFY GADGETS",
+            tagline="Phones & Accessories",
+            address="",
+            phone="",
+        )
+
+    return render_template(
+        "sales/receipt.html",
+        payment=payment,
+        sale=sale,
+        company=company,
+        settings=settings,
+    )
+
+
+# ==========================================================
 # API â€” PRODUCTS BY BRAND
 # ==========================================================
 
-@sale_bp.route(
-    "/api/products/<int:brand_id>"
-)
+
+@sale_bp.route("/api/products/<int:brand_id>")
 def get_products(brand_id):
 
     products = (
-        Product.query
-        .filter_by(
+        Product.query.filter_by(
             brand_id=brand_id,
             is_active=True,
         )
-        .order_by(
-            Product.name
-        )
+        .order_by(Product.name)
         .all()
     )
 
@@ -444,20 +378,16 @@ def get_products(brand_id):
 # API â€” VARIANTS BY PRODUCT
 # ==========================================================
 
-@sale_bp.route(
-    "/api/variants/<int:product_id>"
-)
+
+@sale_bp.route("/api/variants/<int:product_id>")
 def get_variants(product_id):
 
     variants = (
-        ProductVariant.query
-        .filter_by(
+        ProductVariant.query.filter_by(
             product_id=product_id,
             is_active=True,
         )
-        .order_by(
-            ProductVariant.sku
-        )
+        .order_by(ProductVariant.sku)
         .all()
     )
 
@@ -469,9 +399,7 @@ def get_variants(product_id):
                 "colour": variant.colour,
                 "storage": variant.storage,
                 "ram": variant.ram,
-                "price": float(
-                    variant.selling_price
-                ),
+                "price": float(variant.selling_price),
                 "stock": variant.quantity,
                 "brand": variant.product.brand.name,
                 "product": variant.product.name,
@@ -485,29 +413,20 @@ def get_variants(product_id):
 # API â€” BARCODE
 # ==========================================================
 
-@sale_bp.route(
-    "/api/barcode/<path:barcode>"
-)
+
+@sale_bp.route("/api/barcode/<path:barcode>")
 def get_by_barcode(barcode):
 
     code = barcode.strip()
 
-    variant = (
-        ProductVariant.query
-        .filter_by(
-            barcode=code,
-            is_active=True,
-        )
-        .first()
-    )
+    variant = ProductVariant.query.filter_by(
+        barcode=code,
+        is_active=True,
+    ).first()
 
     if not variant:
 
-        return jsonify(
-            {
-                "found": False
-            }
-        ), 404
+        return jsonify({"found": False}), 404
 
     return jsonify(
         {
@@ -515,21 +434,14 @@ def get_by_barcode(barcode):
             "id": variant.id,
             "sku": variant.sku,
             "barcode": variant.barcode,
-
             "brand": variant.product.brand.name,
             "brand_id": variant.product.brand_id,
-
             "product": variant.product.name,
             "product_id": variant.product_id,
-
             "storage": variant.storage or "",
             "ram": variant.ram or "",
             "colour": variant.colour or "",
-
-            "price": float(
-                variant.selling_price
-            ),
-
+            "price": float(variant.selling_price),
             "stock": variant.quantity,
         }
     )
@@ -538,6 +450,7 @@ def get_by_barcode(barcode):
 # ==========================================================
 # ADD PAYMENT TO EXISTING SALE
 # ==========================================================
+
 
 @sale_bp.route(
     "/<int:sale_id>/payment",
@@ -551,9 +464,7 @@ def add_payment(sale_id):
     # ==========================================================
 
     try:
-        original_amount = Decimal(
-            request.form.get("amount", "0")
-        )
+        original_amount = Decimal(request.form.get("amount", "0"))
     except (InvalidOperation, ValueError, TypeError):
         flash("Invalid payment amount.", "danger")
         return redirect(url_for("sale.view_sale", sale_id=sale.id))
@@ -567,10 +478,7 @@ def add_payment(sale_id):
     # ==========================================================
 
     payment_currency = (
-        request.form.get("payment_currency", "UGX")
-        .strip()
-        .upper()
-        or "UGX"
+        request.form.get("payment_currency", "UGX").strip().upper() or "UGX"
     )
 
     currency = CurrencyService.get_by_code(payment_currency)
@@ -586,9 +494,7 @@ def add_payment(sale_id):
     # EXCHANGE RATE / OPTIONAL OVERRIDE
     # ==========================================================
 
-    manual_exchange_rate = request.form.get(
-        "manual_exchange_rate", ""
-    ).strip()
+    manual_exchange_rate = request.form.get("manual_exchange_rate", "").strip()
 
     try:
         if payment_currency == "UGX":
@@ -603,9 +509,7 @@ def add_payment(sale_id):
                 payment_currency,
                 "UGX",
             )
-            exchange_rate = Decimal(
-                str(conversion["rate"])
-            )
+            exchange_rate = Decimal(str(conversion["rate"]))
 
         ugx_amount = original_amount * exchange_rate
 
@@ -629,13 +533,12 @@ def add_payment(sale_id):
 
     payment = SalePayment(
         sale=sale,
+        receipt_number=ReceiptService.generate_receipt_number(),
         amount=ugx_amount,
         original_amount=original_amount,
         currency=currency,
         exchange_rate=exchange_rate,
-        payment_method=request.form.get(
-            "payment_method", "Cash"
-        ),
+        payment_method=request.form.get("payment_method", "Cash"),
         reference=request.form.get("reference"),
         notes=request.form.get("notes"),
         received_by=session["user_id"],
@@ -645,30 +548,20 @@ def add_payment(sale_id):
     # UPDATE SALE
     # ==========================================================
 
-    sale.amount_paid = (
-        Decimal(str(sale.amount_paid or 0))
-        + ugx_amount
-    )
+    sale.amount_paid = Decimal(str(sale.amount_paid or 0)) + ugx_amount
 
     sale.balance_due = max(
-        Decimal(str(sale.total_amount or 0))
-        - sale.amount_paid,
+        Decimal(str(sale.total_amount or 0)) - sale.amount_paid,
         Decimal("0.00"),
     )
 
-    sale.payment_status = (
-        "Paid"
-        if sale.balance_due <= 0
-        else "Partial"
-    )
+    sale.payment_status = "Paid" if sale.balance_due <= 0 else "Partial"
 
     db.session.add(payment)
 
     # Keep customer overpayment separate from sales profit.
     if overpayment > 0:
-        credit = CustomerCredit.query.filter_by(
-            sale_id=sale.id
-        ).first()
+        credit = CustomerCredit.query.filter_by(sale_id=sale.id).first()
 
         if not credit:
             credit = CustomerCredit(
@@ -681,12 +574,10 @@ def add_payment(sale_id):
             db.session.add(credit)
         else:
             credit.remaining_amount = (
-                Decimal(str(credit.remaining_amount or 0))
-                + overpayment
+                Decimal(str(credit.remaining_amount or 0)) + overpayment
             )
             credit.original_amount = (
-                Decimal(str(credit.original_amount or 0))
-                + overpayment
+                Decimal(str(credit.original_amount or 0)) + overpayment
             )
             credit.status = "Outstanding"
 
@@ -702,21 +593,17 @@ def add_payment(sale_id):
     )
 
     if overpayment > 0:
-        message += (
-            f" Overpayment/customer credit: "
-            f"UGX {overpayment:,.2f}."
-        )
+        message += f" Overpayment/customer credit: " f"UGX {overpayment:,.2f}."
 
     flash(message, "success")
 
-    return redirect(
-        url_for("sale.view_sale", sale_id=sale.id)
-    )
+    return redirect(url_for("sale.view_sale", sale_id=sale.id))
 
 
 # ==========================================================
 # SETTLE CUSTOMER OVERPAYMENT
 # ==========================================================
+
 
 @sale_bp.route(
     "/<int:sale_id>/overpayment/refund",
@@ -725,18 +612,14 @@ def add_payment(sale_id):
 def refund_overpayment(sale_id):
     sale = Sale.query.get_or_404(sale_id)
 
-    credit = CustomerCredit.query.filter_by(
-        sale_id=sale.id
-    ).first()
+    credit = CustomerCredit.query.filter_by(sale_id=sale.id).first()
 
     if not credit or Decimal(str(credit.remaining_amount or 0)) <= 0:
         flash("There is no outstanding customer overpayment to settle.", "warning")
         return redirect(url_for("sale.view_sale", sale_id=sale.id))
 
     try:
-        refund_amount = Decimal(
-            request.form.get("refund_amount", "0")
-        )
+        refund_amount = Decimal(request.form.get("refund_amount", "0"))
     except (InvalidOperation, ValueError, TypeError):
         flash("Invalid refund amount.", "danger")
         return redirect(url_for("sale.view_sale", sale_id=sale.id))
@@ -788,6 +671,7 @@ def refund_overpayment(sale_id):
 # CONVERT CUSTOMER OVERPAYMENT TO BUSINESS INCOME
 # ==========================================================
 
+
 @sale_bp.route(
     "/<int:sale_id>/overpayment/convert-to-income",
     methods=["POST"],
@@ -795,9 +679,7 @@ def refund_overpayment(sale_id):
 def convert_overpayment_to_income(sale_id):
     sale = Sale.query.get_or_404(sale_id)
 
-    credit = CustomerCredit.query.filter_by(
-        sale_id=sale.id
-    ).first()
+    credit = CustomerCredit.query.filter_by(sale_id=sale.id).first()
 
     if not credit or Decimal(str(credit.remaining_amount or 0)) <= 0:
         flash(
@@ -808,16 +690,9 @@ def convert_overpayment_to_income(sale_id):
 
     remaining = Decimal(str(credit.remaining_amount or 0))
 
-    reason = (
-        request.form.get("income_reason", "")
-        .strip()
-    )
+    reason = request.form.get("income_reason", "").strip()
 
-    reference = (
-        request.form.get("income_reference", "")
-        .strip()
-        or None
-    )
+    reference = request.form.get("income_reference", "").strip() or None
 
     if not reason:
         flash(
@@ -848,28 +723,21 @@ def convert_overpayment_to_income(sale_id):
         "success",
     )
 
-    return redirect(
-        url_for("sale.view_sale", sale_id=sale.id)
-    )
+    return redirect(url_for("sale.view_sale", sale_id=sale.id))
 
 
 # ==========================================================
 # API â€” IMEIs
 # ==========================================================
 
-@sale_bp.route(
-    "/api/imeis/<int:variant_id>"
-)
+
+@sale_bp.route("/api/imeis/<int:variant_id>")
 def get_imeis(variant_id):
 
-    imeis = (
-        IMEI.query
-        .filter_by(
-            product_variant_id=variant_id,
-            status="In Stock",
-        )
-        .all()
-    )
+    imeis = IMEI.query.filter_by(
+        product_variant_id=variant_id,
+        status="In Stock",
+    ).all()
 
     return jsonify(
         [

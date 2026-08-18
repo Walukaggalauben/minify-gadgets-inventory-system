@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Payment Receipt - {{ payment.receipt_number }}</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            background: #f3f5f7;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #222;
+        }
+
+        .receipt-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .receipt {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .receipt-header {
+            padding: 28px 35px;
+            border-bottom: 3px solid #00695c;
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .company-name {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: #00695c;
+        }
+
+        .company-tagline {
+            margin: 6px 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .company-details {
+            margin-top: 12px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .receipt-title {
+            text-align: right;
+        }
+
+        .receipt-title h1 {
+            margin: 0;
+            font-size: 27px;
+            letter-spacing: 1px;
+            color: #00695c;
+        }
+
+        .receipt-number {
+            margin-top: 10px;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .receipt-number span {
+            color: #00695c;
+        }
+
+        .section {
+            padding: 24px 35px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .info-box {
+            border: 1px solid #e1e5e8;
+            border-radius: 7px;
+            padding: 16px;
+        }
+
+        .info-box h3 {
+            margin: 0 0 12px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: #00695c;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 5px 0;
+            font-size: 14px;
+        }
+
+        .info-row .label {
+            color: #777;
+        }
+
+        .info-row .value {
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .payment-summary {
+            margin-top: 24px;
+            border: 1px solid #dfe4e7;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .payment-summary-header {
+            padding: 13px 16px;
+            background: #00695c;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 13px 16px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .payment-row:last-child {
+            border-bottom: 0;
+        }
+
+        .payment-row .label {
+            color: #666;
+        }
+
+        .payment-row .value {
+            font-weight: 600;
+        }
+
+        .payment-row.highlight {
+            background: #f1f8f6;
+            font-size: 16px;
+        }
+
+        .payment-row.highlight .value {
+            color: #00695c;
+            font-size: 18px;
+        }
+
+        .balance-box {
+            margin-top: 22px;
+            padding: 18px;
+            border: 2px solid #00695c;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .balance-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .balance-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #00695c;
+        }
+
+        .notes {
+            margin-top: 22px;
+            padding: 15px;
+            background: #f7f8f9;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .notes strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .receipt-footer {
+            padding: 24px 35px 30px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .footer-message {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px auto 0;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 6px;
+            padding: 11px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-print {
+            background: #00695c;
+            color: #fff;
+        }
+
+        .btn-back {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding: 10px;
+            }
+
+            .receipt-header {
+                flex-direction: column;
+            }
+
+            .receipt-title {
+                text-align: left;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section,
+            .receipt-header,
+            .receipt-footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                background: #fff;
+            }
+
+            .receipt-wrapper {
+                max-width: none;
+            }
+
+            .receipt {
+                border: 0;
+                border-radius: 0;
+            }
+
+            .actions {
+                display: none;
+            }
+
+            @page {
+                margin: 12mm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="receipt-wrapper">
+
+    <div class="receipt">
+
+        <!-- =====================================================
+             HEADER
+        ====================================================== -->
+
+        <div class="receipt-header">
+
+            <div>
+                <h2 class="company-name">
+                    {{ company.business_name or "MINIFY GADGETS" }}
+                </h2>
+
+                <div class="company-tagline">
+                    {{ company.tagline or "Phones & Accessories" }}
+                </div>
+
+                <div class="company-details">
+                    {% if company.address %}
+                        {{ company.address }}<br>
+                    {% endif %}
+
+                    {% if company.phone %}
+                        Tel: {{ company.phone }}<br>
+                    {% endif %}
+
+                    {% if company.email %}
+                        Email: {{ company.email }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="receipt-title">
+                <h1>PAYMENT RECEIPT</h1>
+
+                <div class="receipt-number">
+                    Receipt No:
+                    <span>{{ payment.receipt_number }}</span>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             CUSTOMER / PAYMENT INFORMATION
+        ====================================================== -->
+
+        <div class="section">
+
+            <div class="info-grid">
+
+                <div class="info-box">
+
+                    <h3>Customer</h3>
+
+                    <div class="info-row">
+                        <span class="label">Name</span>
+                        <span class="value">
+                            {{ sale.customer_name or "Walk-in Customer" }}
+                        </span>
+                    </div>
+
+                    {% if sale.customer_phone %}
+                    <div class="info-row">
+                        <span class="label">Phone</span>
+                        <span class="value">
+                            {{ sale.customer_phone }}
+                        </span>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <h3>Payment Information</h3>
+
+                    <div class="info-row">
+                        <span class="label">Receipt Date</span>
+                        <span class="value">
+                            {{ payment.payment_date.strftime("%d/%m/%Y %H:%M") if payment.payment_date else "-" }}
+                        </span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="label">Payment Method</span>
+                        <span class="value">
+                            {{ payment.payment_method or "-" }}
+                        </span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="label">Invoice</span>
+                        <span class="value">
+                            {{ sale.invoice_number }}
+                        </span>
+                    </div>
+
+                    {% if payment.reference %}
+                    <div class="info-row">
+                        <span class="label">Reference</span>
+                        <span class="value">
+                            {{ payment.reference }}
+                        </span>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 PAYMENT SUMMARY
+            ================================================== -->
+
+            <div class="payment-summary">
+
+                <div class="payment-summary-header">
+                    Payment Details
+                </div>
+
+                <div class="payment-row">
+                    <span class="label">Currency</span>
+                    <span class="value">
+                        {{ payment.currency.code if payment.currency else "UGX" }}
+                    </span>
+                </div>
+
+                <div class="payment-row">
+                    <span class="label">Amount Received</span>
+                    <span class="value">
+                        {{ payment.currency.symbol if payment.currency and payment.currency.symbol else payment.currency.code if payment.currency else "UGX" }}
+                        {{ "{:,.2f}".format(payment.original_amount or 0) }}
+                    </span>
+                </div>
+
+                <div class="payment-row">
+                    <span class="label">Exchange Rate</span>
+                    <span class="value">
+                        {{ "{:,.8f}".format(payment.exchange_rate or 1) }}
+                    </span>
+                </div>
+
+                <div class="payment-row">
+                    <span class="label">UGX Equivalent</span>
+                    <span class="value">
+                        UGX {{ "{:,.2f}".format(payment.amount or 0) }}
+                    </span>
+                </div>
+
+                <div class="payment-row highlight">
+                    <span class="label">THIS PAYMENT</span>
+                    <span class="value">
+                        UGX {{ "{:,.2f}".format(payment.amount or 0) }}
+                    </span>
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 SALE BALANCE
+            ================================================== -->
+
+            <div class="balance-box">
+
+                <div>
+                    <div class="balance-label">
+                        Remaining Balance on Invoice
+                    </div>
+                    <strong>
+                        {{ sale.invoice_number }}
+                    </strong>
+                </div>
+
+                <div class="balance-value">
+                    UGX {{ "{:,.2f}".format(sale.balance_due or 0) }}
+                </div>
+
+            </div>
+
+
+            {% if payment.notes %}
+
+            <div class="notes">
+                <strong>Notes</strong>
+                {{ payment.notes }}
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =====================================================
+             FOOTER
+        ====================================================== -->
+
+        <div class="receipt-footer">
+
+            <div class="footer-message">
+                {{ settings.receipt_footer or "Thank you for your payment." }}
+            </div>
+
+            <div>
+                This receipt confirms payment received against the
+                invoice shown above.
+            </div>
+
+            <div>
+                Received by:
+                <strong>
+                    {{ payment.user.username if payment.user else "System User" }}
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         ACTIONS
+    ========================================================== -->
+
+    <div class="actions">
+
+        <button
+            type="button"
+            class="btn btn-print"
+            onclick="window.print()"
+        >
+            Print Receipt
+        </button>
+
+        <a
+            href="{{ url_for('sale.view_sale', sale_id=sale.id) }}"
+            class="btn btn-back"
+        >
+            Back to Sale
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

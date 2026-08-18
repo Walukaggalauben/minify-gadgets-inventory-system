@@ -12,6 +12,7 @@ from models.currency import Currency
 from models.customer_credit import CustomerCredit
 
 from services.currency_service import CurrencyService
+from services.receipt_service import ReceiptService
 from utils.timezone import application_now
 
 
@@ -500,6 +501,7 @@ class SaleService:
             if paid > 0:
                 payment = SalePayment(
                     sale=sale,
+                    receipt_number=ReceiptService.generate_receipt_number(),
                     amount=base_amount,
                     original_amount=paid,
                     currency_id=currency.id,
@@ -545,6 +547,7 @@ class SaleService:
         except Exception as e:
             db.session.rollback()
             raise e
+
     # ==========================================================
     # CANCEL SALE
     # ==========================================================
@@ -574,14 +577,10 @@ class SaleService:
             # CUSTOMER CREDIT CHECK
             # ==================================================
 
-            credit = CustomerCredit.query.filter_by(
-                sale_id=sale.id
-            ).first()
+            credit = CustomerCredit.query.filter_by(sale_id=sale.id).first()
 
             if credit:
-                remaining_credit = Decimal(
-                    str(credit.remaining_amount or 0)
-                )
+                remaining_credit = Decimal(str(credit.remaining_amount or 0))
 
                 if remaining_credit > 0:
                     raise Exception(
@@ -596,9 +595,7 @@ class SaleService:
 
             for sale_item in sale.items:
 
-                variant = ProductVariant.query.get(
-                    sale_item.product_variant_id
-                )
+                variant = ProductVariant.query.get(sale_item.product_variant_id)
 
                 if not variant:
                     raise Exception(
@@ -609,9 +606,7 @@ class SaleService:
                 quantity = int(sale_item.quantity or 0)
 
                 if quantity <= 0:
-                    raise Exception(
-                        f"Invalid quantity on sale item {sale_item.id}."
-                    )
+                    raise Exception(f"Invalid quantity on sale item {sale_item.id}.")
 
                 # Restore inventory quantity.
                 variant.quantity += quantity
@@ -622,9 +617,7 @@ class SaleService:
 
                 if sale_item.imei_id:
 
-                    imei = IMEI.query.get(
-                        sale_item.imei_id
-                    )
+                    imei = IMEI.query.get(sale_item.imei_id)
 
                     if not imei:
                         raise Exception(
