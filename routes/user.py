@@ -19,9 +19,11 @@ user_bp = Blueprint("user", __name__, url_prefix="/users")
 # VIEW USERS
 # ==========================================
 
-
 @user_bp.route("/")
 def index():
+
+    if not login_required():
+        return redirect(url_for("auth.login"))
 
     page = request.args.get("page", 1, type=int)
     search = request.args.get("search", "").strip()
@@ -55,9 +57,11 @@ def index():
 # CREATE USER
 # ==========================================
 
-
 @user_bp.route("/create", methods=["GET", "POST"])
 def create():
+
+    if not login_required():
+        return redirect(url_for("auth.login"))
 
     roles = UserService.get_all_roles()
 
@@ -70,16 +74,21 @@ def create():
         if success:
             return redirect(url_for("user.index"))
 
-    return render_template("users/create.html", roles=roles)
+    return render_template(
+        "users/create.html",
+        roles=roles,
+    )
 
 
 # ==========================================
 # EDIT USER
 # ==========================================
 
-
 @user_bp.route("/edit/<int:user_id>", methods=["GET", "POST"])
 def edit(user_id):
+
+    if not login_required():
+        return redirect(url_for("auth.login"))
 
     user = UserService.get_user(user_id)
 
@@ -91,23 +100,35 @@ def edit(user_id):
 
     if request.method == "POST":
 
-        success, message = UserService.update_user(user, request.form)
+        success, message = UserService.update_user(
+            user,
+            request.form,
+        )
 
-        flash(message, "success" if success else "danger")
+        flash(
+            message,
+            "success" if success else "danger",
+        )
 
         if success:
             return redirect(url_for("user.index"))
 
-    return render_template("users/edit.html", user=user, roles=roles)
+    return render_template(
+        "users/edit.html",
+        user=user,
+        roles=roles,
+    )
 
 
 # ==========================================
 # CHANGE PASSWORD
 # ==========================================
 
-
 @user_bp.route("/password/<int:user_id>", methods=["POST"])
 def change_password(user_id):
+
+    if not login_required():
+        return redirect(url_for("auth.login"))
 
     user = UserService.get_user(user_id)
 
@@ -119,22 +140,40 @@ def change_password(user_id):
 
     if not password:
         flash("Password cannot be empty.", "danger")
-        return redirect(url_for("user.edit", user_id=user.id))
+        return redirect(
+            url_for(
+                "user.edit",
+                user_id=user.id,
+            )
+        )
 
-    UserService.change_password(user, password)
+    UserService.change_password(
+        user,
+        password,
+    )
 
-    flash("Password changed successfully.", "success")
+    flash(
+        "Password changed successfully.",
+        "success",
+    )
 
-    return redirect(url_for("user.edit", user_id=user.id))
+    return redirect(
+        url_for(
+            "user.edit",
+            user_id=user.id,
+        )
+    )
 
 
 # ==========================================
 # ACTIVATE / DEACTIVATE USER
 # ==========================================
 
-
 @user_bp.route("/toggle/<int:user_id>")
 def toggle(user_id):
+
+    if not login_required():
+        return redirect(url_for("auth.login"))
 
     user = UserService.get_user(user_id)
 
@@ -144,7 +183,10 @@ def toggle(user_id):
 
     UserService.toggle_status(user)
 
-    flash("User status updated.", "success")
+    flash(
+        "User status updated.",
+        "success",
+    )
 
     return redirect(url_for("user.index"))
 
@@ -153,13 +195,19 @@ def toggle(user_id):
 # PROFILE
 # ==========================================
 
-
 @user_bp.route("/profile/<int:user_id>")
 def profile(user_id):
+
+    if not login_required():
+        return redirect(url_for("auth.login"))
+
     user = UserService.get_user(user_id)
 
     if not user:
         flash("User not found.", "danger")
         return redirect(url_for("user.index"))
 
-    return render_template("users/profile.html", user=user)
+    return render_template(
+        "users/profile.html",
+        user=user,
+    )

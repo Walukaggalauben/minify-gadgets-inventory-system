@@ -616,6 +616,7 @@ class DashboardService:
                 .filter(
                     func.extract("year", Sale.sale_date) == today.year,
                     func.extract("month", Sale.sale_date) == month,
+                    Sale.status != "Cancelled",
                 )
                 .scalar()
                 or 0
