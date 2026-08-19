@@ -244,7 +244,17 @@ class SaleService:
 
                 submitted_price = item.get("price")
 
-                price_override_requested = bool(item.get("price_override", False))
+                raw_price_override = item.get("price_override", False)
+
+                if isinstance(raw_price_override, str):
+                    price_override_requested = raw_price_override.strip().lower() in (
+                        "1",
+                        "true",
+                        "yes",
+                        "on",
+                    )
+                else:
+                    price_override_requested = bool(raw_price_override)
 
                 allow_price_override = getattr(
                     settings,
@@ -253,11 +263,10 @@ class SaleService:
                 )
 
                 if price_override_requested and (
-                    not allow_price_override or not has_permission("sales.override_price")
+                    not allow_price_override
+                    or not has_permission("sales.override_price")
                 ):
-                    raise Exception(
-                        "Price override is not allowed for your account."
-                    )
+                    raise Exception("Price override is not allowed for your account.")
 
                 if not price_override_requested:
 
@@ -529,9 +538,16 @@ class SaleService:
             )
 
             if overpayment > 0:
+
+                if not customer:
+                    raise Exception(
+                        "A registered customer is required when the amount received "
+                        "is greater than the sale total."
+                    )
+
                 db.session.add(
                     CustomerCredit(
-                        customer_id=customer_id,
+                        customer_id=customer.id,
                         sale=sale,
                         original_amount=overpayment,
                         remaining_amount=overpayment,
