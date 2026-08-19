@@ -14,13 +14,21 @@
             </p>
         </div>
 
-        <a href="{{ url_for('report.sales_report_pdf',
-            start_date=start_date,
-            end_date=end_date) }}"
-           class="btn btn-danger">
-            <i class="fas fa-file-pdf"></i>
-            Export PDF
-        </a>
+        {% if has_permission("reports.export") %}
+
+<a
+    href="{{ url_for(
+        'report.sales_report_pdf',
+        start_date=start_date,
+        end_date=end_date
+    ) }}"
+    class="btn btn-danger"
+>
+    <i class="fas fa-file-pdf"></i>
+    Export PDF
+</a>
+
+{% endif %}
     </div>
 
     <!-- Filters -->

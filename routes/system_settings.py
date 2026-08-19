@@ -10,6 +10,7 @@ from flask import (
 from db import db
 from models.system_setting import SystemSetting
 from services.currency_service import CurrencyService
+from utils.permissions import permission_required
 
 system_settings_bp = Blueprint(
     "system_settings",
@@ -19,6 +20,7 @@ system_settings_bp = Blueprint(
 
 
 @system_settings_bp.route("/", methods=["GET", "POST"])
+@permission_required("settings.view")
 def index():
 
     settings = SystemSetting.get_settings()
@@ -26,6 +28,11 @@ def index():
     currencies = CurrencyService.get_active_currencies()
 
     if request.method == "POST":
+
+        from utils.permissions import has_permission
+        if not has_permission("settings.edit"):
+            from flask import abort
+            abort(403)
 
         try:
 
@@ -154,6 +161,7 @@ def index():
     "/currency-rate",
     methods=["GET"]
 )
+@permission_required("settings.view")
 def currency_rate():
 
     from_currency = (

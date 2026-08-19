@@ -13,6 +13,7 @@ from flask import (
 
 from services.backup_service import BackupService
 from utils.auth import login_required
+from utils.permissions import permission_required
 
 backup_bp = Blueprint(
     "backup",
@@ -22,6 +23,7 @@ backup_bp = Blueprint(
 
 
 @backup_bp.route("/")
+@permission_required("backup.view")
 def index():
 
     backup_dir = os.path.join(current_app.root_path, "backups")
@@ -50,6 +52,7 @@ def index():
 
 
 @backup_bp.route("/create")
+@permission_required("backup.create")
 def create_backup():
 
     success, filename = BackupService.backup_database()
@@ -72,6 +75,7 @@ def create_backup():
 
 
 @backup_bp.route("/download/<filename>")
+@permission_required("backup.view")
 def download_backup(filename):
 
     backup_dir = os.path.join(current_app.root_path, "backups")
@@ -82,6 +86,7 @@ def download_backup(filename):
 
 
 @backup_bp.route("/restore/<filename>", methods=["POST"])
+@permission_required("backup.restore")
 def restore_backup(filename):
 
     filename = os.path.basename(filename)
@@ -100,6 +105,7 @@ def restore_backup(filename):
 
 
 @backup_bp.route("/delete/<filename>")
+@permission_required("backup.delete")
 def delete_backup(filename):
 
     backup_dir = os.path.join(current_app.root_path, "backups")

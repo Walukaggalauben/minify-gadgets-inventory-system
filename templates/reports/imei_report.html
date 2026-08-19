@@ -1,347 +1,231 @@
-{% extends "layout.html" %}
-
-{% block title %}IMEI Report{% endblock %}
-
-{% block page_title %}IMEI Report{% endblock %}
-
-{% block content %}
+{% extends "layout.html" %} {% block title %}IMEI Report{% endblock %} {% block
+page_title %}IMEI Report{% endblock %} {% block content %}
 
 <div class="container-fluid">
+  <!-- HEADER -->
 
-    <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">IMEI Report</h2>
 
+      <p class="text-muted mb-0">
+        Track device IMEIs and their current inventory status.
+      </p>
+    </div>
+
+    <div class="d-flex gap-2">
+      {% if has_permission("reports.export") %}
+      <a href="{{ url_for('report.imei_report_pdf') }}" class="btn btn-danger">
+        <i class="fas fa-file-pdf me-1"></i>
+        PDF
+      </a>
+
+      <a
+        href="{{ url_for('report.imei_report_excel') }}"
+        class="btn btn-success"
+      >
+        <i class="fas fa-file-excel me-1"></i>
+        Excel
+      </a>
+      {% endif %}
+
+      <a href="{{ url_for('report.index') }}" class="btn btn-outline-secondary">
+        ...
+      </a>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+
+  <div class="row g-4 mb-4">
+    <div class="col-12 col-md-4">
+      <div class="erp-card h-100">
+        <div class="erp-icon blue">
+          <i class="fas fa-mobile-screen-button"></i>
+        </div>
+
+        <div class="flex-grow-1">
+          <small> Total IMEIs </small>
+
+          <h3 class="erp-value">{{ imeis|length }}</h3>
+
+          <span class="text-primary fw-semibold"> Device identifiers </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <div class="erp-card h-100">
+        <div class="erp-icon green">
+          <i class="fas fa-box"></i>
+        </div>
+
+        <div class="flex-grow-1">
+          <small> Available </small>
+
+          <h3 class="erp-value">
+            {{ imeis | selectattr('status', 'equalto', 'In Stock') | list |
+            length }}
+          </h3>
+
+          <span class="text-success fw-semibold"> Available in inventory </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <div class="erp-card h-100">
+        <div class="erp-icon orange">
+          <i class="fas fa-check-circle"></i>
+        </div>
+
+        <div class="flex-grow-1">
+          <small> Sold </small>
+
+          <h3 class="erp-value">
+            {{ imeis | selectattr('status', 'equalto', 'Sold') | list | length
+            }}
+          </h3>
+
+          <span class="text-warning fw-semibold"> Sold devices </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMEI TABLE -->
+
+  <div class="erp-card">
     <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h5 class="fw-bold mb-1">IMEI Records</h5>
 
-        <div>
-            <h2 class="fw-bold mb-1">
-                IMEI Report
-            </h2>
+        <small class="text-muted">
+          Device identifiers and current status
+        </small>
+      </div>
 
-            <p class="text-muted mb-0">
-                Track device IMEIs and their current inventory status.
-            </p>
-        </div>
-
-        <div class="d-flex gap-2">
-
-            <a href="{{ url_for('report.imei_report_pdf') }}"
-               class="btn btn-danger">
-
-                <i class="fas fa-file-pdf me-1"></i>
-                PDF
-
-            </a>
-
-            <a href="{{ url_for('report.imei_report_excel') }}"
-               class="btn btn-success">
-
-                <i class="fas fa-file-excel me-1"></i>
-                Excel
-
-            </a>
-
-            <a href="{{ url_for('report.index') }}"
-               class="btn btn-outline-secondary">
-
-                <i class="fas fa-arrow-left me-1"></i>
-                Reports
-
-            </a>
-
-        </div>
-
+      <strong class="text-primary"> {{ imeis|length }} Records </strong>
     </div>
 
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
 
-    <!-- SUMMARY -->
+            <th>IMEI</th>
 
-    <div class="row g-4 mb-4">
+            <th>Product</th>
 
-        <div class="col-12 col-md-4">
+            <th>Supplier / Purchase</th>
 
-            <div class="erp-card h-100">
+            <th>Buying Cost</th>
 
-                <div class="erp-icon blue">
-                    <i class="fas fa-mobile-screen-button"></i>
-                </div>
+            <th>Customer / Sale</th>
 
-                <div class="flex-grow-1">
+            <th>Selling Price</th>
 
-                    <small>
-                        Total IMEIs
-                    </small>
+            <th>Profit</th>
 
-                    <h3 class="erp-value">
-                        {{ imeis|length }}
-                    </h3>
+            <th>Status</th>
+          </tr>
+        </thead>
 
-                    <span class="text-primary fw-semibold">
-                        Device identifiers
-                    </span>
+        <tbody>
+          {% for imei in imeis %}
 
-                </div>
+          <tr>
+            <td class="text-muted">{{ loop.index }}</td>
 
-            </div>
+            <td>
+              <strong class="font-monospace"> {{ imei.imei }} </strong>
+            </td>
 
-        </div>
+            <td>
+              {% if imei.product_variant and imei.product_variant.product %} {{
+              imei.product_variant.product.name }} {% else %} - {% endif %}
+            </td>
 
+            <td>
+              {% if imei.purchase %}
+              <div>{{ imei.supplier.name if imei.supplier else "-" }}</div>
+              <small class="text-muted"
+                >{{ imei.purchase_number or "-" }}</small
+              >
+              {% else %}-{% endif %}
+            </td>
 
-        <div class="col-12 col-md-4">
+            <td>UGX {{ "{:,.2f}".format(imei.buying_price or 0) }}</td>
 
-            <div class="erp-card h-100">
+            <td>
+              {% if imei.sale_items %} {% set si = imei.sale_items[0] %}
+              <div>{{ si.sale.customer_name if si.sale else "-" }}</div>
+              <small class="text-muted"
+                >{{ si.sale.invoice_number if si.sale else "-" }}</small
+              >
+              {% else %}-{% endif %}
+            </td>
 
-                <div class="erp-icon green">
-                    <i class="fas fa-box"></i>
-                </div>
+            <td>
+              {% if imei.sale_items %} UGX {{
+              "{:,.2f}".format(imei.sale_items[0].selling_price or 0) }} {% else
+              %}-{% endif %}
+            </td>
 
-                <div class="flex-grow-1">
+            <td>
+              {% if imei.sale_items %} UGX {{
+              "{:,.2f}".format(imei.sale_items[0].profit or 0) }} {% else %}-{%
+              endif %}
+            </td>
 
-                    <small>
-                        Available
-                    </small>
+            <td>
+              {% if imei.status == "In Stock" %}
 
-                    <h3 class="erp-value">
+              <span class="badge bg-success">
+                <i class="fas fa-check me-1"></i>
+                In Stock
+              </span>
 
-                        {{ imeis
-                           | selectattr('status', 'equalto', 'In Stock')
-                           | list
-                           | length }}
+              {% elif imei.status == "Sold" %}
 
-                    </h3>
+              <span class="badge bg-primary">
+                <i class="fas fa-shopping-cart me-1"></i>
+                Sold
+              </span>
 
-                    <span class="text-success fw-semibold">
-                        Available in inventory
-                    </span>
+              {% elif imei.status == "Reserved" %}
 
-                </div>
+              <span class="badge bg-warning text-dark">
+                <i class="fas fa-clock me-1"></i>
+                Reserved
+              </span>
 
-            </div>
+              {% else %}
 
-        </div>
+              <span class="badge bg-secondary">
+                {{ imei.status or "Unknown" }}
+              </span>
 
+              {% endif %}
+            </td>
+          </tr>
 
-        <div class="col-12 col-md-4">
+          {% else %}
 
-            <div class="erp-card h-100">
+          <tr>
+            <td colspan="10" class="text-center py-5 text-muted">
+              <i class="fas fa-mobile-screen-button fa-2x mb-3"></i>
 
-                <div class="erp-icon orange">
-                    <i class="fas fa-check-circle"></i>
-                </div>
+              <div>No IMEI records found.</div>
+            </td>
+          </tr>
 
-                <div class="flex-grow-1">
-
-                    <small>
-                        Sold
-                    </small>
-
-                    <h3 class="erp-value">
-
-                        {{ imeis
-                           | selectattr('status', 'equalto', 'Sold')
-                           | list
-                           | length }}
-
-                    </h3>
-
-                    <span class="text-warning fw-semibold">
-                        Sold devices
-                    </span>
-
-                </div>
-
-            </div>
-
-        </div>
-
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-
-
-    <!-- IMEI TABLE -->
-
-    <div class="erp-card">
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-
-            <div>
-
-                <h5 class="fw-bold mb-1">
-                    IMEI Records
-                </h5>
-
-                <small class="text-muted">
-                    Device identifiers and current status
-                </small>
-
-            </div>
-
-            <strong class="text-primary">
-                {{ imeis|length }} Records
-            </strong>
-
-        </div>
-
-
-        <div class="table-responsive">
-
-            <table class="table table-hover align-middle">
-
-                <thead class="table-light">
-
-                    <tr>
-
-                        <th>#</th>
-
-                        <th>IMEI</th>
-
-                        <th>Product</th>
-
-                        <th>Supplier / Purchase</th>
-
-                        <th>Buying Cost</th>
-
-                        <th>Customer / Sale</th>
-
-                        <th>Selling Price</th>
-
-                        <th>Profit</th>
-
-                        <th>Status</th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                {% for imei in imeis %}
-
-                    <tr>
-
-                        <td class="text-muted">
-                            {{ loop.index }}
-                        </td>
-
-
-                        <td>
-
-                            <strong class="font-monospace">
-                                {{ imei.imei }}
-                            </strong>
-
-                        </td>
-
-
-                        <td>
-
-                            {% if imei.product_variant
-                                  and imei.product_variant.product %}
-
-                                {{ imei.product_variant.product.name }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
-
-                        </td>
-
-                        <td>
-                            {% if imei.purchase %}
-                                <div>{{ imei.supplier.name if imei.supplier else "-" }}</div>
-                                <small class="text-muted">{{ imei.purchase_number or "-" }}</small>
-                            {% else %}-{% endif %}
-                        </td>
-
-                        <td>
-                            UGX {{ "{:,.2f}".format(imei.buying_price or 0) }}
-                        </td>
-
-                        <td>
-                            {% if imei.sale_items %}
-                                {% set si = imei.sale_items[0] %}
-                                <div>{{ si.sale.customer_name if si.sale else "-" }}</div>
-                                <small class="text-muted">{{ si.sale.invoice_number if si.sale else "-" }}</small>
-                            {% else %}-{% endif %}
-                        </td>
-
-                        <td>
-                            {% if imei.sale_items %}
-                                UGX {{ "{:,.2f}".format(imei.sale_items[0].selling_price or 0) }}
-                            {% else %}-{% endif %}
-                        </td>
-
-                        <td>
-                            {% if imei.sale_items %}
-                                UGX {{ "{:,.2f}".format(imei.sale_items[0].profit or 0) }}
-                            {% else %}-{% endif %}
-                        </td>
-
-                        <td>
-
-                            {% if imei.status == "In Stock" %}
-
-                                <span class="badge bg-success">
-                                    <i class="fas fa-check me-1"></i>
-                                    In Stock
-                                </span>
-
-                            {% elif imei.status == "Sold" %}
-
-                                <span class="badge bg-primary">
-                                    <i class="fas fa-shopping-cart me-1"></i>
-                                    Sold
-                                </span>
-
-                            {% elif imei.status == "Reserved" %}
-
-                                <span class="badge bg-warning text-dark">
-                                    <i class="fas fa-clock me-1"></i>
-                                    Reserved
-                                </span>
-
-                            {% else %}
-
-                                <span class="badge bg-secondary">
-                                    {{ imei.status or "Unknown" }}
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                {% else %}
-
-                    <tr>
-
-                        <td
-                            colspan="10"
-                            class="text-center py-5 text-muted"
-                        >
-
-                            <i class="fas fa-mobile-screen-button fa-2x mb-3"></i>
-
-                            <div>
-                                No IMEI records found.
-                            </div>
-
-                        </td>
-
-                    </tr>
-
-                {% endfor %}
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
+  </div>
 </div>
 
 {% endblock %}

@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, session, request
 
 from services.notification_service import NotificationService
+from utils.permissions import permission_required
 
 
 notifications_bp = Blueprint(
@@ -15,6 +16,7 @@ def get_current_user_id():
 
 
 @notifications_bp.route("/", methods=["GET"])
+@permission_required("notifications.view")
 def index():
 
     user_id = get_current_user_id()
@@ -70,6 +72,7 @@ def index():
 
 
 @notifications_bp.route("/unread-count", methods=["GET"])
+@permission_required("notifications.view")
 def unread_count():
 
     user_id = get_current_user_id()
@@ -92,6 +95,7 @@ def unread_count():
     "/<int:notification_id>/read",
     methods=["POST"],
 )
+@permission_required("notifications.view")
 def mark_read(notification_id):
 
     user_id = get_current_user_id()
@@ -123,6 +127,7 @@ def mark_read(notification_id):
     "/read-all",
     methods=["POST"],
 )
+@permission_required("notifications.manage")
 def mark_all_read():
 
     user_id = get_current_user_id()
@@ -146,6 +151,7 @@ def mark_all_read():
     "/<int:notification_id>",
     methods=["DELETE"],
 )
+@permission_required("notifications.manage")
 def delete(notification_id):
 
     user_id = get_current_user_id()

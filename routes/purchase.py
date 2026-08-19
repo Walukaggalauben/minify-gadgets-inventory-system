@@ -12,6 +12,7 @@ from flask import (
 from datetime import datetime
 
 from utils.auth import login_required
+from utils.permissions import permission_required
 
 from models.purchase import Purchase
 from models.supplier import Supplier
@@ -34,6 +35,7 @@ purchase_bp = Blueprint(
 
 
 @purchase_bp.route("/")
+@permission_required("purchases.view")
 def index():
 
     if not login_required():
@@ -82,6 +84,7 @@ def index():
 
 
 @purchase_bp.route("/create", methods=["GET", "POST"])
+@permission_required("purchases.create")
 def create():
 
     if not login_required():
@@ -210,6 +213,7 @@ def create():
 
 
 @purchase_bp.route("/edit/<int:purchase_id>", methods=["GET", "POST"])
+@permission_required("purchases.edit")
 def edit(purchase_id):
 
     if not login_required():
@@ -324,12 +328,14 @@ def edit(purchase_id):
 
 
 @purchase_bp.route("/view/<int:purchase_id>")
+@permission_required("purchases.view")
 def view(purchase_id):
     purchase = Purchase.query.get_or_404(purchase_id)
     return render_template("purchases/view.html", purchase=purchase)
 
 
 @purchase_bp.route("/print/<int:purchase_id>")
+@permission_required("purchases.view")
 def print_purchase(purchase_id):
     purchase = Purchase.query.get_or_404(purchase_id)
     return render_template("purchases/print.html", purchase=purchase)
@@ -341,6 +347,7 @@ def print_purchase(purchase_id):
 
 
 @purchase_bp.route("/cancel/<int:purchase_id>", methods=["POST"])
+@permission_required("purchases.cancel")
 def cancel(purchase_id):
 
     if not login_required():

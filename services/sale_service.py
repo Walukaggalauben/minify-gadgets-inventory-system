@@ -14,6 +14,7 @@ from models.customer_credit import CustomerCredit
 from services.currency_service import CurrencyService
 from services.receipt_service import ReceiptService
 from utils.timezone import application_now
+from utils.permissions import has_permission
 
 
 class SaleService:
@@ -251,9 +252,11 @@ class SaleService:
                     False,
                 )
 
-                if price_override_requested and not allow_price_override:
+                if price_override_requested and (
+                    not allow_price_override or not has_permission("sales.override_price")
+                ):
                     raise Exception(
-                        "Price override is not allowed " "by system settings."
+                        "Price override is not allowed for your account."
                     )
 
                 if not price_override_requested:

@@ -5,12 +5,14 @@ from flask import (
     redirect,
     url_for,
     flash,
-    session
+    session,
 )
 
 from services.product_variant_service import ProductVariantService
 from models.product import Product
 from models.system_setting import SystemSetting
+
+from utils.permissions import permission_required
 
 variant_bp = Blueprint("variant", __name__)
 
@@ -20,6 +22,7 @@ def login_required():
 
 
 @variant_bp.route("/variants")
+@permission_required("products.view")
 def index():
 
     if not login_required():
@@ -32,7 +35,8 @@ def index():
     if search:
 
         variants = [
-            v for v in variants
+            v
+            for v in variants
             if (
                 search in v.product.name.lower()
                 or search in (v.sku or "").lower()
@@ -46,11 +50,12 @@ def index():
     return render_template(
         "product_variants/index.html",
         variants=variants,
-        search=search
+        search=search,
     )
 
 
 @variant_bp.route("/variants/create", methods=["GET", "POST"])
+@permission_required("products.create")
 def create():
 
     if not login_required():
@@ -59,12 +64,24 @@ def create():
     products = Product.query.filter_by(is_active=True).order_by(Product.name).all()
 
     if request.method == "POST":
+
         try:
+
             ProductVariantService.create(request.form)
-            flash("Product Variant created successfully.", "success")
+
+            flash(
+                "Product Variant created successfully.",
+                "success",
+            )
+
             return redirect(url_for("variant.index"))
+
         except Exception as exc:
-            flash(str(exc), "danger")
+
+            flash(
+                str(exc),
+                "danger",
+            )
 
     return render_template(
         "product_variants/create.html",
@@ -73,7 +90,11 @@ def create():
     )
 
 
-@variant_bp.route("/variants/edit/<int:id>", methods=["GET", "POST"])
+@variant_bp.route(
+    "/variants/edit/<int:id>",
+    methods=["GET", "POST"],
+)
+@permission_required("products.edit")
 def edit(id):
 
     if not login_required():
@@ -84,12 +105,27 @@ def edit(id):
     products = Product.query.filter_by(is_active=True).order_by(Product.name).all()
 
     if request.method == "POST":
+
         try:
-            ProductVariantService.update(variant, request.form)
-            flash("Product Variant updated successfully.", "success")
+
+            ProductVariantService.update(
+                variant,
+                request.form,
+            )
+
+            flash(
+                "Product Variant updated successfully.",
+                "success",
+            )
+
             return redirect(url_for("variant.index"))
+
         except Exception as exc:
-            flash(str(exc), "danger")
+
+            flash(
+                str(exc),
+                "danger",
+            )
 
     return render_template(
         "product_variants/edit.html",
@@ -100,6 +136,7 @@ def edit(id):
 
 
 @variant_bp.route("/variants/toggle/<int:id>")
+@permission_required("products.edit")
 def toggle(id):
 
     if not login_required():
@@ -111,7 +148,7 @@ def toggle(id):
 
     flash(
         "Product Variant status updated.",
-        "success"
+        "success",
     )
 
     return redirect(url_for("variant.index"))

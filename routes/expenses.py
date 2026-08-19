@@ -3,7 +3,9 @@ from decimal import Decimal, InvalidOperation
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from models.expense import Expense
 from utils.timezone import application_now, application_date
+
 from db import db
+from utils.permissions import permission_required
 
 expenses_bp = Blueprint("expenses", __name__, url_prefix="/expenses")
 
@@ -13,6 +15,7 @@ def _number():
 
 
 @expenses_bp.route("/")
+@permission_required("expenses.view")
 def index():
     search = request.args.get("search", "").strip()
     category = request.args.get("category", "").strip()
@@ -45,6 +48,7 @@ def index():
 
 
 @expenses_bp.route("/create", methods=["GET", "POST"])
+@permission_required("expenses.create")
 def create():
     if request.method == "POST":
         try:
@@ -79,6 +83,7 @@ def create():
 
 
 @expenses_bp.route("/delete/<int:id>", methods=["POST"])
+@permission_required("expenses.delete")
 def delete(id):
     expense = Expense.query.get_or_404(id)
     db.session.delete(expense)
@@ -93,6 +98,7 @@ def delete(id):
 
 
 @expenses_bp.route("/edit/<int:id>", methods=["GET", "POST"])
+@permission_required("expenses.edit")
 def edit(id):
 
     expense = Expense.query.get_or_404(id)

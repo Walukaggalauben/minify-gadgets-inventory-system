@@ -11,6 +11,7 @@ from flask import (
 from models.product_variant import ProductVariant
 from services.imei_service import IMEIService
 from utils.auth import login_required
+from utils.permissions import permission_required
 
 
 imei_bp = Blueprint(
@@ -25,6 +26,7 @@ imei_bp = Blueprint(
 
 
 @imei_bp.route("/")
+@permission_required("imei.view")
 def index():
 
     if not login_required():
@@ -45,6 +47,7 @@ def index():
 
 
 @imei_bp.route("/create", methods=["GET", "POST"])
+@permission_required("imei.create")
 def create():
 
     if not login_required():
@@ -81,6 +84,7 @@ def create():
 
 
 @imei_bp.route("/edit/<int:imei_id>", methods=["GET", "POST"])
+@permission_required("imei.edit")
 def edit(imei_id):
 
     if not login_required():
@@ -122,6 +126,7 @@ def edit(imei_id):
 
 
 @imei_bp.route("/delete/<int:imei_id>", methods=["POST"])
+@permission_required("imei.delete")
 def delete(imei_id):
 
     if not login_required():

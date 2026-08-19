@@ -12,6 +12,7 @@ from db import db
 from models.trade_in_rule import TradeInRule
 
 from utils.auth import login_required
+from utils.permissions import permission_required
 
 trade_in_rules_bp = Blueprint(
     "trade_in_rules",
@@ -21,6 +22,7 @@ trade_in_rules_bp = Blueprint(
 
 
 @trade_in_rules_bp.route("/", methods=["GET", "POST"])
+@permission_required("settings.edit")
 def index():
 
     if not login_required():

@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 
 from db import db
 from models.company import Company
+from utils.permissions import permission_required
 
 import os
 import uuid
@@ -24,6 +25,7 @@ def allowed_file(filename):
 
 
 @company_bp.route("/settings", methods=["GET", "POST"])
+@permission_required("settings.view")
 def settings():
 
     company = Company.query.first()
@@ -40,6 +42,11 @@ def settings():
         db.session.commit()
 
     if request.method == "POST":
+
+        from utils.permissions import has_permission
+        if not has_permission("settings.edit"):
+            from flask import abort
+            abort(403)
 
         company.business_name = request.form.get("business_name")
         company.tagline = request.form.get("tagline")

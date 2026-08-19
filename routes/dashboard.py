@@ -4,6 +4,7 @@ from flask import session
 from flask import redirect
 from flask import url_for
 from flask import jsonify
+from utils.permissions import permission_required
 
 from sqlalchemy import func
 
@@ -23,6 +24,7 @@ dashboard_bp = Blueprint("dashboard", __name__)
 
 
 @dashboard_bp.route("/dashboard")
+@permission_required("dashboard.view")
 def dashboard():
 
     if "user_id" not in session:
@@ -41,6 +43,7 @@ def dashboard():
 
 
 @dashboard_bp.route("/monthly-sales-data")
+@permission_required("dashboard.view")
 def monthly_sales_data():
 
     results = (

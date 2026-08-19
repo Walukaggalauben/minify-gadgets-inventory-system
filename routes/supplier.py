@@ -5,31 +5,35 @@ from flask import (
     redirect,
     url_for,
     flash,
-    #session
 )
 
 from services.supplier_service import SupplierService
 from utils.auth import login_required
-
+from utils.permissions import permission_required
 
 supplier_bp = Blueprint(
     "supplier",
     __name__,
-    url_prefix="/suppliers"
+    url_prefix="/suppliers",
 )
 
 
-#def login_required():
-#    return "user_id" in session
+# ==========================================================
+# SUPPLIER LIST
+# ==========================================================
 
 
 @supplier_bp.route("/")
+@permission_required("suppliers.view")
 def index():
 
     if not login_required():
         return redirect("/")
 
-    search = request.args.get("search", "").strip()
+    search = request.args.get(
+        "search",
+        "",
+    ).strip()
 
     if search:
         suppliers = SupplierService.search(search)
@@ -39,11 +43,20 @@ def index():
     return render_template(
         "supplier/index.html",
         suppliers=suppliers,
-        search=search
+        search=search,
     )
 
 
-@supplier_bp.route("/create", methods=["GET", "POST"])
+# ==========================================================
+# CREATE SUPPLIER
+# ==========================================================
+
+
+@supplier_bp.route(
+    "/create",
+    methods=["GET", "POST"],
+)
+@permission_required("suppliers.create")
 def create():
 
     if not login_required():
@@ -57,23 +70,31 @@ def create():
 
             flash(
                 "Supplier created successfully.",
-                "success"
+                "success",
             )
 
-            return redirect(
-                url_for("supplier.index")
-            )
+            return redirect(url_for("supplier.index"))
 
         except ValueError as e:
 
-            flash(str(e), "danger")
+            flash(
+                str(e),
+                "danger",
+            )
 
-    return render_template(
-        "supplier/create.html"
-    )
+    return render_template("supplier/create.html")
 
 
-@supplier_bp.route("/edit/<int:supplier_id>", methods=["GET", "POST"])
+# ==========================================================
+# EDIT SUPPLIER
+# ==========================================================
+
+
+@supplier_bp.route(
+    "/edit/<int:supplier_id>",
+    methods=["GET", "POST"],
+)
+@permission_required("suppliers.edit")
 def edit(supplier_id):
 
     if not login_required():
@@ -87,29 +108,39 @@ def edit(supplier_id):
 
             SupplierService.update(
                 supplier,
-                request.form
+                request.form,
             )
 
             flash(
                 "Supplier updated successfully.",
-                "success"
+                "success",
             )
 
-            return redirect(
-                url_for("supplier.index")
-            )
+            return redirect(url_for("supplier.index"))
 
         except ValueError as e:
 
-            flash(str(e), "danger")
+            flash(
+                str(e),
+                "danger",
+            )
 
     return render_template(
         "supplier/edit.html",
-        supplier=supplier
+        supplier=supplier,
     )
 
 
-@supplier_bp.route("/delete/<int:supplier_id>", methods=["POST"])
+# ==========================================================
+# DELETE SUPPLIER
+# ==========================================================
+
+
+@supplier_bp.route(
+    "/delete/<int:supplier_id>",
+    methods=["POST"],
+)
+@permission_required("suppliers.delete")
 def delete(supplier_id):
 
     if not login_required():
@@ -121,9 +152,7 @@ def delete(supplier_id):
 
     flash(
         "Supplier deleted successfully.",
-        "success"
+        "success",
     )
 
-    return redirect(
-        url_for("supplier.index")
-    )
+    return redirect(url_for("supplier.index"))

@@ -12,11 +12,12 @@ page_title %}Customer Management{% endblock %} {% block content %}
     <small class="text-muted"> Manage all customers in one place </small>
   </div>
 
-  <a href="{{ url_for('customer.create') }}" class="btn btn-success">
+  {% if has_permission("customers.create") %}
+<a href="{{ url_for('customer.create') }}" class="btn btn-success">
     <i class="fas fa-plus"></i>
-
     Add Customer
-  </a>
+</a>
+{% endif %}
 </div>
 
 <div class="row mb-4">
@@ -218,27 +219,37 @@ page_title %}Customer Management{% endblock %} {% block content %}
                   href="{{ url_for('customer.edit', id=customer.id) }}"
                   class="btn btn-sm btn-outline-warning"
                 >
-                  <i class="fas fa-edit"></i>
-                </a>
+                  {% if has_permission("customers.edit") %}
+<a
+    href="{{ url_for('customer.edit', id=customer.id) }}"
+    class="btn btn-sm btn-outline-warning"
+>
+    <i class="fas fa-edit"></i>
+</a>
+{% endif %}
 
                 {% if customer.is_active %}
 
-                <a
-                  href="{{ url_for('customer.deactivate', id=customer.id) }}"
-                  class="btn btn-sm btn-outline-danger"
-                  onclick="return confirm('Deactivate this customer?');"
-                >
-                  <i class="fas fa-user-slash"></i>
-                </a>
+                {% if has_permission("customers.edit") %}
+<a
+    href="{{ url_for('customer.deactivate', id=customer.id) }}"
+    class="btn btn-sm btn-outline-danger"
+    onclick="return confirm('Deactivate this customer?');"
+>
+    <i class="fas fa-user-slash"></i>
+</a>
+{% endif %}
 
                 {% else %}
 
-                <a
-                  href="{{ url_for('customer.activate', id=customer.id) }}"
-                  class="btn btn-sm btn-outline-success"
-                >
-                  <i class="fas fa-user-check"></i>
-                </a>
+                {% if has_permission("customers.edit") %}
+<a
+    href="{{ url_for('customer.activate', id=customer.id) }}"
+    class="btn btn-sm btn-outline-success"
+>
+    <i class="fas fa-user-check"></i>
+</a>
+{% endif %}
 
                 {% endif %}
               </div>

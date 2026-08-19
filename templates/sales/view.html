@@ -20,19 +20,20 @@
     <a
       href="{{ url_for('sale.print_sale', sale_id=sale.id) }}"
       target="_blank"
-      class="btn btn-success"
+      class="btn btn-outline-primary"
     >
-      <i class="fas fa-print me-1"></i> Print Invoice
+      <i class="fas fa-print me-1"></i> Print
     </a>
 
+    {% if has_permission("sales.cancel") %}
     <form
       method="post"
       action="{{ url_for('sale.cancel_sale', sale_id=sale.id) }}"
       class="d-inline"
       onsubmit="return confirm(
-        'Cancel this sale?\\n\\n' +
-        'This will restore the sold inventory and IMEI(s).\\n' +
-        'The sale will be marked as Cancelled and excluded from business reports.\\n\\n' +
+        'Cancel this sale?\n\n' +
+        'This will restore the sold inventory and IMEI(s).\n' +
+        'The sale will be marked as Cancelled and excluded from business reports.\n\n' +
         'This action cannot be undone automatically. Continue?'
       );"
     >
@@ -43,8 +44,9 @@
         <i class="fas fa-ban me-1"></i> Cancel Sale
       </button>
     </form>
+    {% endif %}
 
-  {% endif %}
+{% endif %}
 
   <a
     href="{{ url_for('sale.index') }}"
@@ -76,7 +78,7 @@
 
   <div class="card border-0 shadow-sm mb-4">
     <div class="table-responsive">
-      <table class="table table-bordered align-middle mb-0">
+      <table class="table table-bordered align-middlemb-0">
         <thead class="table-success">
           <tr>
             <th>Product</th>
@@ -92,7 +94,7 @@
             <td>
               {{ item.product_variant.product.brand.name }} {{ item.product_variant.product.name }}
               <small class="d-block text-muted">
-                {{ item.product_variant.storage or '' }} / {{ item.product_variant.ram or '' }} / {{ item.product_variant.colour or '' }}
+                {{ item.product_variant.storage or ''}} / {{ item.product_variant.ram or '' }} / {{ item.product_variant.colour or '' }}
               </small>
             </td>
             <td>{{ item.imei.imei if item.imei else '-' }}</td>
@@ -126,7 +128,7 @@
     </div>
 
     <div class="card-body">
-      {% set received_total = (sale.amount_paid or 0) %}
+      {% set received_total = (sale.amount_paid or 0)%}
       {% set sale_total = (sale.total_amount or 0) %}
       {% set overpayment = [received_total - sale_total, 0]|max %}
 
@@ -159,7 +161,7 @@
           <div>
             <strong><i class="fas fa-circle-exclamation me-1"></i> Customer Overpayment</strong>
             <div class="small mt-1">
-              This excess is <strong>not profit</strong>. It remains customer credit/refundable money until settled.
+              This excess is <strong>not profit</strong>. It remains customer credit/refundable money untilsettled.
             </div>
             <div class="small text-muted mt-2">
               Original credit: UGX {{ "{:,.2f}".format(overpayment_credit.original_amount or 0) }}
@@ -178,6 +180,7 @@
           The customer can either receive the money back or authorize the business to keep it.
           Until one of those actions is recorded, this amount remains customer credit and is not business income.
         </div>
+        {% if has_permission("credit.settle") %}
         <form method="post" action="{{ url_for('sale.refund_overpayment', sale_id=sale.id) }}">
           <div class="row g-2">
             <div class="col-md-3">
@@ -221,10 +224,11 @@
 
             <div class="col-12">
               <label class="form-label small">Refund Notes</label>
-              <textarea class="form-control" name="refund_notes" rows="2" placeholder="Reason or additional settlement notes"></textarea>
+              <textarea class="form-control" name="refund_notes" rows="2" placeholder="Reason or additionalsettlement notes"></textarea>
             </div>
           </div>
         </form>
+        {% endif %}
 
         <hr class="my-4">
 
@@ -236,7 +240,8 @@
                 Use this only when the customer has agreed to leave the excess with MINIFY GADGETS or has otherwise waived the credit.
                 This does not rewrite the original sale profit; it records a separate business-income event.
               </div>
-              <form method="post" action="{{ url_for('sale.convert_overpayment_to_income', sale_id=sale.id) }}">
+              {% if has_permission("credit.adjust") %}
+              <form method="post" action="{{ url_for('sale.convert_overpayment_to_income', sale_id=sale.id)}}">
                 <div class="mb-2">
                   <label class="form-label small">Reason / Authorization</label>
                   <textarea class="form-control" name="income_reason" rows="2" required placeholder="e.g. Customer agreed to leave the balance with MINIFY GADGETS"></textarea>
@@ -253,6 +258,7 @@
                   <i class="fas fa-building-circle-check me-1"></i> Convert to Business Income
                 </button>
               </form>
+              {% endif %}
             </div>
           </div>
         </div>
@@ -261,7 +267,7 @@
       <div class="alert alert-success border mt-4 mb-0">
         <strong><i class="fas fa-check-circle me-1"></i> Customer Overpayment Settled</strong>
         <div class="small mt-1">The customer has no remaining credit on this sale.</div>
-        {% if overpayment_credit.status == 'Converted to Income' %}
+        {% if overpayment_credit.status == 'Convertedto Income' %}
         <div class="small mt-2"><strong>Settlement:</strong> Converted to business income.</div>
         {% elif overpayment_credit.status == 'Refunded' %}
         <div class="small mt-2"><strong>Settlement:</strong> Refunded to the customer.</div>
@@ -276,8 +282,9 @@
       </div>
       {% endif %}
 
-      {% if sale.balance_due and sale.balance_due > 0 %}
+      {% if sale.balance_due and sale.balance_due > 0%}
       <hr>
+      {% if has_permission("payments.create") %}
       <h6>Record Customer Payment</h6>
 
       <form method="post" action="{{ url_for('sale.add_payment', sale_id=sale.id) }}" id="additionalPaymentForm">
@@ -287,7 +294,7 @@
             <select class="form-select" name="payment_currency" id="additionalPaymentCurrency">
               {% for currency in currencies %}
               <option value="{{ currency.code }}" {% if currency.code == settings.currency %}selected{% endif %}>
-                {{ currency.code }}{% if currency.symbol %} — {{ currency.symbol }}{% endif %}
+                {{ currency.code }}{% if currency.symbol %} â€” {{ currency.symbol }}{% endif %}
               </option>
               {% endfor %}
             </select>
@@ -295,12 +302,12 @@
 
           <div class="col-md-3">
             <label class="form-label small">Amount Received</label>
-            <input class="form-control" type="number" name="amount" id="additionalPaymentAmount" min="0.01" step="0.01" placeholder="Amount" required>
+            <input class="form-control" type="number"name="amount" id="additionalPaymentAmount" min="0.01"step="0.01" placeholder="Amount" required>
           </div>
 
           <div class="col-md-3">
             <label class="form-label small">Manual Rate (optional)</label>
-            <input class="form-control" type="number" name="manual_exchange_rate" id="additionalManualRate" min="0.000001" step="0.000001" placeholder="Use current rate">
+            <input class="form-control" type="number"name="manual_exchange_rate" id="additionalManualRate"min="0.000001" step="0.000001" placeholder="Use current rate">
           </div>
 
           <div class="col-md-3">
@@ -318,7 +325,7 @@
           </div>
 
           <div class="col-md-6 text-md-end">
-            <small class="text-muted">UGX Equivalent: </small>
+            <small class="text-muted">UGX Equivalent:</small>
             <strong id="additionalUgxEquivalent">UGX 0.00</strong>
           </div>
 
@@ -331,6 +338,7 @@
           </div>
         </div>
       </form>
+      {% endif %}
       {% endif %}
 
       {% if overpayment_credit and overpayment_credit.transactions %}
@@ -351,10 +359,10 @@
           <tbody>
             {% for tx in overpayment_credit.transactions %}
             <tr>
-              <td>{{ tx.created_at.strftime("%d %b %Y %H:%M") }}</td>
+              <td>{{ tx.created_at.strftime("%d %b %Y%H:%M") }}</td>
               <td>
                 <span class="badge {% if tx.transaction_type == 'REFUND' %}bg-warning text-dark{% else %}bg-info{% endif %}">
-                  {{ tx.transaction_type.replace('_', ' ') }}
+                  {{ tx.transaction_type.replace('_',' ') }}
                 </span>
               </td>
               <td>{{ tx.payment_method or '-' }}</td>
@@ -443,7 +451,7 @@
 
                 <td>
 
-                    {{ p.payment_date.strftime("%d %b %Y %H:%M") }}
+                    {{ p.payment_date.strftime("%d %b%Y %H:%M") }}
 
                 </td>
 
@@ -520,6 +528,7 @@
 
                 <td class="text-center">
 
+                    {% if has_permission("payments.view") %}
                     <a
                         href="{{ url_for(
                             'sale.payment_receipt',
@@ -535,6 +544,7 @@
                         Receipt
 
                     </a>
+                    {% endif %}
 
                 </td>
 
@@ -575,7 +585,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const rate = effectiveRate();
         equivalent.textContent = `UGX ${(value * rate).toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         if (rate > 0) {
-            rateText.textContent = `1 ${currency.value} = ${rate.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 6})} UGX${manual.value ? " (manual override)" : ""}`;
+            rateText.textContent = `1 ${currency.value} = ${rate.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 6})} UGX${manual.value? " (manual override)" : ""}`;
         }
     }
 

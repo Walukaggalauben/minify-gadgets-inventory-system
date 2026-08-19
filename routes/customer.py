@@ -5,19 +5,18 @@ from flask import (
     redirect,
     url_for,
     flash,
+    jsonify,
 )
 
 from db import db
 
-from flask import jsonify
-
 from models.customer import Customer
-
 from models.sale import Sale
 
 from services.customer_service import CustomerService
 
 from utils.auth import login_required
+from utils.permissions import permission_required
 
 customer_bp = Blueprint(
     "customer",
@@ -32,12 +31,16 @@ customer_bp = Blueprint(
 
 
 @customer_bp.route("/")
+@permission_required("customers.view")
 def index():
 
     if not login_required():
         return redirect(url_for("auth.login"))
 
-    search = request.args.get("search", "").strip()
+    search = request.args.get(
+        "search",
+        "",
+    ).strip()
 
     query = Customer.query
 
@@ -63,8 +66,13 @@ def index():
 # ==========================================================
 
 
-@customer_bp.route("/create", methods=["GET", "POST"])
+@customer_bp.route(
+    "/create",
+    methods=["GET", "POST"],
+)
+@permission_required("customers.create")
 def create():
+
     if not login_required():
         return redirect(url_for("auth.login"))
 
@@ -101,6 +109,7 @@ def create():
         # ======================================================
 
         if return_to == "sale":
+
             return redirect(
                 url_for(
                     "sale.create",
@@ -123,6 +132,7 @@ def create():
 
 
 @customer_bp.route("/<int:id>")
+@permission_required("customers.view")
 def view(id):
 
     if not login_required():
@@ -136,7 +146,12 @@ def view(id):
     ).count()
 
     outstanding_balance = (
-        db.session.query(db.func.coalesce(db.func.sum(Sale.balance_due), 0))
+        db.session.query(
+            db.func.coalesce(
+                db.func.sum(Sale.balance_due),
+                0,
+            )
+        )
         .filter(
             Sale.customer_id == customer.id,
             Sale.status != "Cancelled",
@@ -146,7 +161,12 @@ def view(id):
     )
 
     lifetime_spend = (
-        db.session.query(db.func.coalesce(db.func.sum(Sale.total_amount), 0))
+        db.session.query(
+            db.func.coalesce(
+                db.func.sum(Sale.total_amount),
+                0,
+            )
+        )
         .filter(
             Sale.customer_id == customer.id,
             Sale.status != "Cancelled",
@@ -176,7 +196,11 @@ def view(id):
 # ==========================================================
 
 
-@customer_bp.route("/<int:id>/edit", methods=["GET", "POST"])
+@customer_bp.route(
+    "/<int:id>/edit",
+    methods=["GET", "POST"],
+)
+@permission_required("customers.edit")
 def edit(id):
 
     if not login_required():
@@ -228,6 +252,7 @@ def edit(id):
 
 
 @customer_bp.route("/<int:id>/deactivate")
+@permission_required("customers.edit")
 def deactivate(id):
 
     if not login_required():
@@ -253,6 +278,7 @@ def deactivate(id):
 
 
 @customer_bp.route("/<int:id>/activate")
+@permission_required("customers.edit")
 def activate(id):
 
     if not login_required():
@@ -278,15 +304,18 @@ def activate(id):
 
 
 @customer_bp.route("/api/search")
+@permission_required("customers.view")
 def search():
 
     if not login_required():
         return jsonify([])
 
-    q = request.args.get("q", "").strip()
+    q = request.args.get(
+        "q",
+        "",
+    ).strip()
 
     if not q:
-
         return jsonify([])
 
     customers = (

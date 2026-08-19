@@ -5,6 +5,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from datetime import datetime
 
 from utils.auth import login_required
+from utils.permissions import permission_required
 
 from models.trade_in import TradeIn
 from models.product import Product
@@ -25,6 +26,7 @@ trade_in_bp = Blueprint("trade_in", __name__, url_prefix="/trade-ins")
 
 
 @trade_in_bp.route("/")
+@permission_required("tradeins.view")
 def index():
 
     if not login_required():
@@ -89,6 +91,7 @@ def index():
 
 
 @trade_in_bp.route("/create", methods=["GET", "POST"])
+@permission_required("tradeins.create")
 def create():
 
     if not login_required():
@@ -258,6 +261,7 @@ def create():
 
 
 @trade_in_bp.route("/view/<int:id>")
+@permission_required("tradeins.view")
 def view(id):
 
     if not login_required():
@@ -274,6 +278,7 @@ def view(id):
 
 
 @trade_in_bp.route("/print/<int:id>")
+@permission_required("tradeins.view")
 def print_trade_in(id):
 
     if not login_required():
@@ -290,6 +295,7 @@ def print_trade_in(id):
 
 
 @trade_in_bp.route("/delete/<int:id>")
+@permission_required("tradeins.delete")
 def delete(id):
 
     if not login_required():
@@ -337,6 +343,7 @@ from sqlalchemy import or_
 
 
 @trade_in_bp.route("/api/search-products")
+@permission_required("tradeins.view")
 def search_products():
 
     q = request.args.get("q", "").strip()
@@ -360,6 +367,7 @@ def search_products():
 
 
 @trade_in_bp.route("/api/product/<int:product_id>/variants")
+@permission_required("tradeins.view")
 def product_variants(product_id):
 
     variants = (
@@ -400,6 +408,7 @@ from services.trade_in_valuation_service import TradeInValuationService
 
 
 @trade_in_bp.route("/api/valuation", methods=["POST"])
+@permission_required("tradeins.create")
 def valuation():
 
     data = request.get_json()

@@ -254,7 +254,7 @@ content %}
                     {%
                     if
                     not
-                    settings.allow_price_override
+                    settings.allow_price_override or not has_permission("sales.override_price")
                     %}
                     readonly
                     {%
@@ -268,7 +268,7 @@ content %}
                      Cashier must explicitly approve negotiation
                 =============================================== -->
 
-                {% if not settings.allow_price_override %}
+                {% if not settings.allow_price_override and has_permission("sales.override_price") %}
 
                 <button
                   type="button"
@@ -288,7 +288,7 @@ content %}
                      PRICE OVERRIDE ENABLED GLOBALLY
                 =============================================== -->
 
-                {% else %}
+                {% elif has_permission("sales.override_price") %}
 
                 <small class="d-block text-success mt-1">
                   <i class="fas fa-unlock"></i>

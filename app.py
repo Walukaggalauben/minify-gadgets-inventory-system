@@ -6,6 +6,8 @@ import os
 from config import Config
 from db import db
 
+from utils.permissions import has_permission
+
 
 def create_app():
 
@@ -66,6 +68,15 @@ def create_app():
     @app.context_processor
     def inject_company():
         return {"company": Company.query.first()}
+
+        # ==========================================
+
+    # PERMISSIONS AVAILABLE IN TEMPLATES
+    # ==========================================
+
+    @app.context_processor
+    def inject_permissions():
+        return {"has_permission": has_permission}
 
     # ==========================================
     # REGISTER BLUEPRINTS

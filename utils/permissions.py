@@ -33,7 +33,7 @@ def has_permission(permission_name):
 
     user = current_user()
 
-    if not user:
+    if not user or not user.is_active:
         return False
 
     # ------------------------------------------------------

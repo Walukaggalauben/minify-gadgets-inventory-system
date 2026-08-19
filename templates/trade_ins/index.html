@@ -1,714 +1,488 @@
-{% extends "layout.html" %}
-
-{% block title %}Trade-In Management | MINIFY GADGETS{% endblock %}
-
-{% block page_title %}Trade-In Management{% endblock %}
-
-{% block content %}
+{% extends "layout.html" %} {% block title %}Trade-In Management | MINIFY
+GADGETS{% endblock %} {% block page_title %}Trade-In Management{% endblock %} {%
+block content %}
 
 <div class="container-fluid px-0">
-
-    <!-- ==========================================================
+  <!-- ==========================================================
          PAGE HEADER
     =========================================================== -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <div
+    class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4"
+  >
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <div
+          class="d-flex align-items-center justify-content-center rounded-circle bg-success text-white"
+          style="width: 42px; height: 42px"
+        >
+          <i class="fas fa-right-left"></i>
+        </div>
 
         <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <div
-                    class="d-flex align-items-center justify-content-center rounded-circle bg-success text-white"
-                    style="width: 42px; height: 42px;"
-                >
-                    <i class="fas fa-right-left"></i>
-                </div>
+          <h2 class="fw-bold mb-0">Trade-In Management</h2>
 
-                <div>
-                    <h2 class="fw-bold mb-0">Trade-In Management</h2>
-
-                    <div class="text-muted small">
-                        Receive, inspect, value and manage customer trade-ins
-                    </div>
-                </div>
-            </div>
+          <div class="text-muted small">
+            Receive, inspect, value and manage customer trade-ins
+          </div>
         </div>
-
-        <a
-            href="{{ url_for('trade_in.create') }}"
-            class="btn btn-success px-4"
-        >
-            <i class="fas fa-plus me-1"></i>
-            New Trade-In
-        </a>
-
+      </div>
     </div>
 
+    {% if has_permission("tradeins.create") %}
+    <a href="{{ url_for('trade_in.create') }}" class="btn btn-success px-4">
+      <i class="fas fa-plus me-1"></i>
+      New Trade-In
+    </a>
+    {% endif %}
+  </div>
 
-    <!-- ==========================================================
+  <!-- ==========================================================
          SUMMARY CARDS
     =========================================================== -->
-    <div class="row g-3 mb-4">
+  <div class="row g-3 mb-4">
+    <!-- Records -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="text-muted small fw-semibold mb-1">Records Found</div>
 
-        <!-- Records -->
-        <div class="col-xl-3 col-md-6">
-
-            <div class="card border-0 shadow-sm h-100">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between align-items-start">
-
-                        <div>
-                            <div class="text-muted small fw-semibold mb-1">
-                                Records Found
-                            </div>
-
-                            <div class="fs-3 fw-bold text-success">
-                                {{ trade_ins|length }}
-                            </div>
-                        </div>
-
-                        <div
-                            class="d-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 text-success"
-                            style="width: 44px; height: 44px;"
-                        >
-                            <i class="fas fa-right-left"></i>
-                        </div>
-
-                    </div>
-
-                </div>
-
+              <div class="fs-3 fw-bold text-success">
+                {{ trade_ins|length }}
+              </div>
             </div>
 
-        </div>
-
-
-        <!-- Total Trade Value -->
-        <div class="col-xl-3 col-md-6">
-
-            <div class="card border-0 shadow-sm h-100">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between align-items-start">
-
-                        <div>
-                            <div class="text-muted small fw-semibold mb-1">
-                                Total Trade Value
-                            </div>
-
-                            <div class="fs-5 fw-bold">
-                                UGX
-                                {{ "{:,.0f}".format(
-                                    trade_ins|sum(attribute='total_trade_value')
-                                ) }}
-                            </div>
-                        </div>
-
-                        <div
-                            class="d-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary"
-                            style="width: 44px; height: 44px;"
-                        >
-                            <i class="fas fa-money-bill-wave"></i>
-                        </div>
-
-                    </div>
-
-                </div>
-
+            <div
+              class="d-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 text-success"
+              style="width: 44px; height: 44px"
+            >
+              <i class="fas fa-right-left"></i>
             </div>
-
+          </div>
         </div>
-
-
-        <!-- Cash Paid -->
-        <div class="col-xl-3 col-md-6">
-
-            <div class="card border-0 shadow-sm h-100">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between align-items-start">
-
-                        <div>
-                            <div class="text-muted small fw-semibold mb-1">
-                                Cash Paid
-                            </div>
-
-                            <div class="fs-5 fw-bold">
-                                UGX
-                                {{ "{:,.0f}".format(
-                                    trade_ins|sum(attribute='cash_paid')
-                                ) }}
-                            </div>
-                        </div>
-
-                        <div
-                            class="d-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10 text-warning"
-                            style="width: 44px; height: 44px;"
-                        >
-                            <i class="fas fa-hand-holding-dollar"></i>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Top-up -->
-        <div class="col-xl-3 col-md-6">
-
-            <div class="card border-0 shadow-sm h-100">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between align-items-start">
-
-                        <div>
-                            <div class="text-muted small fw-semibold mb-1">
-                                Top-Up Received
-                            </div>
-
-                            <div class="fs-5 fw-bold">
-                                UGX
-                                {{ "{:,.0f}".format(
-                                    trade_ins|sum(attribute='topup_received')
-                                ) }}
-                            </div>
-                        </div>
-
-                        <div
-                            class="d-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 text-info"
-                            style="width: 44px; height: 44px;"
-                        >
-                            <i class="fas fa-arrow-up"></i>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
+      </div>
     </div>
 
+    <!-- Total Trade Value -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="text-muted small fw-semibold mb-1">
+                Total Trade Value
+              </div>
 
-    <!-- ==========================================================
+              <div class="fs-5 fw-bold">
+                UGX {{ "{:,.0f}".format(
+                trade_ins|sum(attribute='total_trade_value') ) }}
+              </div>
+            </div>
+
+            <div
+              class="d-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary"
+              style="width: 44px; height: 44px"
+            >
+              <i class="fas fa-money-bill-wave"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cash Paid -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="text-muted small fw-semibold mb-1">Cash Paid</div>
+
+              <div class="fs-5 fw-bold">
+                UGX {{ "{:,.0f}".format( trade_ins|sum(attribute='cash_paid') )
+                }}
+              </div>
+            </div>
+
+            <div
+              class="d-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10 text-warning"
+              style="width: 44px; height: 44px"
+            >
+              <i class="fas fa-hand-holding-dollar"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top-up -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="text-muted small fw-semibold mb-1">
+                Top-Up Received
+              </div>
+
+              <div class="fs-5 fw-bold">
+                UGX {{ "{:,.0f}".format(
+                trade_ins|sum(attribute='topup_received') ) }}
+              </div>
+            </div>
+
+            <div
+              class="d-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 text-info"
+              style="width: 44px; height: 44px"
+            >
+              <i class="fas fa-arrow-up"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================
          SEARCH / FILTER PANEL
     =========================================================== -->
-    <div class="card border-0 shadow-sm mb-4">
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white border-bottom">
+      <div class="d-flex align-items-center gap-2">
+        <i class="fas fa-filter text-success"></i>
 
-        <div class="card-header bg-white border-bottom">
+        <div>
+          <h6 class="fw-bold mb-0">Search & Filters</h6>
 
-            <div class="d-flex align-items-center gap-2">
-
-                <i class="fas fa-filter text-success"></i>
-
-                <div>
-                    <h6 class="fw-bold mb-0">
-                        Search & Filters
-                    </h6>
-
-                    <small class="text-muted">
-                        Search trade-ins by number, customer, phone, product or IMEI
-                    </small>
-                </div>
-
-            </div>
-
+          <small class="text-muted">
+            Search trade-ins by number, customer, phone, product or IMEI
+          </small>
         </div>
-
-
-        <div class="card-body">
-
-            <form
-                method="GET"
-                action="{{ url_for('trade_in.index') }}"
-            >
-
-                <div class="row g-3 align-items-end">
-
-                    <!-- Search -->
-                    <div class="col-xl-6 col-lg-5">
-
-                        <label class="form-label fw-semibold">
-                            Search
-                        </label>
-
-                        <div class="input-group">
-
-                            <span class="input-group-text bg-white">
-                                <i class="fas fa-search text-muted"></i>
-                            </span>
-
-                            <input
-                                type="text"
-                                class="form-control"
-                                name="search"
-                                value="{{ search or '' }}"
-                                placeholder="Trade No, Customer, Phone, Product or IMEI"
-                                autocomplete="off"
-                            >
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- From -->
-                    <div class="col-xl-2 col-lg-2 col-md-6">
-
-                        <label class="form-label fw-semibold">
-                            From
-                        </label>
-
-                        <input
-                            type="date"
-                            class="form-control"
-                            name="date_from"
-                            value="{{ date_from or '' }}"
-                        >
-
-                    </div>
-
-
-                    <!-- To -->
-                    <div class="col-xl-2 col-lg-2 col-md-6">
-
-                        <label class="form-label fw-semibold">
-                            To
-                        </label>
-
-                        <input
-                            type="date"
-                            class="form-control"
-                            name="date_to"
-                            value="{{ date_to or '' }}"
-                        >
-
-                    </div>
-
-
-                    <!-- Buttons -->
-                    <div class="col-xl-2 col-lg-3">
-
-                        <div class="d-flex gap-2">
-
-                            <button
-                                type="submit"
-                                class="btn btn-success flex-fill"
-                            >
-                                <i class="fas fa-search me-1"></i>
-                                Search
-                            </button>
-
-                            <a
-                                href="{{ url_for('trade_in.index') }}"
-                                class="btn btn-outline-secondary"
-                                title="Clear filters"
-                            >
-                                <i class="fas fa-xmark"></i>
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </form>
-
-        </div>
-
+      </div>
     </div>
 
+    <div class="card-body">
+      <form method="GET" action="{{ url_for('trade_in.index') }}">
+        <div class="row g-3 align-items-end">
+          <!-- Search -->
+          <div class="col-xl-6 col-lg-5">
+            <label class="form-label fw-semibold"> Search </label>
 
-    <!-- ==========================================================
+            <div class="input-group">
+              <span class="input-group-text bg-white">
+                <i class="fas fa-search text-muted"></i>
+              </span>
+
+              <input
+                type="text"
+                class="form-control"
+                name="search"
+                value="{{ search or '' }}"
+                placeholder="Trade No, Customer, Phone, Product or IMEI"
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+          <!-- From -->
+          <div class="col-xl-2 col-lg-2 col-md-6">
+            <label class="form-label fw-semibold"> From </label>
+
+            <input
+              type="date"
+              class="form-control"
+              name="date_from"
+              value="{{ date_from or '' }}"
+            />
+          </div>
+
+          <!-- To -->
+          <div class="col-xl-2 col-lg-2 col-md-6">
+            <label class="form-label fw-semibold"> To </label>
+
+            <input
+              type="date"
+              class="form-control"
+              name="date_to"
+              value="{{ date_to or '' }}"
+            />
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-xl-2 col-lg-3">
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-success flex-fill">
+                <i class="fas fa-search me-1"></i>
+                Search
+              </button>
+
+              <a
+                href="{{ url_for('trade_in.index') }}"
+                class="btn btn-outline-secondary"
+                title="Clear filters"
+              >
+                <i class="fas fa-xmark"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================
          TRADE-IN RECORDS
     =========================================================== -->
-    <div class="card border-0 shadow-sm">
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-bottom">
+      <div
+        class="d-flex flex-wrap justify-content-between align-items-center gap-2"
+      >
+        <div>
+          <h5 class="fw-bold mb-0">Trade-In Records</h5>
 
-        <div class="card-header bg-white border-bottom">
-
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-
-                <div>
-
-                    <h5 class="fw-bold mb-0">
-                        Trade-In Records
-                    </h5>
-
-                    <small class="text-muted">
-                        Customer devices received through trade-in
-                    </small>
-
-                </div>
-
-                <span class="badge bg-success-subtle text-success px-3 py-2">
-                    {{ trade_ins|length }} record{{ '' if trade_ins|length == 1 else 's' }}
-                </span>
-
-            </div>
-
+          <small class="text-muted">
+            Customer devices received through trade-in
+          </small>
         </div>
 
+        <span class="badge bg-success-subtle text-success px-3 py-2">
+          {{ trade_ins|length }} record{{ '' if trade_ins|length == 1 else 's'
+          }}
+        </span>
+      </div>
+    </div>
 
-        <div class="card-body p-0">
+    <div class="card-body p-0">
+      {% if trade_ins %}
 
-            {% if trade_ins %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-4">Trade-In</th>
 
-            <div class="table-responsive">
+              <th>Date</th>
 
-                <table class="table table-hover align-middle mb-0">
+              <th>Customer</th>
 
-                    <thead class="table-light">
+              <th>Contact</th>
 
-                        <tr>
+              <th>Devices</th>
 
-                            <th class="ps-4">
-                                Trade-In
-                            </th>
+              <th>Trade Value</th>
 
-                            <th>
-                                Date
-                            </th>
+              <th>Cash Paid</th>
 
-                            <th>
-                                Customer
-                            </th>
+              <th>Top-Up</th>
 
-                            <th>
-                                Contact
-                            </th>
+              <th>Status</th>
 
-                            <th>
-                                Devices
-                            </th>
+              <th class="text-end pe-4">Actions</th>
+            </tr>
+          </thead>
 
-                            <th>
-                                Trade Value
-                            </th>
+          <tbody>
+            {% for trade in trade_ins %}
 
-                            <th>
-                                Cash Paid
-                            </th>
+            <tr>
+              <!-- Trade-In Number -->
+              <td class="ps-4">
+                <div class="fw-semibold">{{ trade.trade_in_number }}</div>
 
-                            <th>
-                                Top-Up
-                            </th>
+                <small class="text-muted"> ID #{{ trade.id }} </small>
+              </td>
 
-                            <th>
-                                Status
-                            </th>
+              <!-- Date -->
+              <td>
+                <div class="fw-semibold">
+                  {{ trade.trade_in_date.strftime("%d %b %Y") }}
+                </div>
+              </td>
 
-                            <th class="text-end pe-4">
-                                Actions
-                            </th>
+              <!-- Customer -->
+              <td>
+                <div class="fw-semibold">{{ trade.customer_name }}</div>
 
-                        </tr>
+                {% if trade.business_name %}
 
-                    </thead>
+                <small class="text-muted"> {{ trade.business_name }} </small>
 
+                {% endif %}
+              </td>
 
-                    <tbody>
+              <!-- Contact -->
+              <td>
+                <div>{{ trade.phone_number }}</div>
 
-                    {% for trade in trade_ins %}
+                {% if trade.alternative_phone %}
 
-                        <tr>
+                <small class="text-muted">
+                  {{ trade.alternative_phone }}
+                </small>
 
-                            <!-- Trade-In Number -->
-                            <td class="ps-4">
+                {% endif %}
+              </td>
 
-                                <div class="fw-semibold">
-                                    {{ trade.trade_in_number }}
-                                </div>
+              <!-- Devices -->
+              <td>
+                <span class="badge rounded-pill bg-primary">
+                  {{ trade.items|length }} {{ 'Device' if trade.items|length ==
+                  1 else 'Devices' }}
+                </span>
 
-                                <small class="text-muted">
-                                    ID #{{ trade.id }}
-                                </small>
+                {% if trade.items %}
 
-                            </td>
+                <div class="mt-1">
+                  {% for item in trade.items[:2] %}
 
+                  <div class="small text-muted">
+                    {% if item.product_variant and item.product_variant.product
+                    %} {{ item.product_variant.product.name }} {% else %} Device
+                    {% endif %} {% if item.imei %} · {{ item.imei.imei }} {%
+                    endif %}
+                  </div>
 
-                            <!-- Date -->
-                            <td>
+                  {% endfor %} {% if trade.items|length > 2 %}
 
-                                <div class="fw-semibold">
-                                    {{ trade.trade_in_date.strftime("%d %b %Y") }}
-                                </div>
+                  <div class="small text-muted">
+                    + {{ trade.items|length - 2 }} more
+                  </div>
 
-                            </td>
-
-
-                            <!-- Customer -->
-                            <td>
-
-                                <div class="fw-semibold">
-                                    {{ trade.customer_name }}
-                                </div>
-
-                                {% if trade.business_name %}
-
-                                    <small class="text-muted">
-                                        {{ trade.business_name }}
-                                    </small>
-
-                                {% endif %}
-
-                            </td>
-
-
-                            <!-- Contact -->
-                            <td>
-
-                                <div>
-                                    {{ trade.phone_number }}
-                                </div>
-
-                                {% if trade.alternative_phone %}
-
-                                    <small class="text-muted">
-                                        {{ trade.alternative_phone }}
-                                    </small>
-
-                                {% endif %}
-
-                            </td>
-
-
-                            <!-- Devices -->
-                            <td>
-
-                                <span class="badge rounded-pill bg-primary">
-                                    {{ trade.items|length }}
-                                    {{ 'Device' if trade.items|length == 1 else 'Devices' }}
-                                </span>
-
-                                {% if trade.items %}
-
-                                    <div class="mt-1">
-
-                                        {% for item in trade.items[:2] %}
-
-                                            <div class="small text-muted">
-
-                                                {% if item.product_variant and item.product_variant.product %}
-
-                                                    {{ item.product_variant.product.name }}
-
-                                                {% else %}
-
-                                                    Device
-
-                                                {% endif %}
-
-                                                {% if item.imei %}
-
-                                                    · {{ item.imei.imei }}
-
-                                                {% endif %}
-
-                                            </div>
-
-                                        {% endfor %}
-
-                                        {% if trade.items|length > 2 %}
-
-                                            <div class="small text-muted">
-                                                + {{ trade.items|length - 2 }} more
-                                            </div>
-
-                                        {% endif %}
-
-                                    </div>
-
-                                {% endif %}
-
-                            </td>
-
-
-                            <!-- Trade Value -->
-                            <td>
-
-                                <div class="fw-bold">
-
-                                    UGX
-                                    {{ "{:,.0f}".format(
-                                        trade.total_trade_value or 0
-                                    ) }}
-
-                                </div>
-
-                            </td>
-
-
-                            <!-- Cash Paid -->
-                            <td>
-
-                                UGX
-                                {{ "{:,.0f}".format(
-                                    trade.cash_paid or 0
-                                ) }}
-
-                            </td>
-
-
-                            <!-- Top-Up -->
-                            <td>
-
-                                UGX
-                                {{ "{:,.0f}".format(
-                                    trade.topup_received or 0
-                                ) }}
-
-                            </td>
-
-
-                            <!-- Status -->
-                            <td>
-
-                                {% if trade.status == "Accepted" %}
-
-                                    <span class="badge bg-success">
-                                        Accepted
-                                    </span>
-
-                                {% elif trade.status == "Pending" %}
-
-                                    <span class="badge bg-warning text-dark">
-                                        Pending
-                                    </span>
-
-                                {% elif trade.status == "Rejected" %}
-
-                                    <span class="badge bg-danger">
-                                        Rejected
-                                    </span>
-
-                                {% elif trade.status == "Cancelled" %}
-
-                                    <span class="badge bg-secondary">
-                                        Cancelled
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="badge bg-light text-dark border">
-                                        {{ trade.status or "Unknown" }}
-                                    </span>
-
-                                {% endif %}
-
-                            </td>
-
-
-                            <!-- Actions -->
-                            <td class="text-end pe-4">
-
-                                <div class="btn-group" role="group">
-
-                                    <a
-                                        href="{{ url_for('trade_in.view', id=trade.id) }}"
-                                        class="btn btn-sm btn-outline-primary"
-                                        title="View trade-in"
-                                    >
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-
-                                    <a
-                                        href="{{ url_for('trade_in.print_trade_in', id=trade.id) }}"
-                                        class="btn btn-sm btn-outline-secondary"
-                                        title="Print trade-in"
-                                    >
-                                        <i class="fas fa-print"></i>
-                                    </a>
-
-                                    <a
-                                        href="{{ url_for('trade_in.delete', id=trade.id) }}"
-                                        class="btn btn-sm btn-outline-danger"
-                                        title="Delete trade-in"
-                                        onclick="return confirm('Delete this trade-in? This action cannot be undone.')"
-                                    >
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                    {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-            {% else %}
-
-            <!-- ==================================================
-                 EMPTY STATE
-            =================================================== -->
-
-            <div class="text-center py-5 px-3">
-
-                <div
-                    class="d-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 text-success mx-auto mb-3"
-                    style="width: 72px; height: 72px;"
-                >
-                    <i class="fas fa-right-left fa-2x"></i>
+                  {% endif %}
                 </div>
 
-                <h5 class="fw-bold">
-                    No Trade-Ins Found
-                </h5>
+                {% endif %}
+              </td>
 
-                {% if search or date_from or date_to %}
+              <!-- Trade Value -->
+              <td>
+                <div class="fw-bold">
+                  UGX {{ "{:,.0f}".format( trade.total_trade_value or 0 ) }}
+                </div>
+              </td>
 
-                    <p class="text-muted mb-3">
-                        No trade-in records match the current search or filters.
-                    </p>
+              <!-- Cash Paid -->
+              <td>UGX {{ "{:,.0f}".format( trade.cash_paid or 0 ) }}</td>
 
-                    <a
-                        href="{{ url_for('trade_in.index') }}"
-                        class="btn btn-outline-secondary me-2"
-                    >
-                        <i class="fas fa-xmark me-1"></i>
-                        Clear Filters
-                    </a>
+              <!-- Top-Up -->
+              <td>UGX {{ "{:,.0f}".format( trade.topup_received or 0 ) }}</td>
+
+              <!-- Status -->
+              <td>
+                {% if trade.status == "Accepted" %}
+
+                <span class="badge bg-success"> Accepted </span>
+
+                {% elif trade.status == "Pending" %}
+
+                <span class="badge bg-warning text-dark"> Pending </span>
+
+                {% elif trade.status == "Rejected" %}
+
+                <span class="badge bg-danger"> Rejected </span>
+
+                {% elif trade.status == "Cancelled" %}
+
+                <span class="badge bg-secondary"> Cancelled </span>
 
                 {% else %}
 
-                    <p class="text-muted mb-3">
-                        No trade-ins have been recorded yet.
-                    </p>
+                <span class="badge bg-light text-dark border">
+                  {{ trade.status or "Unknown" }}
+                </span>
 
                 {% endif %}
+              </td>
 
-                <a
-                    href="{{ url_for('trade_in.create') }}"
-                    class="btn btn-success"
-                >
-                    <i class="fas fa-plus me-1"></i>
-                    New Trade-In
-                </a>
+              <!-- Actions -->
+              <td class="text-end pe-4">
+                <div class="btn-group" role="group">
+                  {% if has_permission("tradeins.view") %}
+                  <a
+                    href="{{ url_for('trade_in.view', id=trade.id) }}"
+                    class="btn btn-sm btn-outline-primary"
+                    title="View trade-in"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  {% endif %} {% if has_permission("tradeins.view") %}
+                  <a
+                    href="{{ url_for('trade_in.print_trade_in', id=trade.id) }}"
+                    class="btn btn-sm btn-outline-secondary"
+                    title="Print trade-in"
+                  >
+                    <i class="fas fa-print"></i>
+                  </a>
+                  {% endif %} {% if has_permission("tradeins.delete") %}
+                  <a
+                    href="{{ url_for('trade_in.delete', id=trade.id) }}"
+                    class="btn btn-sm btn-outline-danger"
+                    title="Delete trade-in"
+                    onclick="
+                      return confirm(
+                        'Delete this trade-in? This action cannot be undone.',
+                      );
+                    "
+                  >
+                    <i class="fas fa-trash"></i>
+                  </a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
 
-            </div>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
 
-            {% endif %}
+      {% else %}
 
+      <!-- ==================================================
+                 EMPTY STATE
+            =================================================== -->
+
+      <div class="text-center py-5 px-3">
+        <div
+          class="d-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 text-success mx-auto mb-3"
+          style="width: 72px; height: 72px"
+        >
+          <i class="fas fa-right-left fa-2x"></i>
         </div>
 
-    </div>
+        <h5 class="fw-bold">No Trade-Ins Found</h5>
 
+        {% if search or date_from or date_to %}
+
+        <p class="text-muted mb-3">
+          No trade-in records match the current search or filters.
+        </p>
+
+        <a
+          href="{{ url_for('trade_in.index') }}"
+          class="btn btn-outline-secondary me-2"
+        >
+          <i class="fas fa-xmark me-1"></i>
+          Clear Filters
+        </a>
+
+        {% else %}
+
+        <p class="text-muted mb-3">No trade-ins have been recorded yet.</p>
+
+        {% endif %} {% if has_permission("tradeins.create") %}
+        <a href="{{ url_for('trade_in.create') }}" class="btn btn-success">
+          <i class="fas fa-plus me-1"></i>
+          New Trade-In
+        </a>
+        {% endif %}
+      </div>
+
+      {% endif %}
+    </div>
+  </div>
 </div>
 
 {% endblock %}

@@ -12,10 +12,12 @@ block content %}
       </small>
     </div>
 
+    {% if has_permission("products.create") %}
     <a href="{{ url_for('variant.create') }}" class="btn btn-success">
       <i class="fas fa-circle-plus"></i>
       Add Variant
     </a>
+    {% endif %}
   </div>
 
   <!-- SEARCH -->
@@ -182,40 +184,33 @@ block content %}
               <!-- ACTIONS -->
               <td>
                 <div class="btn-group btn-group-sm">
+                  {% if has_permission("products.edit") %}
                   <a
                     href="{{ url_for(
-                                    'variant.edit',
-                                    id=variant.id
-                                ) }}"
+      'variant.edit',
+      id=variant.id
+  ) }}"
                     class="btn btn-outline-primary"
                     title="Edit Variant"
                   >
                     <i class="fas fa-pen"></i>
                   </a>
-
+                  {% endif %} {% if has_permission("products.edit") %}
                   <a
                     href="{{ url_for(
-                                    'variant.toggle',
-                                    id=variant.id
-                                ) }}"
+      'variant.toggle',
+      id=variant.id
+  ) }}"
                     class="btn btn-outline-secondary"
                     title="{% if variant.is_active %}Deactivate{% else %}Activate{% endif %}"
-                    onclick="
-                      return confirm(
-                        '{% if variant.is_active %}Deactivate{% else %}Activate{% endif %} this variant?',
-                      );
-                    "
                   >
                     {% if variant.is_active %}
-
                     <i class="fas fa-toggle-on"></i>
-
                     {% else %}
-
                     <i class="fas fa-toggle-off"></i>
-
                     {% endif %}
                   </a>
+                  {% endif %}
                 </div>
               </td>
             </tr>

@@ -5,12 +5,17 @@ from flask import (
     redirect,
     url_for,
     flash,
-    session
+    session,
 )
 
 from services.brand_service import BrandService
 
-brand_bp = Blueprint("brand", __name__)
+from utils.permissions import permission_required
+
+brand_bp = Blueprint(
+    "brand",
+    __name__,
+)
 
 
 def login_required():
@@ -18,29 +23,38 @@ def login_required():
 
 
 @brand_bp.route("/brands")
+@permission_required("brands.view")
 def index():
 
     if not login_required():
         return redirect("/")
 
-    search = request.args.get("search", "").strip().lower()
+    search = (
+        request.args.get(
+            "search",
+            "",
+        )
+        .strip()
+        .lower()
+    )
 
     brands = BrandService.get_all()
 
     if search:
-        brands = [
-            b for b in brands
-            if search in b.name.lower()
-        ]
+        brands = [b for b in brands if search in b.name.lower()]
 
     return render_template(
         "brands/index.html",
         brands=brands,
-        search=search
+        search=search,
     )
 
 
-@brand_bp.route("/brands/create", methods=["GET", "POST"])
+@brand_bp.route(
+    "/brands/create",
+    methods=["GET", "POST"],
+)
+@permission_required("brands.create")
 def create():
 
     if not login_required():
@@ -50,14 +64,21 @@ def create():
 
         BrandService.create(request.form)
 
-        flash("Brand created successfully.", "success")
+        flash(
+            "Brand created successfully.",
+            "success",
+        )
 
         return redirect(url_for("brand.index"))
 
     return render_template("brands/create.html")
 
 
-@brand_bp.route("/brands/edit/<int:id>", methods=["GET", "POST"])
+@brand_bp.route(
+    "/brands/edit/<int:id>",
+    methods=["GET", "POST"],
+)
+@permission_required("brands.edit")
 def edit(id):
 
     if not login_required():
@@ -69,20 +90,24 @@ def edit(id):
 
         BrandService.update(
             brand,
-            request.form
+            request.form,
         )
 
-        flash("Brand updated successfully.", "success")
+        flash(
+            "Brand updated successfully.",
+            "success",
+        )
 
         return redirect(url_for("brand.index"))
 
     return render_template(
         "brands/edit.html",
-        brand=brand
+        brand=brand,
     )
 
 
 @brand_bp.route("/brands/toggle/<int:id>")
+@permission_required("brands.edit")
 def toggle(id):
 
     if not login_required():
@@ -92,6 +117,9 @@ def toggle(id):
 
     BrandService.toggle_status(brand)
 
-    flash("Brand status updated.", "success")
+    flash(
+        "Brand status updated.",
+        "success",
+    )
 
     return redirect(url_for("brand.index"))

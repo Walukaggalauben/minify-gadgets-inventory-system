@@ -10,25 +10,33 @@ from flask import (
     send_file,
 )
 
-
-
 from services.report_service import ReportService
+from utils.permissions import permission_required
 
-# We'll create this in the next step
+# ==========================================================
+# OPTIONAL EXPORTERS
+# ==========================================================
+
 try:
     from utils.pdf_export import PDFExporter
 except ImportError:
     PDFExporter = None
+
 
 try:
     from utils.excel_export import ExcelExporter
 except ImportError:
     ExcelExporter = None
 
+
+# ==========================================================
+# BLUEPRINT
+# ==========================================================
+
 report_bp = Blueprint(
     "report",
     __name__,
-    url_prefix="/reports"
+    url_prefix="/reports",
 )
 
 
@@ -36,14 +44,16 @@ report_bp = Blueprint(
 # REPORTS DASHBOARD
 # ==========================================================
 
+
 @report_bp.route("/")
+@permission_required("reports.view")
 def index():
 
     dashboard = ReportService.dashboard_summary()
 
     return render_template(
         "reports/index.html",
-        dashboard=dashboard
+        dashboard=dashboard,
     )
 
 
@@ -51,7 +61,9 @@ def index():
 # SALES REPORT
 # ==========================================================
 
+
 @report_bp.route("/sales")
+@permission_required("reports.view")
 def sales_report():
 
     start_date = request.args.get("start_date")
@@ -59,7 +71,7 @@ def sales_report():
 
     sales, summary = ReportService.sales_report(
         start_date,
-        end_date
+        end_date,
     )
 
     return render_template(
@@ -75,11 +87,17 @@ def sales_report():
 # SALES REPORT PDF
 # ==========================================================
 
+
 @report_bp.route("/sales/pdf")
+@permission_required("reports.export")
 def sales_report_pdf():
 
     if PDFExporter is None:
-        flash("PDF exporter has not been configured.", "warning")
+        flash(
+            "PDF exporter has not been configured.",
+            "warning",
+        )
+
         return redirect(url_for("report.sales_report"))
 
     start_date = request.args.get("start_date")
@@ -87,13 +105,12 @@ def sales_report_pdf():
 
     sales, summary = ReportService.sales_report(
         start_date,
-        end_date
+        end_date,
     )
 
     pdf = PDFExporter.sales_report(
         sales,
         summary,
-        
     )
 
     return send_file(
@@ -103,15 +120,22 @@ def sales_report_pdf():
         mimetype="application/pdf",
     )
 
+
 # ==========================================================
 # SALES REPORT EXCEL
 # ==========================================================
 
+
 @report_bp.route("/sales/excel")
+@permission_required("reports.export")
 def sales_report_excel():
 
     if ExcelExporter is None:
-        flash("Excel exporter has not been configured.", "warning")
+        flash(
+            "Excel exporter has not been configured.",
+            "warning",
+        )
+
         return redirect(url_for("report.sales_report"))
 
     start_date = request.args.get("start_date")
@@ -130,14 +154,19 @@ def sales_report_excel():
         excel,
         as_attachment=True,
         download_name="sales_report.xlsx",
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        mimetype=(
+            "application/" "vnd.openxmlformats-officedocument." "spreadsheetml.sheet"
+        ),
     )
+
 
 # ==========================================================
 # INVENTORY REPORT
 # ==========================================================
 
+
 @report_bp.route("/inventory")
+@permission_required("reports.view")
 def inventory_report():
 
     products, summary = ReportService.inventory_report()
@@ -148,12 +177,23 @@ def inventory_report():
         summary=summary,
     )
 
+
 # ==========================================================
 # INVENTORY REPORT PDF
 # ==========================================================
 
+
 @report_bp.route("/inventory/pdf")
+@permission_required("reports.export")
 def inventory_report_pdf():
+
+    if PDFExporter is None:
+        flash(
+            "PDF exporter has not been configured.",
+            "warning",
+        )
+
+        return redirect(url_for("report.inventory_report"))
 
     products, summary = ReportService.inventory_report()
 
@@ -168,16 +208,23 @@ def inventory_report_pdf():
         download_name="inventory_report.pdf",
         mimetype="application/pdf",
     )
-    
+
+
 # ==========================================================
 # INVENTORY REPORT EXCEL
 # ==========================================================
 
+
 @report_bp.route("/inventory/excel")
+@permission_required("reports.export")
 def inventory_report_excel():
 
     if ExcelExporter is None:
-        flash("Excel exporter has not been configured.", "warning")
+        flash(
+            "Excel exporter has not been configured.",
+            "warning",
+        )
+
         return redirect(url_for("report.inventory_report"))
 
     products, summary = ReportService.inventory_report()
@@ -190,14 +237,19 @@ def inventory_report_excel():
         excel,
         as_attachment=True,
         download_name="inventory_report.xlsx",
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )    
+        mimetype=(
+            "application/" "vnd.openxmlformats-officedocument." "spreadsheetml.sheet"
+        ),
+    )
+
 
 # ==========================================================
 # PURCHASE REPORT
 # ==========================================================
 
+
 @report_bp.route("/purchases")
+@permission_required("reports.view")
 def purchase_report():
 
     start_date = request.args.get("start_date")
@@ -215,9 +267,24 @@ def purchase_report():
         start_date=start_date,
         end_date=end_date,
     )
-    
+
+
+# ==========================================================
+# PURCHASE REPORT PDF
+# ==========================================================
+
+
 @report_bp.route("/purchases/pdf")
+@permission_required("reports.export")
 def purchase_report_pdf():
+
+    if PDFExporter is None:
+        flash(
+            "PDF exporter has not been configured.",
+            "warning",
+        )
+
+        return redirect(url_for("report.purchase_report"))
 
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
@@ -237,17 +304,24 @@ def purchase_report_pdf():
         as_attachment=True,
         download_name="purchase_report.pdf",
         mimetype="application/pdf",
-    ) 
-    
+    )
+
+
 # ==========================================================
 # PURCHASE REPORT EXCEL
 # ==========================================================
 
+
 @report_bp.route("/purchases/excel")
+@permission_required("reports.export")
 def purchase_report_excel():
 
     if ExcelExporter is None:
-        flash("Excel exporter has not been configured.", "warning")
+        flash(
+            "Excel exporter has not been configured.",
+            "warning",
+        )
+
         return redirect(url_for("report.purchase_report"))
 
     start_date = request.args.get("start_date")
@@ -266,15 +340,19 @@ def purchase_report_excel():
         excel,
         as_attachment=True,
         download_name="purchase_report.xlsx",
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )       
+        mimetype=(
+            "application/" "vnd.openxmlformats-officedocument." "spreadsheetml.sheet"
+        ),
+    )
 
 
 # ==========================================================
 # PROFIT REPORT
 # ==========================================================
 
+
 @report_bp.route("/profit")
+@permission_required("reports.view")
 def profit_report():
 
     start_date = request.args.get("start_date")
@@ -293,12 +371,23 @@ def profit_report():
         end_date=end_date,
     )
 
+
 # ==========================================================
 # PROFIT REPORT PDF
 # ==========================================================
 
+
 @report_bp.route("/profit/pdf")
+@permission_required("reports.export")
 def profit_report_pdf():
+
+    if PDFExporter is None:
+        flash(
+            "PDF exporter has not been configured.",
+            "warning",
+        )
+
+        return redirect(url_for("report.profit_report"))
 
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
@@ -319,16 +408,23 @@ def profit_report_pdf():
         download_name="profit_report.pdf",
         mimetype="application/pdf",
     )
-    
+
+
 # ==========================================================
 # PROFIT REPORT EXCEL
 # ==========================================================
 
+
 @report_bp.route("/profit/excel")
+@permission_required("reports.export")
 def profit_report_excel():
 
     if ExcelExporter is None:
-        flash("Excel exporter has not been configured.", "warning")
+        flash(
+            "Excel exporter has not been configured.",
+            "warning",
+        )
+
         return redirect(url_for("report.profit_report"))
 
     start_date = request.args.get("start_date")
@@ -347,15 +443,19 @@ def profit_report_excel():
         excel,
         as_attachment=True,
         download_name="profit_report.xlsx",
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )    
-    
+        mimetype=(
+            "application/" "vnd.openxmlformats-officedocument." "spreadsheetml.sheet"
+        ),
+    )
+
 
 # ==========================================================
 # IMEI REPORT
 # ==========================================================
 
+
 @report_bp.route("/imei")
+@permission_required("reports.view")
 def imei_report():
 
     imeis = ReportService.imei_report()
@@ -365,12 +465,23 @@ def imei_report():
         imeis=imeis,
     )
 
+
 # ==========================================================
 # IMEI REPORT PDF
 # ==========================================================
 
+
 @report_bp.route("/imei/pdf")
+@permission_required("reports.export")
 def imei_report_pdf():
+
+    if PDFExporter is None:
+        flash(
+            "PDF exporter has not been configured.",
+            "warning",
+        )
+
+        return redirect(url_for("report.imei_report"))
 
     imeis = ReportService.imei_report()
 
@@ -384,16 +495,23 @@ def imei_report_pdf():
         download_name="imei_report.pdf",
         mimetype="application/pdf",
     )
-    
+
+
 # ==========================================================
 # IMEI REPORT EXCEL
 # ==========================================================
 
+
 @report_bp.route("/imei/excel")
+@permission_required("reports.export")
 def imei_report_excel():
 
     if ExcelExporter is None:
-        flash("Excel exporter has not been configured.", "warning")
+        flash(
+            "Excel exporter has not been configured.",
+            "warning",
+        )
+
         return redirect(url_for("report.imei_report"))
 
     imeis = ReportService.imei_report()
@@ -406,14 +524,19 @@ def imei_report_excel():
         excel,
         as_attachment=True,
         download_name="imei_report.xlsx",
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )    
+        mimetype=(
+            "application/" "vnd.openxmlformats-officedocument." "spreadsheetml.sheet"
+        ),
+    )
+
 
 # ==========================================================
 # LOW STOCK REPORT
 # ==========================================================
 
+
 @report_bp.route("/low-stock")
+@permission_required("reports.view")
 def low_stock_report():
 
     products = ReportService.low_stock_report()
@@ -422,13 +545,24 @@ def low_stock_report():
         "reports/low_stock_report.html",
         products=products,
     )
-    
+
+
 # ==========================================================
 # LOW STOCK REPORT PDF
 # ==========================================================
 
+
 @report_bp.route("/low-stock/pdf")
+@permission_required("reports.export")
 def low_stock_report_pdf():
+
+    if PDFExporter is None:
+        flash(
+            "PDF exporter has not been configured.",
+            "warning",
+        )
+
+        return redirect(url_for("report.low_stock_report"))
 
     products = ReportService.low_stock_report()
 
@@ -442,16 +576,23 @@ def low_stock_report_pdf():
         download_name="low_stock_report.pdf",
         mimetype="application/pdf",
     )
-    
+
+
 # ==========================================================
 # LOW STOCK REPORT EXCEL
 # ==========================================================
 
+
 @report_bp.route("/low-stock/excel")
+@permission_required("reports.export")
 def low_stock_report_excel():
 
     if ExcelExporter is None:
-        flash("Excel exporter has not been configured.", "warning")
+        flash(
+            "Excel exporter has not been configured.",
+            "warning",
+        )
+
         return redirect(url_for("report.low_stock_report"))
 
     products = ReportService.low_stock_report()
@@ -464,12 +605,35 @@ def low_stock_report_excel():
         excel,
         as_attachment=True,
         download_name="low_stock_report.xlsx",
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )        
+        mimetype=(
+            "application/" "vnd.openxmlformats-officedocument." "spreadsheetml.sheet"
+        ),
+    )
+
+
+# ==========================================================
+# EXPENSE REPORT
+# ==========================================================
+
 
 @report_bp.route("/expenses")
+@permission_required("reports.view")
 def expense_report():
+
     from models.expense import Expense
-    expenses = Expense.query.order_by(Expense.expense_date.desc(), Expense.id.desc()).all()
+
+    expenses = Expense.query.order_by(
+        Expense.expense_date.desc(),
+        Expense.id.desc(),
+    ).all()
+
     total = sum(float(e.amount or 0) for e in expenses)
-    return render_template("reports/expense_report.html", expenses=expenses, total=total)
+
+    return render_template(
+        "expenses/index.html",
+        expenses=expenses,
+        total=total,
+        categories=[],
+        search="",
+        selected_category="",
+    )

@@ -5,14 +5,16 @@ from flask import (
     redirect,
     url_for,
     flash,
-    session
+    session,
 )
 
 from services.category_service import CategoryService
 
+from utils.permissions import permission_required
+
 category_bp = Blueprint(
     "category",
-    __name__
+    __name__,
 )
 
 
@@ -21,29 +23,38 @@ def login_required():
 
 
 @category_bp.route("/categories")
+@permission_required("categories.view")
 def index():
 
     if not login_required():
         return redirect("/")
 
-    search = request.args.get("search", "").strip().lower()
+    search = (
+        request.args.get(
+            "search",
+            "",
+        )
+        .strip()
+        .lower()
+    )
 
     categories = CategoryService.get_all()
 
     if search:
-        categories = [
-            c for c in categories
-            if search in c.name.lower()
-        ]
+        categories = [c for c in categories if search in c.name.lower()]
 
     return render_template(
         "categories/index.html",
         categories=categories,
-        search=search
+        search=search,
     )
 
 
-@category_bp.route("/categories/create", methods=["GET", "POST"])
+@category_bp.route(
+    "/categories/create",
+    methods=["GET", "POST"],
+)
+@permission_required("categories.create")
 def create():
 
     if not login_required():
@@ -53,14 +64,21 @@ def create():
 
         CategoryService.create(request.form)
 
-        flash("Category created successfully.", "success")
+        flash(
+            "Category created successfully.",
+            "success",
+        )
 
         return redirect(url_for("category.index"))
 
     return render_template("categories/create.html")
 
 
-@category_bp.route("/categories/edit/<int:id>", methods=["GET", "POST"])
+@category_bp.route(
+    "/categories/edit/<int:id>",
+    methods=["GET", "POST"],
+)
+@permission_required("categories.edit")
 def edit(id):
 
     if not login_required():
@@ -72,20 +90,24 @@ def edit(id):
 
         CategoryService.update(
             category,
-            request.form
+            request.form,
         )
 
-        flash("Category updated successfully.", "success")
+        flash(
+            "Category updated successfully.",
+            "success",
+        )
 
         return redirect(url_for("category.index"))
 
     return render_template(
         "categories/edit.html",
-        category=category
+        category=category,
     )
 
 
 @category_bp.route("/categories/toggle/<int:id>")
+@permission_required("categories.edit")
 def toggle(id):
 
     if not login_required():
@@ -95,6 +117,9 @@ def toggle(id):
 
     CategoryService.toggle_status(category)
 
-    flash("Category status updated.", "success")
+    flash(
+        "Category status updated.",
+        "success",
+    )
 
     return redirect(url_for("category.index"))

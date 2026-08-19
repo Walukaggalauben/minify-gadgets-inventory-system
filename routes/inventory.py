@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify
+from utils.permissions import permission_required
 from sqlalchemy import or_
 from models.product_variant import ProductVariant
 from models.imei import IMEI
@@ -9,6 +10,7 @@ inventory_bp = Blueprint("inventory", __name__, url_prefix="/inventory")
 
 
 @inventory_bp.route("/")
+@permission_required("inventory.view")
 def index():
 
     search = request.args.get("search", "").strip()
@@ -100,6 +102,7 @@ def index():
 
 
 @inventory_bp.route("/api/barcode/<path:barcode>")
+@permission_required("inventory.view")
 def barcode_lookup(barcode):
     variant = ProductVariant.query.filter_by(barcode=barcode.strip()).first()
     if not variant:

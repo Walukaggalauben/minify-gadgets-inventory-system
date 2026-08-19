@@ -11,6 +11,7 @@ from services.user_service import UserService
 from models.system_setting import SystemSetting
 
 from utils.auth import login_required
+from utils.permissions import permission_required
 
 user_bp = Blueprint("user", __name__, url_prefix="/users")
 
@@ -20,6 +21,7 @@ user_bp = Blueprint("user", __name__, url_prefix="/users")
 # ==========================================
 
 @user_bp.route("/")
+@permission_required("users.view")
 def index():
 
     if not login_required():
@@ -58,6 +60,7 @@ def index():
 # ==========================================
 
 @user_bp.route("/create", methods=["GET", "POST"])
+@permission_required("users.create")
 def create():
 
     if not login_required():
@@ -85,6 +88,7 @@ def create():
 # ==========================================
 
 @user_bp.route("/edit/<int:user_id>", methods=["GET", "POST"])
+@permission_required("users.edit")
 def edit(user_id):
 
     if not login_required():
@@ -125,6 +129,7 @@ def edit(user_id):
 # ==========================================
 
 @user_bp.route("/password/<int:user_id>", methods=["POST"])
+@permission_required("users.reset_password")
 def change_password(user_id):
 
     if not login_required():
@@ -170,6 +175,7 @@ def change_password(user_id):
 # ==========================================
 
 @user_bp.route("/toggle/<int:user_id>")
+@permission_required("users.disable")
 def toggle(user_id):
 
     if not login_required():
@@ -196,6 +202,7 @@ def toggle(user_id):
 # ==========================================
 
 @user_bp.route("/profile/<int:user_id>")
+@permission_required("users.view")
 def profile(user_id):
 
     if not login_required():

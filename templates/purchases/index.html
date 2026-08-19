@@ -1,247 +1,188 @@
-{% extends "layout.html" %}
-
-{% block title %}Purchases{% endblock %}
-
-{% block content %}
+{% extends "layout.html" %} {% block title %}Purchases{% endblock %} {% block
+content %}
 
 <div class="container-fluid mt-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <div>
-            <h3 class="fw-bold mb-0">Purchase Management</h3>
-            <small class="text-muted">
-                Manage supplier purchases and inventory restocking.
-            </small>
-        </div>
-
-        <a href="{{ url_for('purchase.create') }}"
-           class="btn btn-success">
-            <strong>+</strong> New Purchase
-        </a>
-
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-0">Purchase Management</h3>
+      <small class="text-muted">
+        Manage supplier purchases and inventory restocking.
+      </small>
     </div>
 
-    <div class="card shadow-sm">
+    {% if has_permission("purchases.create") %}
+    <a href="{{ url_for('purchase.create') }}" class="btn btn-success">
+      <strong>+</strong> New Purchase
+    </a>
+    {% endif %}
+  </div>
 
-        <div class="card-body">
-
-            <form method="GET"
-      action="{{ url_for('purchase.index') }}"
-      class="row mb-3 g-2">
-
-    <div class="col-md-4">
-
-        <input
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form
+        method="GET"
+        action="{{ url_for('purchase.index') }}"
+        class="row mb-3 g-2"
+      >
+        <div class="col-md-4">
+          <input
             type="text"
             name="search"
             class="form-control"
             placeholder="Search purchase number, invoice or supplier"
-            value="{{ search or '' }}">
-
-    </div>
-
-    <div class="col-md-3">
-
-        <select name="status"
-                class="form-select">
-
-            <option value=""
-                {% if not status %}selected{% endif %}>
-                All Status
-            </option>
-
-            <option value="Received"
-                {% if status == "Received" %}selected{% endif %}>
-                Received
-            </option>
-
-            <option value="Pending"
-                {% if status == "Pending" %}selected{% endif %}>
-                Pending
-            </option>
-
-            <option value="Cancelled"
-                {% if status == "Cancelled" %}selected{% endif %}>
-                Cancelled
-            </option>
-
-        </select>
-
-    </div>
-
-    <div class="col-md-2">
-
-        <button type="submit"
-                class="btn btn-success w-100">
-
-            <i class="bi bi-search"></i>
-            Search
-
-        </button>
-
-    </div>
-
-    {% if search or status %}
-
-    <div class="col-md-2">
-
-        <a href="{{ url_for('purchase.index') }}"
-           class="btn btn-outline-secondary w-100">
-
-            <i class="bi bi-x-circle"></i>
-            Clear
-
-        </a>
-
-    </div>
-
-    {% endif %}
-
-</form>
-
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle">
-
-                    <thead class="table-light">
-
-                        <tr>
-                            <th>Purchase No.</th>
-                            <th>Date</th>
-                            <th>Supplier</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th width="300">Actions</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                    {% if purchases %}
-
-                        {% for purchase in purchases %}
-
-                        <tr>
-
-                            <td>
-                                <strong>
-                                    {{ purchase.purchase_number }}
-                                </strong>
-                            </td>
-
-                            <td>
-                                {{ purchase.purchase_date }}
-                            </td>
-
-                            <td>
-                                {{ purchase.supplier.name }}
-                            </td>
-
-                            <td>
-                                UGX {{ "{:,.0f}".format(purchase.total_amount) }}
-                            </td>
-
-                            <td>
-
-                                {% if purchase.status == "Received" %}
-
-                                    <span class="badge bg-success">
-                                        Received
-                                    </span>
-
-                                {% elif purchase.status == "Pending" %}
-
-                                    <span class="badge bg-warning text-dark">
-                                        Pending
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="badge bg-danger">
-                                        Cancelled
-                                    </span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                <div class="d-flex gap-2 flex-wrap">
-
-    <!-- VIEW -->
-    <a href="{{ url_for('purchase.view', purchase_id=purchase.id) }}"
-       class="btn btn-sm btn-outline-primary">
-        View
-    </a>
-
-
-    <!-- EDIT -->
-    {% if purchase.status != "Cancelled" %}
-
-    <a href="{{ url_for('purchase.edit', purchase_id=purchase.id) }}"
-       class="btn btn-sm btn-outline-warning">
-        Edit
-    </a>
-
-    {% endif %}
-
-
-    <!-- PRINT -->
-    <a href="{{ url_for('purchase.print_purchase', purchase_id=purchase.id) }}"
-       class="btn btn-sm btn-outline-secondary"
-       target="_blank">
-        Print
-    </a>
-
-
-    <!-- CANCEL -->
-    {% if purchase.status == "Received" %}
-
-    <form method="POST"
-          action="{{ url_for('purchase.cancel', purchase_id=purchase.id) }}"
-          style="display:inline;"
-          onsubmit="return confirm('Are you sure you want to cancel this purchase? The received stock will be reversed.');">
-
-        <button type="submit"
-                class="btn btn-sm btn-outline-danger">
-            Cancel
-        </button>
-
-    </form>
-
-    {% endif %}
-
-</div>
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    {% else %}
-
-                        <tr>
-                            <td colspan="6" class="text-center py-4">
-                                No purchases found.
-                            </td>
-                        </tr>
-
-                    {% endif %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
+            value="{{ search or '' }}"
+          />
         </div>
 
-    </div>
+        <div class="col-md-3">
+          <select name="status" class="form-select">
+            <option value="" {% if not status %}selected{% endif %}>
+              All Status
+            </option>
 
+            <option value="Received" {% if status == "Received" %}selected{% endif %}>Received</option>
+
+            <option value="Pending" {% if status == "Pending" %}selected{% endif %}>Pending</option>
+
+            <option value="Cancelled" {% if status == "Cancelled" %}selected{% endif %}>Cancelled</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-success w-100">
+            <i class="bi bi-search"></i>
+            Search
+          </button>
+        </div>
+
+        {% if search or status %}
+
+        <div class="col-md-2">
+          <a
+            href="{{ url_for('purchase.index') }}"
+            class="btn btn-outline-secondary w-100"
+          >
+            <i class="bi bi-x-circle"></i>
+            Clear
+          </a>
+        </div>
+
+        {% endif %}
+      </form>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Purchase No.</th>
+              <th>Date</th>
+              <th>Supplier</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th width="300">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% if purchases %} {% for purchase in purchases %}
+
+            <tr>
+              <td>
+                <strong> {{ purchase.purchase_number }} </strong>
+              </td>
+
+              <td>{{ purchase.purchase_date }}</td>
+
+              <td>{{ purchase.supplier.name }}</td>
+
+              <td>UGX {{ "{:,.0f}".format(purchase.total_amount) }}</td>
+
+              <td>
+                {% if purchase.status == "Received" %}
+
+                <span class="badge bg-success"> Received </span>
+
+                {% elif purchase.status == "Pending" %}
+
+                <span class="badge bg-warning text-dark"> Pending </span>
+
+                {% else %}
+
+                <span class="badge bg-danger"> Cancelled </span>
+
+                {% endif %}
+              </td>
+
+              <td>
+                <div class="d-flex gap-2 flex-wrap">
+                  <!-- VIEW -->
+                  {% if has_permission("purchases.view") %}
+                  <a
+                    href="{{ url_for('purchase.view', purchase_id=purchase.id) }}"
+                    class="btn btn-sm btn-outline-primary"
+                  >
+                    View
+                  </a>
+                  {% endif %}
+
+                  <!-- EDIT -->
+                  {% if purchase.status != "Cancelled" %} {% if purchase.status
+                  != "Cancelled" and has_permission("purchases.edit") %}
+                  <a
+                    href="{{ url_for('purchase.edit', purchase_id=purchase.id) }}"
+                    class="btn btn-sm btn-outline-warning"
+                  >
+                    Edit
+                  </a>
+                  {% endif %} {% endif %}
+
+                  <!-- PRINT -->
+                  {% if has_permission("purchases.view") %}
+                  <a
+                    href="{{ url_for('purchase.print_purchase', purchase_id=purchase.id) }}"
+                    class="btn btn-sm btn-outline-secondary"
+                    target="_blank"
+                  >
+                    Print
+                  </a>
+                  {% endif %}
+
+                  <!-- CANCEL -->
+                  {% if purchase.status == "Received" and
+                  has_permission("purchases.cancel") %}
+                  <form
+                    method="POST"
+                    action="{{ url_for('purchase.cancel', purchase_id=purchase.id) }}"
+                    style="display: inline"
+                    onsubmit="
+                      return confirm(
+                        'Are you sure you want to cancel this purchase? The received stock will be reversed.',
+                      );
+                    "
+                  >
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                      Cancel
+                    </button>
+                  </form>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+
+            {% endfor %} {% else %}
+
+            <tr>
+              <td colspan="6" class="text-center py-4">No purchases found.</td>
+            </tr>
+
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
+
+
