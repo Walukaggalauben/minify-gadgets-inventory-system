@@ -16,6 +16,8 @@ from flask import (
 
 from db import db
 
+from utils.permissions import permission_required
+
 from models.product_variant import ProductVariant
 from models.imei import IMEI
 from models.brand import Brand
@@ -46,6 +48,7 @@ sale_bp = Blueprint(
 
 
 @sale_bp.route("/")
+@permission_required("sales.view")
 def index():
 
     search = request.args.get("search", "").strip()
@@ -74,6 +77,7 @@ def index():
 
 
 @sale_bp.route("/create", methods=["GET", "POST"])
+@permission_required("sales.create")
 def create():
 
     if request.method == "POST":
@@ -221,6 +225,7 @@ def create():
 
 
 @sale_bp.route("/view/<int:sale_id>")
+@permission_required("sales.view")
 def view_sale(sale_id):
 
     sale = Sale.query.get_or_404(sale_id)
@@ -254,6 +259,7 @@ def view_sale(sale_id):
     "/<int:sale_id>/cancel",
     methods=["POST"],
 )
+@permission_required("sales.cancel")
 def cancel_sale(sale_id):
 
     try:
@@ -287,6 +293,7 @@ def cancel_sale(sale_id):
 
 
 @sale_bp.route("/print/<int:sale_id>")
+@permission_required("sales.view")
 def print_sale(sale_id):
 
     sale = Sale.query.get_or_404(sale_id)
@@ -318,6 +325,7 @@ def print_sale(sale_id):
 
 
 @sale_bp.route("/receipt/<int:payment_id>")
+@permission_required("payments.view")
 def payment_receipt(payment_id):
 
     payment = SalePayment.query.get_or_404(payment_id)
@@ -352,6 +360,7 @@ def payment_receipt(payment_id):
 
 
 @sale_bp.route("/api/products/<int:brand_id>")
+@permission_required("sales.create")
 def get_products(brand_id):
 
     products = (
@@ -380,6 +389,7 @@ def get_products(brand_id):
 
 
 @sale_bp.route("/api/variants/<int:product_id>")
+@permission_required("sales.create")
 def get_variants(product_id):
 
     variants = (
@@ -415,6 +425,7 @@ def get_variants(product_id):
 
 
 @sale_bp.route("/api/barcode/<path:barcode>")
+@permission_required("sales.create")
 def get_by_barcode(barcode):
 
     code = barcode.strip()
@@ -456,6 +467,7 @@ def get_by_barcode(barcode):
     "/<int:sale_id>/payment",
     methods=["POST"],
 )
+@permission_required("payments.create")
 def add_payment(sale_id):
     sale = Sale.query.get_or_404(sale_id)
 
@@ -609,6 +621,7 @@ def add_payment(sale_id):
     "/<int:sale_id>/overpayment/refund",
     methods=["POST"],
 )
+@permission_required("credit.settle")
 def refund_overpayment(sale_id):
     sale = Sale.query.get_or_404(sale_id)
 
@@ -676,6 +689,7 @@ def refund_overpayment(sale_id):
     "/<int:sale_id>/overpayment/convert-to-income",
     methods=["POST"],
 )
+@permission_required("credit.adjust")
 def convert_overpayment_to_income(sale_id):
     sale = Sale.query.get_or_404(sale_id)
 
@@ -732,6 +746,7 @@ def convert_overpayment_to_income(sale_id):
 
 
 @sale_bp.route("/api/imeis/<int:variant_id>")
+@permission_required("sales.create")
 def get_imeis(variant_id):
 
     imeis = IMEI.query.filter_by(

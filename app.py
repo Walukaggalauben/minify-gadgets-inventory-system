@@ -1,4 +1,4 @@
-from flask import Flask, request, session, redirect, url_for, flash
+from flask import Flask, request, session, redirect, url_for, flash, render_template
 from flask_migrate import Migrate
 from datetime import datetime
 import os
@@ -37,6 +37,8 @@ def create_app():
 
     from models.role import Role
     from models.user import User
+    from models.permission import Permission
+    from models.role_permission import RolePermission
     from models.category import Category
     from models.brand import Brand
     from models.product import Product
@@ -55,7 +57,7 @@ def create_app():
     from models.sale_payment import SalePayment
     from models.currency import Currency
     from models.exchange_rate import ExchangeRate
-    from models.notification import Notification	
+    from models.notification import Notification
 
     # ==========================================
     # COMPANY AVAILABLE IN EVERY TEMPLATE
@@ -71,6 +73,7 @@ def create_app():
 
     from routes.auth import auth_bp
     from routes.user import user_bp
+    from routes.role import role_bp
     from routes.dashboard import dashboard_bp
     from routes.category import category_bp
     from routes.brand import brand_bp
@@ -93,6 +96,7 @@ def create_app():
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
+    app.register_blueprint(role_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(category_bp)
     app.register_blueprint(brand_bp)
@@ -161,6 +165,14 @@ def create_app():
         session["last_activity"] = datetime.utcnow().timestamp()
 
         return None
+
+    # ==========================================
+    # ACCESS DENIED / HTTP 403
+    # ==========================================
+
+    @app.errorhandler(403)
+    def access_denied(error):
+        return render_template("403.html"), 403
 
     # ==========================================
     # FLASK-MIGRATE

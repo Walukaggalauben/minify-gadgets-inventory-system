@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}Access Denied{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-7 col-lg-5">
+
+            <div class="card border-0 shadow-sm text-center">
+
+                <div class="card-body p-5">
+
+                    <div class="mb-4">
+                        <i class="fas fa-lock text-danger"
+                           style="font-size: 64px;"></i>
+                    </div>
+
+                    <h2 class="fw-bold mb-3">
+                        Access Denied
+                    </h2>
+
+                    <p class="text-muted mb-4">
+                        You do not have permission to access this
+                        section of MINIFY GADGETS.
+                    </p>
+
+                    <a href="{{ url_for('dashboard.dashboard') }}"
+                       class="btn btn-success">
+                        <i class="fas fa-home me-1"></i>
+                        Back to Dashboard
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
