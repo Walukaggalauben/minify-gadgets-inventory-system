@@ -10,6 +10,8 @@ from flask import (
 
 from db import db
 
+from sqlalchemy.exc import IntegrityError
+
 from models.customer import Customer
 from models.sale import Sale
 
@@ -81,23 +83,139 @@ def create():
 
     if request.method == "POST":
 
+        # ======================================================
+        # CLEAN INPUT
+        # ======================================================
+
+        full_name = request.form.get("full_name", "").strip()
+        phone = request.form.get("phone", "").strip()
+        alternative_phone = request.form.get("alternative_phone", "").strip()
+        email = request.form.get("email", "").strip()
+        national_id = request.form.get("national_id", "").strip()
+        address = request.form.get("address", "").strip()
+        business_name = request.form.get("business_name", "").strip()
+        customer_type = request.form.get(
+            "customer_type",
+            "Retail",
+        ).strip()
+
+        # ======================================================
+        # BASIC VALIDATION
+        # ======================================================
+
+        if not full_name:
+            flash("Customer name is required.", "danger")
+            return render_template(
+                "customers/create.html",
+                return_to=return_to,
+            )
+
+        if not phone:
+            flash("Customer phone number is required.", "danger")
+            return render_template(
+                "customers/create.html",
+                return_to=return_to,
+            )
+
+        # ======================================================
+        # DUPLICATE PHONE CHECK
+        # ======================================================
+
+        existing_customer = Customer.query.filter_by(phone=phone).first()
+
+        if existing_customer:
+
+            flash(
+                f"A customer with phone number {phone} already exists: "
+                f"{existing_customer.full_name}.",
+                "warning",
+            )
+
+            # If coming from the Sales POS, send the user back
+            # with the existing customer selected.
+            if return_to == "sale":
+                return redirect(
+                    url_for(
+                        "sale.create",
+                        customer_id=existing_customer.id,
+                    )
+                )
+
+            # Otherwise open the existing customer's profile.
+            return redirect(
+                url_for(
+                    "customer.view",
+                    id=existing_customer.id,
+                )
+            )
+
+        # ======================================================
+        # CREATE CUSTOMER
+        # ======================================================
+
         customer = Customer(
             customer_code=CustomerService.generate_customer_code(),
-            full_name=request.form["full_name"],
-            phone=request.form["phone"],
-            alternative_phone=request.form.get("alternative_phone"),
-            email=request.form.get("email"),
-            national_id=request.form.get("national_id"),
-            address=request.form.get("address"),
-            business_name=request.form.get("business_name"),
-            customer_type=request.form.get(
-                "customer_type",
-                "Retail",
-            ),
+            full_name=full_name,
+            phone=phone,
+            alternative_phone=alternative_phone or None,
+            email=email or None,
+            national_id=national_id or None,
+            address=address or None,
+            business_name=business_name or None,
+            customer_type=customer_type or "Retail",
         )
 
-        db.session.add(customer)
-        db.session.commit()
+        try:
+
+            db.session.add(customer)
+            db.session.commit()
+
+        except Exception:
+
+            # Always clear the failed transaction.
+            db.session.rollback()
+
+            # A duplicate may have been created by another
+            # request between our check and commit.
+            existing_customer = Customer.query.filter_by(phone=phone).first()
+
+            if existing_customer:
+
+                flash(
+                    f"A customer with phone number {phone} already exists: "
+                    f"{existing_customer.full_name}.",
+                    "warning",
+                )
+
+                if return_to == "sale":
+                    return redirect(
+                        url_for(
+                            "sale.create",
+                            customer_id=existing_customer.id,
+                        )
+                    )
+
+                return redirect(
+                    url_for(
+                        "customer.view",
+                        id=existing_customer.id,
+                    )
+                )
+
+            flash(
+                "Unable to create customer. Please check the information "
+                "and try again.",
+                "danger",
+            )
+
+            return render_template(
+                "customers/create.html",
+                return_to=return_to,
+            )
+
+        # ======================================================
+        # SUCCESS
+        # ======================================================
 
         flash(
             "Customer added successfully.",
