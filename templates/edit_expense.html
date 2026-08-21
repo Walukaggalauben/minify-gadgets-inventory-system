@@ -12,6 +12,8 @@
 <div class="card">
 
 <form action="/update_expense/{{ expense.id }}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
 <label><strong>Expense Name</strong></label>
 

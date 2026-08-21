@@ -135,7 +135,7 @@ def edit(id):
     )
 
 
-@variant_bp.route("/variants/toggle/<int:id>")
+@variant_bp.route("/variants/toggle/<int:id>", methods=["POST"])
 @permission_required("products.edit")
 def toggle(id):
 

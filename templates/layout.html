@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{% block title %} MINIFY GADGETS ERP {% endblock %}</title>
 
@@ -249,10 +250,18 @@
           </a>
           {% endif %}
 
-          <a href="{{ url_for('auth.logout') }}" class="nav-link logout-link">
-            <i class="fas fa-right-from-bracket"></i>
-            <span>Logout</span>
-          </a>
+          <form
+            method="POST"
+            action="{{ url_for('auth.logout') }}"
+            class="logout-form"
+          >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <button type="submit" class="nav-link logout-link">
+              <i class="fas fa-right-from-bracket"></i>
+              <span>Logout</span>
+            </button>
+          </form>
         </nav>
       </aside>
 
@@ -534,6 +543,58 @@
           return date.toLocaleString();
         }
 
+        /*
+ * MINIFY V2:
+ * POST action helper for state-changing links.
+ * Uses the CSRF token already exposed in the layout meta tag.
+ */
+async function submitPostAction(url, confirmationMessage) {
+    if (confirmationMessage && !window.confirm(confirmationMessage)) {
+        return false;
+    }
+
+    const token = getCsrfToken();
+
+    if (!token) {
+        alert("Security token missing. Please refresh the page and try again.");
+        return false;
+    }
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": token,
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            credentials: "same-origin"
+        });
+
+        if (response.redirected) {
+            window.location.href = response.url;
+            return false;
+        }
+
+        if (!response.ok) {
+            const text = await response.text();
+            console.error("POST action failed:", response.status, text);
+            alert("The action could not be completed.");
+            return false;
+        }
+
+        window.location.reload();
+    } catch (error) {
+        console.error("POST action error:", error);
+        alert("The action could not be completed. Please try again.");
+    }
+
+    return false;
+}
+function getCsrfToken() {
+          const meta = document.querySelector('meta[name="csrf-token"]');
+          return meta ? meta.getAttribute("content") : "";
+        }
+
         async function loadUnreadCount() {
           try {
             const response = await fetch("/api/notifications/unread-count", {
@@ -601,6 +662,9 @@
             const response = await fetch(`/api/notifications/${id}/read`, {
               method: "POST",
               credentials: "same-origin",
+              headers: {
+                "X-CSRFToken": getCsrfToken(),
+              },
             });
 
             if (!response.ok) {
@@ -618,6 +682,9 @@
             const response = await fetch("/api/notifications/read-all", {
               method: "POST",
               credentials: "same-origin",
+              headers: {
+                "X-CSRFToken": getCsrfToken(),
+              },
             });
 
             if (!response.ok) {
@@ -678,3 +745,5 @@
     {% block scripts %} {% endblock %}
   </body>
 </html>
+
+

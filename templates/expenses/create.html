@@ -230,6 +230,8 @@
 
 
         <form method="POST" action="{{ url_for('expenses.create') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
             <div class="expense-grid">
 

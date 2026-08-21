@@ -416,18 +416,12 @@ block content %}
                     <i class="fas fa-print"></i>
                   </a>
                   {% endif %} {% if has_permission("tradeins.delete") %}
-                  <a
-                    href="{{ url_for('trade_in.delete', id=trade.id) }}"
-                    class="btn btn-sm btn-outline-danger"
-                    title="Delete trade-in"
-                    onclick="
-                      return confirm(
-                        'Delete this trade-in? This action cannot be undone.',
-                      );
-                    "
-                  >
-                    <i class="fas fa-trash"></i>
-                  </a>
+                  <form method="POST" action="{{ url_for('trade_in.delete', id=trade.id) }}" class="d-inline" onsubmit="return confirm('Delete this trade-in? This action cannot be undone.');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete trade-in">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
                   {% endif %}
                 </div>
               </td>

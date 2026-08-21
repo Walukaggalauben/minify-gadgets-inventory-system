@@ -14,6 +14,8 @@
 <form
 action="/update_customer/{{ customer.id }}"
 method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
 <label><strong>Customer Name</strong></label>
 

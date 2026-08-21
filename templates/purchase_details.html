@@ -226,6 +226,8 @@ Add Product
 </h2>
 
 <form action="/add_purchase_item" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
 <input
 type="hidden"

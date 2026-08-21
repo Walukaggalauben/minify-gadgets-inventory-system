@@ -50,13 +50,13 @@
 
         <div class="erp-panel-body">
 
-            <a
-                href="{{ url_for('backup.create_backup') }}"
-                class="btn btn-success"
-            >
-                <i class="fas fa-plus me-1"></i>
-                Create Backup
-            </a>
+            <form method="POST" action="{{ url_for('backup.create_backup') }}" class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i>
+                    Create Backup
+                </button>
+            </form>
 
         </div>
 
@@ -199,6 +199,7 @@
                                         );"
                                         class="d-inline"
                                     >
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                                         <button
                                             type="submit"
@@ -215,21 +216,12 @@
 
                                     <!-- DELETE -->
 
-                                    <a
-                                        href="{{ url_for(
-                                            'backup.delete_backup',
-                                            filename=backup.name
-                                        ) }}"
-                                        class="btn btn-danger btn-sm"
-                                        title="Delete backup"
-                                        onclick="return confirm(
-                                            'Are you sure you want to permanently delete this backup?'
-                                        );"
-                                    >
-
-                                        <i class="fas fa-trash"></i>
-
-                                    </a>
+                                    <form method="POST" action="{{ url_for('backup.delete_backup', filename=backup.name) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently delete this backup?');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete backup">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
 
                                 </div>
 

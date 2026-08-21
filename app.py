@@ -1,4 +1,5 @@
 from flask import Flask, request, session, redirect, url_for, flash, render_template
+from flask_wtf.csrf import CSRFProtect
 from flask_migrate import Migrate
 from datetime import datetime
 import os
@@ -23,6 +24,9 @@ def create_app():
             return "-"
 
     app.config.from_object(Config)
+
+    # CSRF protection for all state-changing requests
+    csrf = CSRFProtect(app)
 
     # Upload configuration
     app.config["UPLOAD_FOLDER"] = os.path.join(app.static_folder, "uploads")

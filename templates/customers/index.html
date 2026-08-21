@@ -231,24 +231,40 @@ page_title %}Customer Management{% endblock %} {% block content %}
                 {% if customer.is_active %}
 
                 {% if has_permission("customers.edit") %}
-<a
-    href="{{ url_for('customer.deactivate', id=customer.id) }}"
-    class="btn btn-sm btn-outline-danger"
-    onclick="return confirm('Deactivate this customer?');"
+<form
+    method="POST"
+    action="{{ url_for('customer.deactivate', id=customer.id) }}"
+    class="d-inline"
+    onsubmit="return confirm('Deactivate this customer?');"
 >
-    <i class="fas fa-user-slash"></i>
-</a>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button
+        type="submit"
+        class="btn btn-sm btn-outline-danger"
+    >
+        <i class="fas fa-user-slash"></i>
+    </button>
+</form>
 {% endif %}
 
                 {% else %}
 
                 {% if has_permission("customers.edit") %}
-<a
-    href="{{ url_for('customer.activate', id=customer.id) }}"
-    class="btn btn-sm btn-outline-success"
+<form
+    method="POST"
+    action="{{ url_for('customer.activate', id=customer.id) }}"
+    class="d-inline"
 >
-    <i class="fas fa-user-check"></i>
-</a>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button
+        type="submit"
+        class="btn btn-sm btn-outline-success"
+    >
+        <i class="fas fa-user-check"></i>
+    </button>
+</form>
 {% endif %}
 
                 {% endif %}

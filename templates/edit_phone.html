@@ -7,6 +7,8 @@
 <div class="card">
 
 <form action="/update_phone/{{ phone.id }}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <p>Brand</p>
     <input type="text" name="brand" value="{{ phone.brand }}" required>

@@ -369,7 +369,7 @@ def edit(id):
 # ==========================================================
 
 
-@customer_bp.route("/<int:id>/deactivate")
+@customer_bp.route("/<int:id>/deactivate", methods=["POST"])
 @permission_required("customers.edit")
 def deactivate(id):
 
@@ -395,7 +395,7 @@ def deactivate(id):
 # ==========================================================
 
 
-@customer_bp.route("/<int:id>/activate")
+@customer_bp.route("/<int:id>/activate", methods=["POST"])
 @permission_required("customers.edit")
 def activate(id):
 

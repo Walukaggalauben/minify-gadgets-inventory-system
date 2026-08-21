@@ -51,7 +51,7 @@ def index():
     return render_template("backup/index.html", backups=backups)
 
 
-@backup_bp.route("/create")
+@backup_bp.route("/create", methods=["POST"])
 @permission_required("backup.create")
 def create_backup():
 
@@ -104,7 +104,7 @@ def restore_backup(filename):
     return redirect(url_for("backup.index"))
 
 
-@backup_bp.route("/delete/<filename>")
+@backup_bp.route("/delete/<filename>", methods=["POST"])
 @permission_required("backup.delete")
 def delete_backup(filename):
 

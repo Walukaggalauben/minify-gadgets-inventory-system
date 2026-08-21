@@ -3,6 +3,8 @@ block page_title %}Company Settings{% endblock %} {% block content %}
 
 <div class="container-fluid mt-4">
   <form method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="row">
       <!-- Logo Card -->
       <div class="col-lg-5">

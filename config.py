@@ -12,6 +12,14 @@ class Config:
 
     SECRET_KEY = os.getenv("SECRET_KEY")
 
+    # Session security
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"
+
+    # Keep False for local HTTP development.
+    # Change to True only when deployed behind HTTPS.
+    SESSION_COOKIE_SECURE = False
+
     # =====================================
     # Database
     # =====================================

@@ -196,20 +196,16 @@ block content %}
                     <i class="fas fa-pen"></i>
                   </a>
                   {% endif %} {% if has_permission("products.edit") %}
-                  <a
-                    href="{{ url_for(
-      'variant.toggle',
-      id=variant.id
-  ) }}"
-                    class="btn btn-outline-secondary"
-                    title="{% if variant.is_active %}Deactivate{% else %}Activate{% endif %}"
-                  >
-                    {% if variant.is_active %}
-                    <i class="fas fa-toggle-on"></i>
-                    {% else %}
-                    <i class="fas fa-toggle-off"></i>
-                    {% endif %}
-                  </a>
+                  <form method="POST" action="{{ url_for('variant.toggle', id=variant.id) }}" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-outline-secondary" title="{% if variant.is_active %}Deactivate{% else %}Activate{% endif %}">
+                      {% if variant.is_active %}
+                      <i class="fas fa-toggle-on"></i>
+                      {% else %}
+                      <i class="fas fa-toggle-off"></i>
+                      {% endif %}
+                    </button>
+                  </form>
                   {% endif %}
                 </div>
               </td>

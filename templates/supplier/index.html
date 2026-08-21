@@ -71,6 +71,8 @@ content %}
                 action="{{ url_for('supplier.delete', supplier_id=supplier.id) }}"
                 style="display: inline"
               >
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button
                   class="btn btn-danger btn-sm"
                   onclick="return confirm('Delete this supplier?');"

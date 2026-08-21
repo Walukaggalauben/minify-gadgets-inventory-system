@@ -28,6 +28,8 @@
     </div>
 
     <form method="POST" id="purchaseForm" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <!-- PURCHASE INFORMATION -->
         <div class="card purchase-panel border-0 mb-4">

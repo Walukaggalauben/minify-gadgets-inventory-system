@@ -40,6 +40,8 @@
     <h2>➕ Add IMEIs</h2>
 
     <form action="/save_imeis" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <label><strong>Select Phone Model</strong></label>
 

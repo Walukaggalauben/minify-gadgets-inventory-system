@@ -174,7 +174,7 @@ def change_password(user_id):
 # ACTIVATE / DEACTIVATE USER
 # ==========================================
 
-@user_bp.route("/toggle/<int:user_id>")
+@user_bp.route("/toggle/<int:user_id>", methods=["POST"])
 @permission_required("users.disable")
 def toggle(user_id):
 

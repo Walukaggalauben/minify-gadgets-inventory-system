@@ -9,6 +9,8 @@
     <h2>{{ imei.brand }} {{ imei.model }}</h2>
 
     <form method="POST" action="/update_imei/{{ imei.id }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <label><strong>IMEI Number</strong></label>
 

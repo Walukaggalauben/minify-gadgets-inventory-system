@@ -106,7 +106,7 @@ def edit(id):
     )
 
 
-@category_bp.route("/categories/toggle/<int:id>")
+@category_bp.route("/categories/toggle/<int:id>", methods=["POST"])
 @permission_required("categories.edit")
 def toggle(id):
 

@@ -106,7 +106,7 @@ def edit(id):
     )
 
 
-@brand_bp.route("/brands/toggle/<int:id>")
+@brand_bp.route("/brands/toggle/<int:id>", methods=["POST"])
 @permission_required("brands.edit")
 def toggle(id):
 

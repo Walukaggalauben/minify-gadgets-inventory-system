@@ -70,13 +70,12 @@ page_title %}Products{% endblock %} {% block content %}
               <i class="fas fa-edit"></i>
             </a>
             {% endif %} {% if has_permission("products.edit") %}
-            <a
-              href="{{ url_for('product.toggle', id=product.id) }}"
-              class="btn btn-warning btn-sm"
-              onclick="return confirm('Change product status?');"
-            >
-              <i class="fas fa-power-off"></i>
-            </a>
+            <form method="POST" action="{{ url_for('product.toggle', id=product.id) }}" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Change product status?');">
+                <i class="fas fa-power-off"></i>
+              </button>
+            </form>
             {% endif %}
           </td>
         </tr>

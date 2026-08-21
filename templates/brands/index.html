@@ -74,13 +74,12 @@ page_title %}Brands{% endblock %} {% block content %}
               <i class="fas fa-edit"></i>
             </a>
             {% endif %} {% if has_permission("brands.edit") %}
-            <a
-              href="{{ url_for('brand.toggle', id=brand.id) }}"
-              class="btn btn-warning btn-sm"
-              onclick="return confirm('Change brand status?');"
-            >
-              <i class="fas fa-power-off"></i>
-            </a>
+            <form method="POST" action="{{ url_for('brand.toggle', id=brand.id) }}" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Change brand status?');">
+                <i class="fas fa-power-off"></i>
+              </button>
+            </form>
             {% endif %}
           </td>
         </tr>

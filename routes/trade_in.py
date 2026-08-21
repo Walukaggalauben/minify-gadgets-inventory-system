@@ -294,7 +294,7 @@ def print_trade_in(id):
 # ==========================================================
 
 
-@trade_in_bp.route("/delete/<int:id>")
+@trade_in_bp.route("/delete/<int:id>", methods=["POST"])
 @permission_required("tradeins.delete")
 def delete(id):
 

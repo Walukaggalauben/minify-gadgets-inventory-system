@@ -18,6 +18,8 @@ System Settings
 </div>
 
 <form method="POST" action="{{ url_for('system_settings.index') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   <div class="row g-4">
 

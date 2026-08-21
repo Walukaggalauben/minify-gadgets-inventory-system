@@ -37,6 +37,8 @@
         'This action cannot be undone automatically. Continue?'
       );"
     >
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <button
         type="submit"
         class="btn btn-danger"
@@ -182,6 +184,8 @@
         </div>
         {% if has_permission("credit.settle") %}
         <form method="post" action="{{ url_for('sale.refund_overpayment', sale_id=sale.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="row g-2">
             <div class="col-md-3">
               <label class="form-label small">Refund Amount</label>
@@ -242,6 +246,8 @@
               </div>
               {% if has_permission("credit.adjust") %}
               <form method="post" action="{{ url_for('sale.convert_overpayment_to_income', sale_id=sale.id)}}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="mb-2">
                   <label class="form-label small">Reason / Authorization</label>
                   <textarea class="form-control" name="income_reason" rows="2" required placeholder="e.g. Customer agreed to leave the balance with MINIFY GADGETS"></textarea>
@@ -288,6 +294,8 @@
       <h6>Record Customer Payment</h6>
 
       <form method="post" action="{{ url_for('sale.add_payment', sale_id=sale.id) }}" id="additionalPaymentForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="row g-2">
           <div class="col-md-3">
             <label class="form-label small">Currency</label>
