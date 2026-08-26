@@ -38,21 +38,11 @@
         <!-- Logo -->
 
         <div class="sidebar-header">
-          {% if company and company.logo %}
-
           <img
-            src="{{ url_for('static', filename='uploads/' ~ company.logo) }}"
+            src="{{ url_for('static', filename='images/logo.png') }}"
             class="company-logo"
-            alt="Company Logo"
+            alt="MINIFY GADGETS"
           />
-
-          {% else %}
-
-          <div class="company-placeholder">
-            <i class="fas fa-mobile-screen-button"></i>
-          </div>
-
-          {% endif %}
 
           <h3>{{ company.business_name if company else "MINIFY GADGETS" }}</h3>
 
