@@ -139,7 +139,7 @@ def create_app():
     @app.before_request
     def enforce_session_auth():
 
-        public_endpoints = {"auth.login", "static"}
+        public_endpoints = {"auth.login", "auth.forgot_password", "auth.reset_password", "static"}
 
         if request.endpoint in public_endpoints or request.path.startswith("/static/"):
             return None

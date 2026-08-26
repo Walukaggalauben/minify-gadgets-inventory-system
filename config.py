@@ -54,3 +54,15 @@ class Config:
     # =====================================
 
     APP_NAME = "MINIFY GADGETS ERP V2"
+
+    # =====================================
+    # Password recovery / SMTP
+    # =====================================
+
+    PASSWORD_RESET_TOKEN_MAX_AGE = int(os.getenv("PASSWORD_RESET_TOKEN_MAX_AGE", "900"))
+    SMTP_HOST = os.getenv("SMTP_HOST")
+    SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+    SMTP_USERNAME = os.getenv("SMTP_USERNAME")
+    SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
+    MAIL_FROM = os.getenv("MAIL_FROM")
+    SMTP_USE_SSL = os.getenv("SMTP_USE_SSL", "false").lower() in {"1", "true", "yes"}

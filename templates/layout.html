@@ -342,7 +342,12 @@
             </a>
             {% endif %}
 
-            <div class="user-profile">
+            <a
+              href="{{ url_for('user.me') }}"
+              class="user-profile"
+              title="My Profile"
+              style="text-decoration:none;color:inherit;cursor:pointer;"
+            >
               <div class="avatar">
                 {{ session.get('username', 'A')[0]|upper }}
               </div>
@@ -350,9 +355,9 @@
               <div>
                 <strong> {{ session.username }} </strong>
 
-                <small> Administrator </small>
+                <small> {{ session.get('role', 'User') }} </small>
               </div>
-            </div>
+            </a>
           </div>
         </header>
 

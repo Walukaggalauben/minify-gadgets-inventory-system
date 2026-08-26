@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block title %}My Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">My Profile</h2>
+            <p class="text-muted mb-0">Update your personal account details and password.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-person-fill me-2 text-success"></i>Account Details</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <div class="mb-3">
+                            <label class="form-label">Full Name *</label>
+                            <input class="form-control" name="full_name" value="{{ user.full_name }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Username *</label>
+                            <input class="form-control" name="username" value="{{ user.username }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" value="{{ user.email or '' }}">
+                            <div class="form-text">Keep this email current so password recovery works.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input class="form-control" name="phone" value="{{ user.phone or '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <input class="form-control" value="{{ user.role.name if user.role else '-' }}" readonly>
+                        </div>
+
+                        <button class="btn btn-success" type="submit">
+                            <i class="bi bi-save me-2"></i>Save Profile
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-key-fill me-2 text-success"></i>Change Password</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('user.change_own_password') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <div class="mb-3">
+                            <label class="form-label">Current Password *</label>
+                            <input type="password" class="form-control" name="current_password" autocomplete="current-password" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">New Password *</label>
+                            <input type="password" class="form-control" name="password" minlength="8" autocomplete="new-password" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Confirm New Password *</label>
+                            <input type="password" class="form-control" name="confirm_password" minlength="8" autocomplete="new-password" required>
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-shield-lock me-2"></i>Change Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="alert alert-info border-0 shadow-sm">
+                <strong>Password recovery:</strong> if you forget your password, use
+                <a href="{{ url_for('auth.forgot_password') }}">Forgot Password</a>
+                on the login page. Your account email must be up to date.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

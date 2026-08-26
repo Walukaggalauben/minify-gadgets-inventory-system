@@ -22,11 +22,13 @@
             display:flex;
             justify-content:center;
             align-items:center;
-            height:100vh;
+            min-height:100vh;
+            padding:20px;
         }
 
         .login-card{
             width:420px;
+            max-width:100%;
             background:white;
             border-radius:15px;
             padding:40px;
@@ -103,14 +105,15 @@
     {% endwith %}
 
     <form method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-        <label>Username</label>
+        <label>Username, Phone or Email</label>
 
         <input
             type="text"
-            name="username"
+            name="identifier"
+            autocomplete="username"
+            placeholder="Enter username, phone or email"
             required>
 
         <label>Password</label>
@@ -118,11 +121,17 @@
         <input
             type="password"
             name="password"
+            autocomplete="current-password"
+            placeholder="Enter password"
             required>
 
         <button type="submit">
             Login
         </button>
+
+        <div style="text-align:center;margin-top:18px;">
+            <a href="{{ url_for('auth.forgot_password') }}" style="color:#00695C;text-decoration:none;">Forgot Password?</a>
+        </div>
 
     </form>
 
