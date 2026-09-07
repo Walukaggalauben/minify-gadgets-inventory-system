@@ -4,7 +4,7 @@ from flask import session
 from flask import redirect
 from flask import url_for
 from flask import jsonify
-from utils.permissions import permission_required
+from utils.permissions import permission_required, has_permission
 
 from sqlalchemy import func
 
@@ -34,7 +34,14 @@ def dashboard():
 
     settings = SystemSetting.get_settings()
 
-    return render_template("dashboard/index.html", stats=stats, settings=settings)
+    financial_access = has_permission("dashboard.financial")
+
+    return render_template(
+        "dashboard/index.html",
+        stats=stats,
+        settings=settings,
+        financial_access=financial_access,
+    )
 
 
 # ==========================================================

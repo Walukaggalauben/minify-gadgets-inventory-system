@@ -47,6 +47,8 @@
 
     </div>
 
+{% if financial_access %}
+
 <!-- ========================================================= -->
 <!-- EXPENSE & FINANCIAL OVERVIEW -->
 <!-- ========================================================= -->
@@ -122,8 +124,11 @@
     </div>
 
 </div>
+{% endif %}
 
     
+{% if financial_access %}
+
 <!-- ========================================================= -->
 <!-- EXECUTIVE KPI DASHBOARD -->
 <!-- ========================================================= -->
@@ -277,6 +282,9 @@
 </div>
 
 <!-- ========================================================= -->
+{% endif %}
+
+{% if financial_access %}
 
 <div class="row g-4 mb-4">
 
@@ -366,7 +374,11 @@
 
 </div>
 
-        <!-- ========================================================= -->
+{% endif %}
+
+        {% if financial_access %}
+
+<!-- ========================================================= -->
 <!-- ANALYTICS SECTION -->
 <!-- ========================================================= -->
 
@@ -422,6 +434,7 @@
     </div>
 
 </div>
+{% endif %}
 
 
 <!-- ========================================================= -->
@@ -449,34 +462,34 @@
 
                     <div class="col-12 col-md-6 col-xl-3 px-xl-3">
 
+                        {% if financial_access %}
                         <div class="summary-item">
                             <span>Inventory Value</span>
-
                             <strong class="text-success">
                                 UGX {{ "{:,.0f}".format(stats.inventory_value) }}
                             </strong>
                         </div>
-
                         <div class="summary-item">
                             <span>Inventory Cost</span>
-
                             <strong class="text-danger">
                                 UGX {{ "{:,.0f}".format(stats.inventory_cost) }}
                             </strong>
                         </div>
+                        {% endif %}
 
                     </div>
 
 
                     <div class="col-12 col-md-6 col-xl-3 px-xl-3">
 
+                        {% if financial_access %}
                         <div class="summary-item">
                             <span>Expected Profit</span>
-
                             <strong class="text-primary">
                                 UGX {{ "{:,.0f}".format(stats.expected_profit) }}
                             </strong>
                         </div>
+                        {% endif %}
 
                         <div class="summary-item">
                             <span>Available Stock</span>
@@ -585,7 +598,7 @@
                         <tr>
                             <th>Invoice</th>
                             <th>Customer</th>
-                            <th class="text-end">Amount</th>
+                            {% if financial_access %}<th class="text-end">Amount</th>{% endif %}
                             <th>Date</th>
                         </tr>
 
@@ -607,13 +620,13 @@
                                 <strong>{{ sale.customer_name }}</strong>
                             </td>
 
+                            {% if financial_access %}
                             <td class="text-end">
-
                                 <span class="amount">
                                     UGX {{ "{:,.0f}".format(sale.total_amount) }}
                                 </span>
-
                             </td>
+                            {% endif %}
 
                             <td>
                                 {{ sale.sale_date.strftime("%d %b %Y") }}
@@ -626,7 +639,7 @@
                         <tr>
 
                             <td
-                                colspan="4"
+                                colspan="{{ 4 if financial_access else 3 }}"
                                 class="text-center py-5 text-muted"
                             >
                                 <i class="fas fa-receipt fa-2x mb-3"></i>
@@ -1023,6 +1036,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+{% if financial_access %}
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -1294,5 +1308,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 </script>
+{% endif %}
 
 {% endblock %}

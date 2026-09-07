@@ -173,9 +173,8 @@ textarea {
 /* LOGO */
 
 .company-logo {
-    width: 180px;
-    height: auto;
-    max-width: 100%;
+    width: 86px;
+    height: 86px;
 
     display: block;
 

@@ -18,7 +18,7 @@ class Config:
 
     # Keep False for local HTTP development.
     # Change to True only when deployed behind HTTPS.
-    SESSION_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "true").lower() in {"1", "true", "yes"}
 
     # =====================================
     # Database

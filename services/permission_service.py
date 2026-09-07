@@ -14,6 +14,7 @@ class PermissionService:
     PERMISSIONS = [
         # Dashboard
         ("dashboard", "view", "View dashboard"),
+        ("dashboard", "financial", "View financial dashboard statistics"),
         # Products
         ("products", "view", "View products"),
         ("products", "create", "Create products"),
@@ -128,6 +129,7 @@ class PermissionService:
         },
         "Administrator": {
             "dashboard.view",
+            "dashboard.financial",
             "products.*",
             "categories.*",
             "brands.*",
@@ -216,6 +218,7 @@ class PermissionService:
         },
         "Accountant": {
             "dashboard.view",
+            "dashboard.financial",
             "customers.view",
             "sales.view",
             "payments.*",

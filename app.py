@@ -1,5 +1,5 @@
 from flask import Flask, request, session, redirect, url_for, flash, render_template
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, CSRFError
 from flask_migrate import Migrate
 from datetime import datetime
 import os
@@ -180,6 +180,35 @@ def create_app():
         session["last_activity"] = datetime.utcnow().timestamp()
 
         return None
+
+    # ==========================================
+    # EXPIRED/INVALID FORM SESSION (HTTP 400)
+    # ==========================================
+    # Flask-WTF reports an expired/missing CSRF token as HTTP 400.
+    # Users should never be left staring at a raw "Bad Request" page.
+
+    @app.errorhandler(CSRFError)
+    def csrf_error(error):
+        session.clear()
+        flash(
+            "Your login session expired or became invalid. Please log in again.",
+            "warning",
+        )
+        return redirect(url_for("auth.login"))
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        # A stale/invalid session can also produce a generic Bad Request.
+        # Send the user through the normal login flow instead of exposing
+        # a technical Werkzeug error page.
+        if session.get("user_id"):
+            session.clear()
+            flash(
+                "Your login session expired or became invalid. Please log in again.",
+                "warning",
+            )
+            return redirect(url_for("auth.login"))
+        return redirect(url_for("auth.login"))
 
     # ==========================================
     # ACCESS DENIED / HTTP 403

@@ -4,6 +4,8 @@
 
 {% block content %}
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.min.css">
+
 <div class="container-fluid">
 
 <div class="card shadow">
@@ -18,7 +20,6 @@
 
 <form method="POST">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
 <div class="mb-3">
 
@@ -26,6 +27,7 @@
 
     <select
         name="product_variant_id"
+        id="productVariantSelect"
         class="form-select"
         required>
 
@@ -50,6 +52,8 @@
         {% endfor %}
 
     </select>
+
+    <div class="form-text">Search by product name, storage, RAM, colour or SKU.</div>
 
 </div>
 
@@ -126,5 +130,22 @@ Cancel
 </div>
 
 </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const select = document.getElementById("productVariantSelect");
+    if (!select) return;
+    new TomSelect(select, {
+        create: false,
+        allowEmptyOption: true,
+        maxOptions: null,
+        searchField: ["text"],
+        placeholder: "Search product variant...",
+        closeAfterSelect: true,
+    });
+});
+</script>
 
 {% endblock %}

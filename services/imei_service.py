@@ -54,40 +54,34 @@ class IMEIService:
         has_sale_history = bool(imei.sale_items)
         has_purchase_history = imei.purchase_item_id is not None
 
+        requested_serial = (data.get("serial_number") or "").strip() or None
+
         if has_sale_history:
             requested_imei = str(data.get("imei", imei.imei)).strip()
-            requested_serial = data.get("serial_number") or None
             requested_variant = int(data["product_variant_id"]) if data.get("product_variant_id") else imei.product_variant_id
             requested_status = data.get("status", imei.status)
 
             if (
                 requested_imei != imei.imei
-                or requested_serial != imei.serial_number
                 or requested_variant != imei.product_variant_id
                 or requested_status != imei.status
             ):
                 raise ValueError(
-                    "This IMEI has sale history and cannot have its identity, "
-                    "product variant, or status changed. Edit notes only."
+                    "This IMEI has sale history. Its IMEI, product variant, and status "
+                    "cannot be changed, but the serial number and notes can be updated."
                 )
-
-            imei.notes = data.get("notes")
-            db.session.commit()
-            return imei
 
         if has_purchase_history:
             requested_imei = str(data.get("imei", imei.imei)).strip()
-            requested_serial = data.get("serial_number") or None
             requested_variant = int(data["product_variant_id"]) if data.get("product_variant_id") else imei.product_variant_id
 
             if (
                 requested_imei != imei.imei
-                or requested_serial != imei.serial_number
                 or requested_variant != imei.product_variant_id
             ):
                 raise ValueError(
-                    "This IMEI is linked to a purchase and its identity or "
-                    "product variant cannot be changed."
+                    "This IMEI is linked to a purchase. Its IMEI and product variant "
+                    "cannot be changed, but the serial number can be updated."
                 )
 
         # Prevent duplicate IMEI
@@ -100,9 +94,9 @@ class IMEIService:
             raise ValueError("IMEI already exists.")
 
         # Prevent duplicate Serial Number
-        if data.get("serial_number"):
+        if requested_serial:
             existing_serial = IMEI.query.filter(
-                IMEI.serial_number == data["serial_number"],
+                IMEI.serial_number == requested_serial,
                 IMEI.id != imei.id
             ).first()
 
@@ -111,7 +105,7 @@ class IMEIService:
 
         imei.product_variant_id = data["product_variant_id"]
         imei.imei = data["imei"]
-        imei.serial_number = data.get("serial_number")
+        imei.serial_number = requested_serial
         imei.status = data.get("status", imei.status)
         imei.notes = data.get("notes")
 
