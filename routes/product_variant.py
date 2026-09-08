@@ -122,6 +122,11 @@ def edit(id):
 
         except Exception as exc:
 
+            # A failed SQLAlchemy flush leaves the session in rollback-only state.
+            # Roll it back before rendering the edit page again.
+            from db import db
+            db.session.rollback()
+
             flash(
                 str(exc),
                 "danger",

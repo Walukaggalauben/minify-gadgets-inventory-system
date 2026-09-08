@@ -76,7 +76,22 @@ class ProductVariantService:
         variant.storage = data.get("storage")
         variant.ram = data.get("ram")
         variant.colour = data.get("colour")
-        variant.condition = data.get("condition")
+        condition = (data.get("condition") or "").strip()
+        # Accept legacy form values while storing only the database ENUM values.
+        condition = {
+            "Used GradeA": "Used Grade A",
+            "Used GradeB": "Used Grade B",
+        }.get(condition, condition)
+        allowed_conditions = {
+            "Brand New",
+            "Refurbished",
+            "Used Grade A",
+            "Used Grade B",
+        }
+        if condition not in allowed_conditions:
+            raise ValueError("Invalid product condition.")
+
+        variant.condition = condition
         variant.buying_price = data["buying_price"]
         variant.selling_price = data["selling_price"]
         variant.quantity = data["quantity"]
