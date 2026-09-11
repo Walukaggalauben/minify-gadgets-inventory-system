@@ -4,6 +4,33 @@ from xml.sax.saxutils import escape
 
 from utils.timezone import application_now
 
+
+def _current_logo_path():
+    """Return the exact logo configured in Company Settings, if available."""
+    try:
+        from flask import current_app
+        from models.company import Company
+
+        company = Company.query.first()
+        if not company or not company.logo:
+            return None
+
+        path = current_app.config.get("UPLOAD_FOLDER")
+        if not path:
+            path = current_app.root_path + "/static/uploads"
+
+        logo_path = __import__("os").path.join(path, company.logo)
+        return logo_path if __import__("os").path.exists(logo_path) else None
+    except Exception:
+        return None
+
+
+def _logo_element(width=61.2, height=61.2):
+    path = _current_logo_path()
+    if not path:
+        return None
+    return Image(path, width=width, height=height, kind="proportional")
+
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.styles import getSampleStyleSheet
@@ -14,6 +41,7 @@ from reportlab.platypus import (
     Spacer,
     Table,
     TableStyle,
+    Image,
 )
 
 
@@ -108,6 +136,13 @@ class PDFExporter:
         normal = styles["Normal"]
 
         elements = []
+
+        logo = _logo_element()
+        if logo:
+            logo_table = Table([[logo]], colWidths=[doc.width])
+            logo_table.setStyle(TableStyle([("ALIGN", (0, 0), (-1, -1), "CENTER")]))
+            elements.append(logo_table)
+            elements.append(Spacer(1, 6))
 
         elements.append(Paragraph("<b>MINIFY GADGETS</b>", title_style))
 

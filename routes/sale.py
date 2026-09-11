@@ -1,5 +1,7 @@
 import json
 
+from io import BytesIO
+
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
@@ -36,6 +38,7 @@ from services.sale_service import SaleService
 from services.currency_service import CurrencyService
 from services.receipt_service import ReceiptService
 from utils.pdf_export import create_sale_invoice_pdf, create_payment_receipt_pdf
+from weasyprint import HTML
 
 sale_bp = Blueprint(
     "sale",
@@ -327,8 +330,21 @@ def download_invoice(sale_id):
     sale = Sale.query.get_or_404(sale_id)
     company = Company.query.first() or Company(business_name="MINIFY GADGETS")
     settings = SystemSetting.get_settings()
-    pdf = create_sale_invoice_pdf(sale, company, settings)
-    return send_file(pdf, mimetype="application/pdf", as_attachment=True, download_name=f"Invoice-{sale.invoice_number}.pdf")
+    html = render_template(
+        "sales/print.html",
+        sale=sale,
+        company=company,
+        settings=settings,
+    )
+    pdf = BytesIO()
+    HTML(string=html, base_url=request.url_root).write_pdf(pdf)
+    pdf.seek(0)
+    return send_file(
+        pdf,
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"Invoice-{sale.invoice_number}.pdf",
+    )
 
 
 # ==========================================================
@@ -395,8 +411,23 @@ def download_receipt(payment_id):
         Decimal(str(payment.amount or 0)) - Decimal(str(refund_total or 0)),
         Decimal("0.00"),
     )
-    pdf = create_payment_receipt_pdf(payment, sale, company, settings, net_payment_amount)
-    return send_file(pdf, mimetype="application/pdf", as_attachment=True, download_name=f"Receipt-{payment.receipt_number}.pdf")
+    html = render_template(
+        "sales/receipt.html",
+        payment=payment,
+        sale=sale,
+        company=company,
+        settings=settings,
+        net_payment_amount=net_payment_amount,
+    )
+    pdf = BytesIO()
+    HTML(string=html, base_url=request.url_root).write_pdf(pdf)
+    pdf.seek(0)
+    return send_file(
+        pdf,
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"Receipt-{payment.receipt_number}.pdf",
+    )
 
 
 # ==========================================================
