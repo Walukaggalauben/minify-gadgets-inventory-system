@@ -12,6 +12,7 @@ from flask import (
     flash,
     session,
     jsonify,
+    send_file,
 )
 
 from db import db
@@ -34,6 +35,7 @@ from models.customer_credit_transaction import CustomerCreditTransaction
 from services.sale_service import SaleService
 from services.currency_service import CurrencyService
 from services.receipt_service import ReceiptService
+from utils.pdf_export import create_sale_invoice_pdf, create_payment_receipt_pdf
 
 sale_bp = Blueprint(
     "sale",
@@ -319,6 +321,16 @@ def print_sale(sale_id):
     )
 
 
+@sale_bp.route("/download-invoice/<int:sale_id>")
+@permission_required("sales.view")
+def download_invoice(sale_id):
+    sale = Sale.query.get_or_404(sale_id)
+    company = Company.query.first() or Company(business_name="MINIFY GADGETS")
+    settings = SystemSetting.get_settings()
+    pdf = create_sale_invoice_pdf(sale, company, settings)
+    return send_file(pdf, mimetype="application/pdf", as_attachment=True, download_name=f"Invoice-{sale.invoice_number}.pdf")
+
+
 # ==========================================================
 # PAYMENT RECEIPT
 # ==========================================================
@@ -352,6 +364,17 @@ def payment_receipt(payment_id):
         company=company,
         settings=settings,
     )
+
+
+@sale_bp.route("/download-receipt/<int:payment_id>")
+@permission_required("payments.view")
+def download_receipt(payment_id):
+    payment = SalePayment.query.get_or_404(payment_id)
+    sale = payment.sale
+    company = Company.query.first() or Company(business_name="MINIFY GADGETS")
+    settings = SystemSetting.get_settings()
+    pdf = create_payment_receipt_pdf(payment, sale, company, settings)
+    return send_file(pdf, mimetype="application/pdf", as_attachment=True, download_name=f"Receipt-{payment.receipt_number}.pdf")
 
 
 # ==========================================================

@@ -536,6 +536,13 @@
         </button>
 
         <a
+            href="{{ url_for('sale.download_receipt', payment_id=payment.id) }}"
+            class="btn btn-print"
+        >
+            Download Receipt PDF
+        </a>
+
+        <a
             href="{{ url_for('sale.view_sale', sale_id=sale.id) }}"
             class="btn btn-back"
         >
