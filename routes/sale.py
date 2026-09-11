@@ -348,6 +348,17 @@ def payment_receipt(payment_id):
 
     settings = SystemSetting.get_settings()
 
+    refund_total = sum(
+        (tx.amount or 0)
+        for credit in CustomerCredit.query.filter_by(sale_id=sale.id).all()
+        for tx in credit.transactions
+        if tx.transaction_type == "REFUND"
+    )
+    net_payment_amount = max(
+        Decimal(str(payment.amount or 0)) - Decimal(str(refund_total or 0)),
+        Decimal("0.00"),
+    )
+
     if not company:
 
         company = Company(
@@ -363,6 +374,7 @@ def payment_receipt(payment_id):
         sale=sale,
         company=company,
         settings=settings,
+        net_payment_amount=net_payment_amount,
     )
 
 
@@ -373,7 +385,17 @@ def download_receipt(payment_id):
     sale = payment.sale
     company = Company.query.first() or Company(business_name="MINIFY GADGETS")
     settings = SystemSetting.get_settings()
-    pdf = create_payment_receipt_pdf(payment, sale, company, settings)
+    refund_total = sum(
+        (tx.amount or 0)
+        for credit in CustomerCredit.query.filter_by(sale_id=sale.id).all()
+        for tx in credit.transactions
+        if tx.transaction_type == "REFUND"
+    )
+    net_payment_amount = max(
+        Decimal(str(payment.amount or 0)) - Decimal(str(refund_total or 0)),
+        Decimal("0.00"),
+    )
+    pdf = create_payment_receipt_pdf(payment, sale, company, settings, net_payment_amount)
     return send_file(pdf, mimetype="application/pdf", as_attachment=True, download_name=f"Receipt-{payment.receipt_number}.pdf")
 
 

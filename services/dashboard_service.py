@@ -217,7 +217,6 @@ class DashboardService:
         today_profit = (
             float(today_sale_profit)
             + float(today_credit_income)
-            - float(today_credit_refunds)
         )
 
         today_transactions = Sale.query.filter(
@@ -305,7 +304,6 @@ class DashboardService:
         week_profit = (
             float(week_sale_profit)
             + float(week_credit_income)
-            - float(week_credit_refunds)
         )
 
         week_purchases = (
@@ -378,7 +376,6 @@ class DashboardService:
         month_profit = (
             float(month_sale_profit)
             + float(month_credit_income)
-            - float(month_credit_refunds)
         )
 
         month_purchases = (
@@ -448,7 +445,6 @@ class DashboardService:
         year_profit = (
             float(year_sale_profit)
             + float(year_credit_income)
-            - float(year_credit_refunds)
         )
 
         year_purchases = (

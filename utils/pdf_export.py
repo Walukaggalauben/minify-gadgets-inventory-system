@@ -57,13 +57,14 @@ def create_sale_invoice_pdf(sale, company, settings):
     return buffer
 
 
-def create_payment_receipt_pdf(payment, sale, company, settings):
+def create_payment_receipt_pdf(payment, sale, company, settings, net_payment_amount=None):
     """Create a customer-shareable PDF for one actual payment receipt."""
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=(8.5 * inch, 11 * inch), rightMargin=36, leftMargin=36, topMargin=36, bottomMargin=36)
     styles = getSampleStyleSheet()
     title = styles["Title"]
     title.textColor = colors.HexColor("#00695c")
+    net_amount = payment.amount if net_payment_amount is None else net_payment_amount
     elements = [Paragraph(company.business_name or "MINIFY GADGETS", title), Paragraph("PAYMENT RECEIPT", styles["Heading2"])]
     elements.append(Paragraph(f"Receipt No: <b>{payment.receipt_number}</b> &nbsp;&nbsp; Invoice: <b>{sale.invoice_number}</b>", styles["Normal"]))
     elements.append(Spacer(1, 12))
@@ -72,7 +73,7 @@ def create_payment_receipt_pdf(payment, sale, company, settings):
         elements.append(Paragraph(f"Phone: {sale.customer_phone}", styles["Normal"]))
     elements.append(Spacer(1, 15))
     currency = payment.currency.symbol or payment.currency.code if payment.currency else "UGX"
-    rows = [["Payment Detail", "Value"], ["Receipt Date", payment.payment_date.strftime('%d/%m/%Y %H:%M') if payment.payment_date else "-"], ["Payment Method", payment.payment_method or "-"], ["Amount Received", f"{currency} {float(payment.original_amount or 0):,.2f}"], ["UGX Equivalent", _money(payment.amount)], ["Exchange Rate", f"{float(payment.exchange_rate or 1):,.8f}"], ["Remaining Balance", _money(sale.balance_due)]]
+    rows = [["Payment Detail", "Value"], ["Receipt Date", payment.payment_date.strftime('%d/%m/%Y %H:%M') if payment.payment_date else "-"], ["Payment Method", payment.payment_method or "-"], ["Amount Received", f"{currency} {float(net_amount / (payment.exchange_rate or 1)):,.2f}"], ["UGX Equivalent", _money(net_amount)], ["Exchange Rate", f"{float(payment.exchange_rate or 1):,.8f}"], ["Remaining Balance", _money(sale.balance_due)]]
     table = Table(rows, colWidths=[2.6*inch, 4.1*inch])
     table.setStyle(TableStyle([("BACKGROUND", (0,0), (-1,0), colors.HexColor("#00695c")), ("TEXTCOLOR", (0,0), (-1,0), colors.white), ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"), ("GRID", (0,0), (-1,-1), .5, colors.grey), ("FONTNAME", (0,1), (0,-1), "Helvetica-Bold"), ("ALIGN", (1,1), (1,-1), "RIGHT")]))
     elements.extend([table, Spacer(1, 18)])

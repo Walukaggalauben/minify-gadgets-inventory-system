@@ -432,7 +432,7 @@
                     <span class="label">Amount Received</span>
                     <span class="value">
                         {{ payment.currency.symbol if payment.currency and payment.currency.symbol else payment.currency.code if payment.currency else "UGX" }}
-                        {{ "{:,.2f}".format(payment.original_amount or 0) }}
+                        {{ "{:,.2f}".format((net_payment_amount or 0) / (payment.exchange_rate or 1)) }}
                     </span>
                 </div>
 
@@ -446,14 +446,14 @@
                 <div class="payment-row">
                     <span class="label">UGX Equivalent</span>
                     <span class="value">
-                        UGX {{ "{:,.2f}".format(payment.amount or 0) }}
+                        UGX {{ "{:,.2f}".format(net_payment_amount or 0) }}
                     </span>
                 </div>
 
                 <div class="payment-row highlight">
                     <span class="label">THIS PAYMENT</span>
                     <span class="value">
-                        UGX {{ "{:,.2f}".format(payment.amount or 0) }}
+                        UGX {{ "{:,.2f}".format(net_payment_amount or 0) }}
                     </span>
                 </div>
 
