@@ -135,6 +135,68 @@
             text-align: right;
         }
 
+        .items-section {
+            margin-top: 24px;
+            border: 1px solid #dfe4e7;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .items-section-header {
+            padding: 13px 16px;
+            background: #00695c;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .item-card {
+            padding: 15px 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item-card:last-child {
+            border-bottom: 0;
+        }
+
+        .item-name {
+            margin-bottom: 9px;
+            font-size: 15px;
+            font-weight: 800;
+            color: #222;
+        }
+
+        .item-details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0 24px;
+        }
+
+        .item-detail {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 5px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #f3f3f3;
+        }
+
+        .item-detail .label {
+            color: #777;
+        }
+
+        .item-detail .value {
+            font-weight: 700;
+            text-align: right;
+            word-break: break-word;
+        }
+
+        @media (max-width: 650px) {
+            .item-details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .payment-summary {
             margin-top: 24px;
             border: 1px solid #dfe4e7;
@@ -433,6 +495,56 @@
 
                 </div>
 
+            </div>
+
+
+            <!-- =================================================
+                 PURCHASED ITEM DETAILS
+            ================================================== -->
+
+            <div class="items-section">
+                <div class="items-section-header">Purchased Item Details</div>
+
+                {% if sale.items %}
+                    {% for item in sale.items %}
+                        {% set variant = item.product_variant %}
+                        {% set product = variant.product if variant else None %}
+                        <div class="item-card">
+                            <div class="item-name">
+                                {{ product.brand.name ~ ' ' if product and product.brand else '' }}{{ product.name if product else 'Product' }}
+                            </div>
+
+                            <div class="item-details-grid">
+                                <div class="item-detail">
+                                    <span class="label">Model</span>
+                                    <span class="value">{{ product.name if product else '-' }}</span>
+                                </div>
+                                <div class="item-detail">
+                                    <span class="label">Storage</span>
+                                    <span class="value">{{ variant.storage or '-' if variant else '-' }}</span>
+                                </div>
+                                <div class="item-detail">
+                                    <span class="label">IMEI</span>
+                                    <span class="value">{{ item.imei.imei if item.imei and item.imei.imei else '-' }}</span>
+                                </div>
+                                <div class="item-detail">
+                                    <span class="label">Serial Number</span>
+                                    <span class="value">{{ item.imei.serial_number if item.imei and item.imei.serial_number else '-' }}</span>
+                                </div>
+                                <div class="item-detail">
+                                    <span class="label">Colour</span>
+                                    <span class="value">{{ variant.colour or '-' if variant else '-' }}</span>
+                                </div>
+                                <div class="item-detail">
+                                    <span class="label">Quantity</span>
+                                    <span class="value">{{ item.quantity }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="item-card">No purchased items recorded for this sale.</div>
+                {% endif %}
             </div>
 
 
