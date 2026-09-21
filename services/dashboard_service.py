@@ -113,7 +113,10 @@ class DashboardService:
                 )
                 .join(Product, Product.id == ProductVariant.product_id)
                 .join(Brand, Brand.id == Product.brand_id)
-                .filter(ProductVariant.quantity <= ProductVariant.minimum_stock)
+                .filter(
+                    ProductVariant.quantity > 0,
+                    ProductVariant.quantity <= ProductVariant.minimum_stock,
+                )
                 .order_by(ProductVariant.quantity.asc())
                 .all()
             )

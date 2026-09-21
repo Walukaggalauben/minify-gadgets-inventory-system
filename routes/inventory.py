@@ -37,7 +37,10 @@ def index():
     # STOCK FILTER
     # ==========================================================
     if status == "low":
-        query = query.filter(ProductVariant.quantity <= ProductVariant.minimum_stock)
+        query = query.filter(
+            ProductVariant.quantity > 0,
+            ProductVariant.quantity <= ProductVariant.minimum_stock,
+        )
 
     elif status == "out":
         query = query.filter(ProductVariant.quantity <= 0)
@@ -60,7 +63,9 @@ def index():
     total_units = sum(int(v.quantity or 0) for v in all_variants)
 
     low_stock = sum(
-        1 for v in all_variants if (v.quantity or 0) <= (v.minimum_stock or 0)
+        1
+        for v in all_variants
+        if 0 < (v.quantity or 0) <= (v.minimum_stock or 0)
     )
 
     out_of_stock = sum(1 for v in all_variants if (v.quantity or 0) <= 0)
