@@ -188,9 +188,30 @@ class ReportService:
 
         total_stock = sum(v.quantity for v in variants)
 
-        stock_value = sum(float(v.buying_price) * v.quantity for v in variants)
+        # Respect physical IMEI-level prices where present, while preserving
+        # the variant price for units that do not have a unit-specific price.
+        variant_ids = [v.id for v in variants]
+        in_stock_imeis = (
+            IMEI.query.filter(
+                IMEI.status == "In Stock",
+                IMEI.product_variant_id.in_(variant_ids) if variant_ids else False,
+            ).all()
+        )
+        imeis_by_variant = {}
+        for unit in in_stock_imeis:
+            imeis_by_variant.setdefault(unit.product_variant_id, []).append(unit)
 
-        selling_value = sum(float(v.selling_price) * v.quantity for v in variants)
+        stock_value = 0
+        selling_value = 0
+        for v in variants:
+            units = imeis_by_variant.get(v.id, [])
+            priced_units = min(len(units), int(v.quantity or 0))
+            for unit in units[:priced_units]:
+                stock_value += float(unit.buying_price if unit.buying_price is not None else (v.buying_price or 0))
+                selling_value += float(unit.default_selling_price if unit.default_selling_price is not None else (v.selling_price or 0))
+            remaining = max(int(v.quantity or 0) - priced_units, 0)
+            stock_value += float(v.buying_price or 0) * remaining
+            selling_value += float(v.selling_price or 0) * remaining
 
         expected_profit = selling_value - stock_value
 

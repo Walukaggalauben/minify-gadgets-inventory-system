@@ -125,19 +125,27 @@ class DashboardService:
 
         low_stock_count = len(low_stock)
 
-        inventory_cost = (
-            db.session.query(
-                func.sum(ProductVariant.buying_price * ProductVariant.quantity)
-            ).scalar()
-            or 0
-        )
+        # Inventory valuation must respect unit-level IMEI prices. A variant can
+        # contain physical units with different selling prices (for example, a
+        # normal-stock phone and a trade-in phone). Units without a unit price
+        # safely fall back to the variant's standard price.
+        all_variants = ProductVariant.query.all()
+        all_in_stock_imeis = IMEI.query.filter(IMEI.status == "In Stock").all()
+        imeis_by_variant = {}
+        for unit in all_in_stock_imeis:
+            imeis_by_variant.setdefault(unit.product_variant_id, []).append(unit)
 
-        inventory_selling_value = (
-            db.session.query(
-                func.sum(ProductVariant.selling_price * ProductVariant.quantity)
-            ).scalar()
-            or 0
-        )
+        inventory_cost = 0
+        inventory_selling_value = 0
+        for variant in all_variants:
+            units = imeis_by_variant.get(variant.id, [])
+            priced_units = min(len(units), int(variant.quantity or 0))
+            for unit in units[:priced_units]:
+                inventory_cost += unit.buying_price if unit.buying_price is not None else (variant.buying_price or 0)
+                inventory_selling_value += unit.default_selling_price if unit.default_selling_price is not None else (variant.selling_price or 0)
+            remaining = max(int(variant.quantity or 0) - priced_units, 0)
+            inventory_cost += (variant.buying_price or 0) * remaining
+            inventory_selling_value += (variant.selling_price or 0) * remaining
 
         expected_profit = inventory_selling_value - inventory_cost
 
@@ -686,7 +694,7 @@ class DashboardService:
                 or 0
             )
 
-            profit = float(sale_profit) + float(credit_income) - float(credit_refunds)
+            profit = float(sale_profit) + float(credit_income)
 
             chart_labels.append(current_day.strftime("%d %b"))
 

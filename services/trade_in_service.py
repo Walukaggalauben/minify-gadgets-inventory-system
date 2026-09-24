@@ -129,9 +129,14 @@ class TradeInService:
                 if IMEI.query.filter_by(imei=imei_number).first():
                     raise Exception(f"IMEI already exists: {imei_number}")
 
+                serial_number = (item.get("serial_number") or "").strip() or None
+                if serial_number and IMEI.query.filter_by(serial_number=serial_number).first():
+                    raise Exception(f"Serial number already exists: {serial_number}")
+
                 imei = IMEI(
                     product_variant_id=variant.id,
                     imei=imei_number,
+                    serial_number=serial_number,
                     buying_price=buying_price,
                     default_selling_price=selling_price,
                     acquisition_source="Trade In",

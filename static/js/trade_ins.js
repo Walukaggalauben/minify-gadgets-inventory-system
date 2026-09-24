@@ -103,8 +103,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // MAIN ELEMENTS
     // ============================================================
 
+    const suggestedTradeValue =
+        document.getElementById("suggestedTradeValue");
+
     const tradeValue =
-        document.querySelector(".finalTradeValue");
+        document.querySelector(".agreedTradeValue");
 
     const sellingPrice =
         document.querySelector(".sellingPrice");
@@ -169,6 +172,68 @@ document.addEventListener("DOMContentLoaded", () => {
             "UGX " +
             number.toLocaleString()
         );
+
+    }
+
+
+    // ============================================================
+    // SUGGESTED TRADE VALUE — ERP TRADE-IN RULES
+    // ============================================================
+
+    async function calculateSuggestedValue() {
+
+        if (!suggestedTradeValue || !sellingPrice) {
+            return;
+        }
+
+        const csrfToken =
+            document.querySelector('input[name="csrf_token"]')?.value ||
+            (typeof getCsrfToken === "function" ? getCsrfToken() : "");
+
+        try {
+
+            const response = await fetch(
+                "/trade-ins/api/valuation",
+                {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...(csrfToken ? { "X-CSRFToken": csrfToken } : {})
+                    },
+                    body: JSON.stringify({
+                        selling_price: parseFloat(sellingPrice.value) || 0,
+                        battery_health: document.querySelector('[name="battery_health[]"]')?.value || null,
+                        screen_condition: document.querySelector('[name="screen_condition[]"]')?.value,
+                        back_condition: document.querySelector('[name="back_condition[]"]')?.value,
+                        frame_condition: document.querySelector('[name="frame_condition[]"]')?.value,
+                        camera_condition: document.querySelector('[name="camera_condition[]"]')?.value,
+                        face_id_status: document.querySelector('[name="face_id_status[]"]')?.value,
+                        fingerprint_status: document.querySelector('[name="fingerprint_status[]"]')?.value,
+                        network_lock: document.querySelector('[name="network_lock[]"]')?.value,
+                        icloud_status: document.querySelector('[name="icloud_status[]"]')?.value,
+                        frp_status: document.querySelector('[name="frp_status[]"]')?.value,
+                        charger_received: document.querySelector('[name="charger_received_0"]')?.checked ?? true,
+                        box_received: document.querySelector('[name="box_received_0"]')?.checked ?? true
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Trade valuation request failed");
+            }
+
+            const result = await response.json();
+
+            suggestedTradeValue.value =
+                result.suggested_trade_value ?? 0;
+
+            calculateProfit();
+            updateReview();
+
+        } catch (error) {
+            console.error("Suggested trade value error:", error);
+        }
 
     }
 
@@ -270,14 +335,40 @@ document.addEventListener("DOMContentLoaded", () => {
         const profit =
             selling - buying;
 
-
-        expectedProfit.value =
+        expectedProfit.textContent =
             money(profit);
 
+        const summarySuggested =
+            document.getElementById("summarySuggested");
+        const summaryAgreed =
+            document.getElementById("summaryAgreed");
+        const summarySelling =
+            document.getElementById("summarySelling");
+
+        if (summarySuggested) {
+            summarySuggested.textContent =
+                money(suggestedTradeValue?.value || 0);
+        }
+
+        if (summaryAgreed) {
+            summaryAgreed.textContent =
+                money(buying);
+        }
+
+        if (summarySelling) {
+            summarySelling.textContent =
+                money(selling);
+        }
 
         calculateTopup();
 
     }
+
+
+    suggestedTradeValue?.addEventListener(
+        "input",
+        calculateProfit
+    );
 
 
     tradeValue?.addEventListener(
@@ -288,8 +379,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     sellingPrice?.addEventListener(
         "input",
-        calculateProfit
+        () => {
+            calculateProfit();
+            calculateSuggestedValue();
+        }
     );
+
+
+    document.querySelectorAll(".inspection-status, .battery-health, input[name^=\"charger_received_\"], input[name^=\"box_received_\"]").forEach(field => {
+        field.addEventListener("change", calculateSuggestedValue);
+        field.addEventListener("input", calculateSuggestedValue);
+    });
 
 
     swapSellingPrice?.addEventListener(
@@ -1026,6 +1126,14 @@ variantSelect?.addEventListener(
             )
         );
 
+        if (sellingPrice) {
+            sellingPrice.value =
+                option.dataset.price || "";
+        }
+
+        calculateSuggestedValue();
+        calculateProfit();
+
     }
 );
 
@@ -1050,6 +1158,61 @@ function setText(
 
     }
 
+}
+
+
+// ============================================================
+// REVIEW PAGE — ALWAYS READ CURRENT FORM VALUES
+// ============================================================
+
+function updateReview() {
+
+    const value = (selector, fallback = "-") => {
+        const field = document.querySelector(selector);
+        if (!field) return fallback;
+        return field.value || fallback;
+    };
+
+    const setReview = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value || "-";
+    };
+
+    const formatMoney = value =>
+        "UGX " + (Number(value) || 0).toLocaleString();
+
+    setReview("reviewCustomer", value('[name="customer_name"]'));
+    setReview("reviewPhone", value('[name="phone_number"]'));
+    setReview("reviewBusiness", value('[name="business_name"]'));
+    setReview("reviewDate", value('[name="trade_in_date"]'));
+
+    const variant = document.getElementById("variantSelect");
+    const option = variant?.selectedOptions?.[0];
+    const deviceName = value("#deviceSearch");
+    const variantText = option?.value
+        ? [option.dataset.storage, option.dataset.ram, option.dataset.colour].filter(Boolean).join(" / ")
+        : "";
+
+    setReview("reviewDevice", variantText ? deviceName + " — " + variantText : deviceName);
+    setReview("reviewIMEI", value('[name="imei[]"]'));
+
+    const battery = value('[name="battery_health[]"]');
+    setReview("reviewBattery", battery !== "-" ? battery + "%" : "-");
+    setReview("reviewScreen", value('[name="screen_condition[]"]'));
+    setReview("reviewFrame", value('[name="frame_condition[]"]'));
+    setReview("reviewCamera", value('[name="camera_condition[]"]'));
+
+    const agreed = document.querySelector(".agreedTradeValue")?.value || 0;
+    const selling = document.querySelector(".sellingPrice")?.value || 0;
+    const cash = document.getElementById("cashPaidCustomer")?.value || 0;
+    const topup = document.getElementById("customerTopup")?.value || 0;
+    const profit = (Number(selling) || 0) - (Number(agreed) || 0);
+
+    setReview("reviewSelling", formatMoney(selling));
+    setReview("reviewTradeValue", formatMoney(agreed));
+    setReview("reviewCash", formatMoney(cash));
+    setReview("reviewTopup", formatMoney(topup));
+    setReview("reviewProfit", formatMoney(profit));
 }
 
 
@@ -1088,3 +1251,5 @@ document.addEventListener(
 
     }
 );
+
+});

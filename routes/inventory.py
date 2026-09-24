@@ -52,6 +52,24 @@ def index():
         ProductVariant.quantity.asc(), ProductVariant.sku.asc()
     ).all()
 
+    # Load current in-stock physical units once so inventory can show
+    # IMEI/serial-level prices without changing ProductVariant pricing.
+    variant_ids = [v.id for v in variants]
+    in_stock_imeis = (
+        IMEI.query.filter(
+            IMEI.status == "In Stock",
+            IMEI.product_variant_id.in_(variant_ids) if variant_ids else False,
+        )
+        .order_by(IMEI.product_variant_id.asc(), IMEI.id.asc())
+        .all()
+    )
+    imeis_by_variant = {}
+    for unit in in_stock_imeis:
+        imeis_by_variant.setdefault(unit.product_variant_id, []).append(unit)
+
+    for variant in variants:
+        variant.inventory_units = imeis_by_variant.get(variant.id, [])
+
     # ==========================================================
     # INVENTORY SUMMARY
     # ==========================================================
@@ -70,16 +88,24 @@ def index():
 
     out_of_stock = sum(1 for v in all_variants if (v.quantity or 0) <= 0)
 
-    # Total amount spent on stock currently available
-    inventory_cost = sum(
-        (v.buying_price or 0) * (v.quantity or 0) for v in all_variants
-    )
+    # Price inventory from physical IMEI units when unit-level prices exist.
+    # Remaining quantity falls back to the variant's standard price.
+    all_in_stock_imeis = IMEI.query.filter(IMEI.status == "In Stock").all()
+    imeis_by_variant_all = {}
+    for unit in all_in_stock_imeis:
+        imeis_by_variant_all.setdefault(unit.product_variant_id, []).append(unit)
 
-    # Total amount the current stock could generate if everything
-    # were sold at the normal selling price
-    potential_sales = sum(
-        (v.selling_price or 0) * (v.quantity or 0) for v in all_variants
-    )
+    inventory_cost = 0
+    potential_sales = 0
+    for v in all_variants:
+        units = imeis_by_variant_all.get(v.id, [])
+        priced_units = min(len(units), int(v.quantity or 0))
+        for unit in units[:priced_units]:
+            inventory_cost += unit.buying_price if unit.buying_price is not None else (v.buying_price or 0)
+            potential_sales += unit.default_selling_price if unit.default_selling_price is not None else (v.selling_price or 0)
+        remaining = max(int(v.quantity or 0) - priced_units, 0)
+        inventory_cost += (v.buying_price or 0) * remaining
+        potential_sales += (v.selling_price or 0) * remaining
 
     # Expected gross profit from current stock
     expected_profit = potential_sales - inventory_cost

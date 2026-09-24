@@ -123,10 +123,12 @@
             <th colspan="4" class="text-end">Total</th>
             <th class="text-end">UGX {{ "{:,.0f}".format(sale.total_amount) }}</th>
           </tr>
+          {% if session.get("role") in ["Administrator", "Super Administrator"] %}
           <tr>
             <th colspan="4" class="text-end">Profit</th>
             <th class="text-end text-success">UGX {{ "{:,.0f}".format(sale.profit) }}</th>
           </tr>
+          {% endif %}
         </tfoot>
       </table>
     </div>
