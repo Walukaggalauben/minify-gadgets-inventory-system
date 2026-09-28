@@ -120,6 +120,7 @@ def create():
             selling_prices = request.form.getlist("default_selling_price[]")
 
             imei_groups = request.form.getlist("imeis[]")
+            serial_groups = request.form.getlist("serials[]")
 
             items = []
 
@@ -129,12 +130,14 @@ def create():
                 unit_cost,
                 selling_price,
                 imei_text,
+                serial_text,
             ) in zip(
                 variant_ids,
                 quantities,
                 unit_costs,
                 selling_prices,
                 imei_groups,
+                serial_groups,
             ):
 
                 if not variant_id:
@@ -150,6 +153,10 @@ def create():
                 default_selling_price = float(selling_price)
 
                 imeis = [i.strip() for i in imei_text.splitlines() if i.strip()]
+                serials = [s.strip() for s in serial_text.splitlines() if s.strip()]
+
+                if serials and len(serials) != len(imeis):
+                    raise ValueError("Serial count must match IMEI count for each item.")
 
                 items.append(
                     {
@@ -158,6 +165,7 @@ def create():
                         "unit_cost": buying_price,
                         "default_selling_price": default_selling_price,
                         "imeis": imeis,
+                        "serials": serials,
                     }
                 )
 

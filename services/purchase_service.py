@@ -140,10 +140,14 @@ class PurchaseService:
                 grand_total += buying_price * quantity
 
                 # ==================================================
-                # CREATE IMEIs
+                # CREATE IMEIs + SERIAL NUMBERS
                 # ==================================================
 
-                for imei_number in imeis:
+                serials = item.get("serials") or []
+                if serials and len(serials) != len(imeis):
+                    raise Exception(f"Serial and IMEI count do not match for {variant.sku}.")
+
+                for index, imei_number in enumerate(imeis):
 
                     imei_number = imei_number.strip()
 
@@ -167,6 +171,7 @@ class PurchaseService:
                         product_variant_id=variant.id,
                         purchase_item_id=purchase_item.id,
                         imei=imei_number,
+                        serial_number=(serials[index] if index < len(serials) else None),
                         buying_price=buying_price,
                         default_selling_price=selling_price,
                         acquisition_source="Purchase",

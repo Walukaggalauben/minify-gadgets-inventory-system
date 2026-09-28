@@ -1,3 +1,4 @@
+from db import db
 from flask import (
     Blueprint,
     render_template,
@@ -5,10 +6,12 @@ from flask import (
     redirect,
     url_for,
     flash,
-   # session
+    session,
 )
 
 from models.product_variant import ProductVariant
+from models.supplier import Supplier
+from utils.timezone import application_date
 from services.imei_service import IMEIService
 from utils.auth import login_required
 from utils.permissions import permission_required
@@ -53,33 +56,26 @@ def create():
     if not login_required():
         return redirect("/")
 
-    variants = ProductVariant.query.order_by(
-        ProductVariant.sku
-    ).all()
-
-    print("Variants found:", len(variants))
-    print(variants)
+    variants = ProductVariant.query.filter_by(is_active=True).order_by(ProductVariant.sku).all()
+    suppliers = Supplier.query.order_by(Supplier.name).all()
 
     if request.method == "POST":
-
         try:
-            IMEIService.create(request.form)
-
-            flash(
-                "IMEI added successfully.",
-                "success"
-            )
-
-            return redirect(
-                url_for("imei.index")
-            )
-
-        except ValueError as e:
+            IMEIService.receive_device(request.form, session["user_id"])
+            flash("Device received successfully. Purchase, IMEI, serial and stock were recorded together.", "success")
+            return redirect(url_for("imei.index"))
+        except (ValueError, KeyError) as e:
+            db.session.rollback()
             flash(str(e), "danger")
+        except Exception as e:
+            db.session.rollback()
+            flash("Could not receive device: " + str(e), "danger")
 
     return render_template(
         "imei/create.html",
-        variants=variants
+        variants=variants,
+        suppliers=suppliers,
+        today=application_date().strftime("%Y-%m-%d"),
     )
 
 
