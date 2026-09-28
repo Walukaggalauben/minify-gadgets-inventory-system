@@ -56,6 +56,27 @@ def create():
     if not login_required():
         return redirect("/")
 
+    variants = ProductVariant.query.order_by(ProductVariant.sku).all()
+
+    if request.method == "POST":
+        try:
+            IMEIService.create(request.form)
+            flash("IMEI added successfully.", "success")
+            return redirect(url_for("imei.index"))
+        except ValueError as e:
+            db.session.rollback()
+            flash(str(e), "danger")
+
+    return render_template("imei/create.html", variants=variants)
+
+
+@imei_bp.route("/receive", methods=["GET", "POST"])
+@permission_required("imei.create")
+def receive():
+
+    if not login_required():
+        return redirect("/")
+
     variants = ProductVariant.query.filter_by(is_active=True).order_by(ProductVariant.sku).all()
     suppliers = Supplier.query.order_by(Supplier.name).all()
 
@@ -72,7 +93,7 @@ def create():
             flash("Could not receive device: " + str(e), "danger")
 
     return render_template(
-        "imei/create.html",
+        "imei/receive.html",
         variants=variants,
         suppliers=suppliers,
         today=application_date().strftime("%Y-%m-%d"),

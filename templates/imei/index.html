@@ -13,10 +13,13 @@
             IMEI Management
         </h3>
 
-        <a href="{{ url_for('imei.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i>
-            Receive Individual Device
-        </a>
+        <div class="text-end">
+            <a href="{{ url_for('imei.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Add IMEI
+            </a>
+            <div class="small mt-1"><a href="{{ url_for('imei.receive') }}" class="text-muted text-decoration-none">Receive individual device</a></div>
+        </div>
 
     </div>
 

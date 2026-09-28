@@ -138,7 +138,24 @@ class ReportService:
 
         total_profit = sale_profit + converted_credit_income - customer_credit_refunds
 
-        inventory_value = sum(float(v.buying_price) * v.quantity for v in variants)
+        # Use the same unit-aware inventory valuation as the main dashboard.
+        variant_ids = [v.id for v in variants]
+        in_stock_imeis = IMEI.query.filter(
+            IMEI.status == "In Stock",
+            IMEI.product_variant_id.in_(variant_ids) if variant_ids else False,
+        ).all()
+        imeis_by_variant = {}
+        for unit in in_stock_imeis:
+            imeis_by_variant.setdefault(unit.product_variant_id, []).append(unit)
+
+        inventory_value = 0
+        for variant in variants:
+            units = imeis_by_variant.get(variant.id, [])
+            priced_units = min(len(units), int(variant.quantity or 0))
+            for unit in units[:priced_units]:
+                inventory_value += float(unit.buying_price if unit.buying_price is not None else (variant.buying_price or 0))
+            remaining = max(int(variant.quantity or 0) - priced_units, 0)
+            inventory_value += float(variant.buying_price or 0) * remaining
 
         total_products = len(variants)
 

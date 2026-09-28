@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}Receive Individual Device{% endblock %}
+{% block title %}Add IMEI{% endblock %}
 
 {% block content %}
 
@@ -12,8 +12,7 @@
 
 <div class="card-header">
 
-<h4><i class="fas fa-box-open me-2"></i>Receive Individual Device</h4>
-<p class="text-muted mb-0">Record the supplier, cost, IMEI and serial number together. This adds exactly one unit to stock.</p>
+<h4>Add IMEI</h4>
 
 </div>
 
@@ -58,56 +57,9 @@
 
 </div>
 
-<div class="row g-3 mb-3">
-    <div class="col-lg-6">
-        <label class="form-label">Supplier <span class="text-danger">*</span></label>
-        <div class="input-group">
-            <select name="supplier_id" class="form-select" required>
-                <option value="">Select supplier</option>
-                {% for supplier in suppliers %}
-                <option value="{{ supplier.id }}">{{ supplier.name }}</option>
-                {% endfor %}
-            </select>
-            <a href="{{ url_for("supplier.create") }}" class="btn btn-outline-primary" target="_blank">+ Add Supplier</a>
-        </div>
-    </div>
-    <div class="col-lg-6">
-        <label class="form-label">Date Received <span class="text-danger">*</span></label>
-        <input type="date" name="purchase_date" class="form-control" value="{{ today }}" required>
-    </div>
-</div>
-
-<div class="row g-3 mb-3">
-    <div class="col-lg-6">
-        <label class="form-label">Buying Price <span class="text-danger">*</span></label>
-        <input type="number" name="buying_price" class="form-control" min="0" step="0.01" required>
-    </div>
-    <div class="col-lg-6">
-        <label class="form-label">Selling Price <span class="text-danger">*</span></label>
-        <input type="number" name="selling_price" class="form-control" min="0" step="0.01" required>
-    </div>
-</div>
-
-<div class="row g-3 mb-3">
-    <div class="col-lg-6">
-        <label class="form-label">Invoice / Reference</label>
-        <input type="text" name="invoice_number" class="form-control" placeholder="Optional supplier invoice/reference">
-    </div>
-    <div class="col-lg-6">
-        <label class="form-label">Payment Method</label>
-        <select name="payment_method" class="form-select">
-            <option value="Cash">Cash</option>
-            <option value="Mobile Money">Mobile Money</option>
-            <option value="Bank Transfer">Bank Transfer</option>
-            <option value="Cheque">Cheque</option>
-            <option value="Credit">Credit</option>
-        </select>
-    </div>
-</div>
-
 <div class="mb-3">
 
-<label>IMEI <span class="text-danger">*</span></label>
+<label>IMEI</label>
 
 <input
 type="text"
@@ -137,6 +89,10 @@ name="status"
 class="form-select">
 
 <option>In Stock</option>
+<option>Reserved</option>
+<option>Sold</option>
+<option>Returned</option>
+<option>Damaged</option>
 
 </select>
 
@@ -155,7 +111,7 @@ rows="4"></textarea>
 
 <button class="btn btn-primary">
 
-Receive Device & Add to Stock
+Save IMEI
 
 </button>
 
